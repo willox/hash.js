@@ -6,6 +6,8 @@ timer	= require "timer"
 cookie	= require "cookie" 
 senv	= require "senv" 
 
+require "superstring"
+
 ENV, ENV_META	= senv()
 
 
