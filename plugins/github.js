@@ -2,25 +2,12 @@ var config 	= require( "../config" );
 var github 	= require( "../lib/github" )( config.GitHub );
 var gitio 	= require( "../lib/gitio" );
 var https 	= require( "https" );
-
-var repositories = {
-	"garrysmod-issues": true,
-	"garrysmod-requests": true,
-	"garrysmod": true
-}
-
 var last = null;
 
 
 github.on( "data", function( notification ) {
 
 	github.markAsRead();
-
-	var repo = repositories[ notification.repository.name ]
-
-	// We don't want notifications about this repo
-	if ( repo == undefined )
-		return true;
 
 	var notificationTime = new Date( notification.updated_at )
 	var currentTime = new Date()
