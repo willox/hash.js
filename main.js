@@ -16,7 +16,7 @@ bot.on( "Connected", function() {
 // Default Commands
 //
 
-bot.registerCommand( "quit", function( name, steamID ) {
+bot.registerCommand( "restart", function( name, steamID ) {
 
 	if ( bot.isAdmin( steamID ) )
 		process.exit( 1 ); 
