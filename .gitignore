@@ -1,4 +1,4 @@
 node_modules
 config.js
 store.db
-plugins/lua/cookie.dat
+plugins/lua/cookies.dat
