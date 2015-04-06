@@ -1,5 +1,5 @@
 var config 	= require( "../config" );
-var github 	= require( "github-notifications" )( config.GitHub );
+var github 	= require( "../lib/github" )( config.GitHub );
 var gitio 	= require( "../lib/gitio" );
 var https 	= require( "https" );
 
@@ -13,6 +13,8 @@ var last = null;
 
 
 github.on( "data", function( notification ) {
+
+	github.markAsRead();
 
 	var repo = repositories[ notification.repository.name ]
 
