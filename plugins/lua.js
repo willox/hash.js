@@ -63,16 +63,13 @@ function QueueHook( event, args ) {
 
 	if ( args && args.length > 0 ) {
 
-		buf.push( "," );
 
 		for ( var i = 0; i < args.length; i++ ) {
 
-			buf.push( LuaQuote( args[ i ] ) );
 			buf.push( "," );
+			buf.push( LuaQuote( args[ i ] ) );
 
 		}
-
-		buf.pop(); // Remove the trailing comma
 
 	}
 
