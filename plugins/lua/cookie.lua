@@ -1,5 +1,22 @@
 local cookies = {}
 
+local function encode( str )
+
+	str = string.format( "%q", str )
+	str = string.gsub( str, "\\\n", "\\n" )
+
+	return str
+
+end
+
+local function decode( str )
+
+	local f = load( "return " .. str, "decode", "t", {} )
+
+	return f()
+
+end
+
 -- Ensure our file exists
 io.open( "cookies.dat", "a" ):close()
 
@@ -9,7 +26,7 @@ local function Load()
 
 		local k, v = string.unpack( "zz", line )
 
-		cookies[ k ] = v
+		cookies[ decode( k ) ] = decode( v )
 
 	end
 
@@ -23,7 +40,7 @@ local function Save()
 
 	for k, v in pairs( cookies ) do
 
-		fs:write( string.pack( "zz", k, v ) )
+		fs:write( string.pack( "zz", encode( k ), encode( v ) ) )
 		fs:write( "\n" )
 
 	end
@@ -41,15 +58,11 @@ meta.__metatable = FAKE_META
 function meta:__newindex( k, v )
 
 	k = tostring( k )
-	k = k:gsub( "\n", "" )
-	k = k:gsub( "\0", "" )
 
 	if v ~= nil then
 
 		v = tostring( v )
-		v = v:gsub( "\n", "" )
-		v = v:gsub( "\0", "" )
-
+		
 	end
 
 	cookies[ k ] = v
