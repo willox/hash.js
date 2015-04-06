@@ -41,13 +41,16 @@ meta.__metatable = FAKE_META
 function meta:__newindex( k, v )
 
 	k = tostring( k )
-	v = tostring( v )
-
 	k = k:gsub( "\n", "" )
-	v = v:gsub( "\n", "" )
-
 	k = k:gsub( "\0", "" )
-	v = v:gsub( "\0", "" )
+
+	if v ~= nil then
+
+		v = tostring( v )
+		v = v:gsub( "\n", "" )
+		v = v:gsub( "\0", "" )
+
+	end
 
 	cookies[ k ] = v
 
