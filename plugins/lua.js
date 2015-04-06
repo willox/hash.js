@@ -36,20 +36,34 @@ setInterval( ProcessCommand, 10 );
 
 function LuaQuote( str ) {
 
-	str = str.split( "\0" ).join( "\\0" );
-	str = str.split( EOF ).join( "\\n\\x1A" );
-	str = str.split( "\"" ).join( "\\\"" );
-	str = str.split( "\n" ).join( "\\n" );
+	return "\"" + str.replace( /.|\r|\n/gm, function( c ) {
 
-	return "\"" + str + "\"";
+		switch ( c ) {
 
+			case "\"":
+			case "\\":
+			case "\n":
+				return "\\" + c;
+
+			case "\r":
+				return "\\r";
+			case "\0":
+				return "\\0";
+
+		}
+
+		return c;
+
+	} ) + "\"";
 }
 
 function QueueHook( event, args ) {
 
-	var buf = [ "> hook.Call(" ]
+	var buf = [ "> hook.Call(", LuaQuote( event ) ];
 
 	if ( args && args.length > 0 ) {
+
+		buf.push( "," );
 
 		for ( var i = 0; i < args.length; i++ ) {
 
@@ -85,7 +99,7 @@ bot.on( "Message", function( name, steamID, msg ) {
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.split( EOF ).join( "\\n\\x1A" ) );
+	QueueCommand( msg.replace( EOF, "\\n\\x1A" ) );
 
 } );
 
@@ -117,8 +131,8 @@ lua.stdout.on( "data", function( data ) {
 		buf = buf.join( "" );
 
 		// Filter out unwanted shit
-		buf = buf.split( "\0" ).join( "\\0" );
-		buf = buf.split( "\t" ).join( "    " );
+		buf = buf.replace( "\0", "\\0" );
+		buf = buf.replace( "\t", "    " );
 
 		// Ignore empty packets
 		if ( buf.trim().length > 0 )
