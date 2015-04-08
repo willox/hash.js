@@ -73,6 +73,8 @@ local function CreateSecureEnvironment()
 		type				= type,
 		xpcall				= xpcall,
 
+		require				= srequire,
+
 		cookie				= cookie,
 		coroutine			= coroutine,
 		hook				= hook,

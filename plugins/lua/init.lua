@@ -1,10 +1,11 @@
 FAKE_META		= {}
 EOF				= "\n\x1A"
 
-hook	= require "hook" 
-timer	= require "timer" 
-cookie	= require "cookie" 
-senv	= require "senv" 
+hook		= require "hook" 
+timer		= require "timer" 
+cookie		= require "cookie"
+srequire	= require "srequire"
+senv		= require "senv" 
 
 require "superstring"
 
