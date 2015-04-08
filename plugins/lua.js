@@ -1,4 +1,5 @@
 var child_process	= require( "child_process" );
+var request			= require( "request" );
 var EOF				= "\n\x1A";
 var http			= require( "http" );
 
@@ -141,5 +142,37 @@ lua.stdout.on( "data", function( data ) {
 	// We've received our packet. Prepare the next command!
 	if ( buf.length == 1 && buf[0].length == 0 )
 		processing = false;
+
+} );
+
+bot.registerCommand( "require", function( name, steamID, args, argstr ) {
+
+	var isValid = argstr.match(/^[\w/]+$/);
+
+	if ( !isValid ) {
+
+		bot.sendMessage( "Invalid Path." );
+		return;
+
+	}
+
+
+	request( "https://raw.githubusercontent.com/wiox/hash.js/master/plugins/lua/user_modules/" + argstr + ".lua", function( err, resp, body ) {
+
+		if ( err || ( resp.statusCode < 200 || resp.statusCode > 200 ) ) {
+
+			bot.sendMessage( "An error occured whilst loading your module." );
+			bot.sendMessage( err || ( "HTTP Error " + resp.statusCode )  );
+
+			return;
+
+		}
+
+		QueueCommand( "> " + body );
+
+
+
+	} );
+
 
 } );
