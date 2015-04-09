@@ -423,7 +423,7 @@ local function RunCode(inst, bytes, offset)
 	func(inst, bytes:sub(1, offset - 1), args);
 end
 
-require"opcodes"
+require"x86/opcodes"
 
 function inst:run(bytes)
 	self:seteip(1);
