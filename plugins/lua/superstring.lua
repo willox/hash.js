@@ -12,3 +12,13 @@ function meta:__call( )
 	return f()
 
 end
+
+function meta:__index(k)
+	
+	if type( k ) == "number" then
+		return self:sub( k, k )
+	end
+	
+	return string[k]
+	
+end
