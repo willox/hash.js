@@ -6,7 +6,7 @@ local function Add( event, id, callback )
 		error( "bad argument #3 to 'Add' (function expected got " .. type( callback ) .. ")", 2 )
 	end
 
-	hooks[ event ] = hooks[ event] or {}
+	hooks[ event ] = hooks[ event ] or {}
 	hooks[ event ][ id ] = callback
 
 end
@@ -47,7 +47,7 @@ function GetTable()
 
 	for k, v in pairs( hooks ) do
 
-		ret[ k ]= v
+		ret[ k ] = v
 
 	end
 
