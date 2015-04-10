@@ -37,7 +37,7 @@ local function ProtectTable( tab, target )
 
 		if rawget( index, k, v ) then
 
-			error( "Attempt to modify read-only member '" .. k .. "'.", 2 )
+			error( "attempt to modify read-only member '" .. k .. "'", 2 )
 
 			return
 
