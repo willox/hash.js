@@ -97,6 +97,7 @@ local INDEX = {
 
 	cookie				= require "cookie",
 	hook				= require "hook",
+	include				= require "user_include",
 	require				= require "user_require",
 	timer				= require "timer",
 
