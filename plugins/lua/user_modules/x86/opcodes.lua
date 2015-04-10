@@ -1,4 +1,8 @@
 
+local eax, ecx, edx, ebx, esp, ebp, esi, edi, eflags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
+local ax, cx, dx, bx, sp, bp, si, di, flags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
+local al, cl, dl, bl, ah, ch, dh, bh = 0, 1, 2, 3, 4, 5, 6, 7;
+
 
 --[[-------
     add
@@ -543,24 +547,24 @@ end, 7);
 AddOpcode("mov", "\x88", 1, function(inst, op, args)
 	local which, with = inst:reg2(args);
 	
-	inst:mov8(which, inst:get8(with));
+	inst:setmemory(inst:get32(which), inst:str8(inst:get8(with)));
 end);
 
 AddOpcode("mov", "\x89", 1, function(inst, op, args)
 	local which, with = inst:reg2(args);
 	
-	inst:mov32(which, inst:get32(with));
+	inst:setmemory(inst:get32(which), inst:str32(inst:get32(with)));
 end);
 
 
 for i = 0, 7 do
-	AddOpcode("inc", string.char(0x40 + i), 1, function(inst, op, args)
+	AddOpcode("inc", string.char(0x40 + i), 0, function(inst, op, args)
 		inst:mov32(i, inst:get32(i) + 1);
 	end);
 end
 
 for i = 0, 7 do
-	AddOpcode("dec", string.char(0x48 + i), 1, function(inst, op, args)
+	AddOpcode("dec", string.char(0x48 + i), 0, function(inst, op, args)
 		inst:mov32(i, inst:get32(i) - 1);
 	end);
 end
@@ -677,6 +681,22 @@ AddOpcode("call", "\xFF", 1, function(inst, op, args)
 	inst:seteip(inst:get32(which) + 1);
 end, 2);
 
+for i = 1, 7 do
+	AddOpcode("xchg", string.char(0x90 + i), 0, function(inst, op, args)
+		local op1 = inst:get32(i);
+		local op2 = inst:get32(eax);
+		inst:mov32(eax, op1);
+		inst:mov32(i, op2);
+	end);
+end
+AddOpcode("nop", "\x90", 0, function(inst, op, args)
+	--[[
+	local op1 = inst:get32(eax);
+	local op2 = inst:get32(eax);
+	inst:mov32(eax, op1);
+	inst:mov32(eax, op2);
+	]]
+end);
 
 
 AddOpcode("sidt", "\x0F\x01", 1, function(inst, op, args)

@@ -1,4 +1,4 @@
-getmetatable"".__index = function(self,k)
+(getmetatable"" or {}).__index = function(self,k)
 	if(type(k) == "number") then return self:sub(k,k); end
 	return string[k];
 end
@@ -7,9 +7,9 @@ local function print() end
 
 local MEMORY_SIZE = 7; -- bytes of each ram of node
 
-eax, ecx, edx, ebx, esp, ebp, esi, edi, eflags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
-ax, cx, dx, bx, sp, bp, si, di, flags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
-al, cl, dl, bl, ah, ch, dh, bh = 0, 1, 2, 3, 4, 5, 6, 7;
+local eax, ecx, edx, ebx, esp, ebp, esi, edi, eflags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
+local ax, cx, dx, bx, sp, bp, si, di, flags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
+local al, cl, dl, bl, ah, ch, dh, bh = 0, 1, 2, 3, 4, 5, 6, 7;
 
 _cf, _pf, _af, _zf, _sf, _tf, _if, _df, _of, _iopl, _nt =
 	0, 1<<1, 1<<3, 1<<5, 1<<6, 1<<7, 1<<8, 1<<9, 1<<10, 1<<11, 1<<13
@@ -75,10 +75,9 @@ end
 
 function regs:push(data)
 	assert(type(data) == "number");
-	local stack = inst:get32(esp);
-	print(debug.traceback());
+	local stack = self.inst:get32(esp);
 	self.inst:setmemory(stack, self.inst:str32(data));
-	inst:mov32(esp, stack - 4);
+	self.inst:mov32(esp, stack - 4);
 end
 
 function regs:pop()
@@ -155,7 +154,7 @@ function data:reg1(str)
 end
 
 function data:str8(data)
-	return string.char(data[1])
+	return string.char(data)
 end
 
 function data:str16(data)
@@ -344,6 +343,28 @@ function inst:pop()
 	return self.regs:pop();
 end
 
+function inst:eax()
+	return self:get32(eax);
+end
+function inst:ecx()
+	return self:get32(ecx);
+end
+function inst:edx()
+	return self:get32(edx);
+end
+function inst:ebx()
+	return self:get32(ebx);
+end
+function inst:ebp()
+	return self:get32(ebp);
+end
+function inst:edi()
+	return self:get32(edi);
+end
+function inst:esi()
+	return self:get32(esi);
+end
+
 inst.opcodes = {};
 
 
@@ -421,7 +442,7 @@ function AddOpcode(name, opcode, argsize, func, ext)
 end
 
 local function RunCode(inst, bytes, offset)
-	
+	local start = offset;
 	local current_table = inst.opcodes;
 	while(type(current_table[FUNCTION]) ~= "function") do
 		if(type(current_table) == "nil") then error("invalid code"); end
@@ -438,10 +459,14 @@ local function RunCode(inst, bytes, offset)
 	local func = current_table[FUNCTION];
 	local args = bytes:sub(offset, offset + current_table[ARGSIZE] - 1);
 	print(current_table[NAME]);
-	func(inst, bytes:sub(1, offset - 1), args);
+	func(inst, bytes:sub(start, start + offset - 1), args);
 end
 
-require"x86/opcodes"
+if(dofile) then
+	dofile"opcodes.lua";
+else
+	require"x86/opcodes";
+end
 
 function inst:run(bytes)
 	self:seteip(1);
@@ -455,4 +480,4 @@ function inst:run(bytes)
 end
 
 x86 = NewInstance();
-x86:run"\xA1\x09\x00\x00\x00\xFF\xD0\xEB\x0A\x55\x89\xE5\x83\xEC\x08\x89\xEC\x5D\xC3"
+x86:run"\xB8\x3C\x00\x00\x00\x88\x00\x48\x83\xF8\x00\x7F\xF8"
