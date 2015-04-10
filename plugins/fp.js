@@ -113,7 +113,7 @@ function RequestTicker() {
 	http.get( {
 		hostname: "facepunch.com",
 		port: 80,
-		path: "/fp_ticker.php?aj=1&lasttime=" + lastPostTime
+		path: "/fp_ticker.php?aj=1&lasttime=" + lastPostTime - 5 // Hack
 	}, OnTicker );
 
 }
