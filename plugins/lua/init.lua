@@ -50,14 +50,11 @@ end
 
 local thread	= coroutine.create( f )
 local start		= os.clock()
-local ops		= 0
 
 --
 -- Install our execution time limiter
 --
 debug.sethook( thread, function()
-
-	ops = ops + 128
 
 	if os.clock() > start + 0.5 then
 
