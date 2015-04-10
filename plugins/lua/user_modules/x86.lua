@@ -364,6 +364,9 @@ end
 function inst:esi()
 	return self:get32(esi);
 end
+function inst:esp()
+	return self:get32(esp);
+end
 
 inst.opcodes = {};
 
@@ -479,5 +482,5 @@ function inst:run(bytes)
 	return self;
 end
 
-x86 = NewInstance();
-x86:run"\xB8\x3C\x00\x00\x00\x88\x00\x48\x83\xF8\x00\x7F\xF8"
+x86 = NewInstance(); 
+x86:run"\xE8\x02\x00\x00\x00\xEB\x01\xC3"
