@@ -665,13 +665,13 @@ AddOpcode("retn", "\xC2", 2, function(inst, op, args)
 	end
 end);
 
-AddOpcode("retn", "\xC3", 0, function(inst, op, args)
+AddOpcode("ret", "\xC3", 0, function(inst, op, args)
 	inst:seteip(inst:pop());
 end);
 
 AddOpcode("call", "\xE8", 4, function(inst, op, args)
-	inst:push(inst:eip() + 5);
-	inst:seteip(inst:uint32(args) + inst:eip() + 5);
+	inst:push(inst:eip());
+	inst:seteip(inst:uint32(args) + inst:eip());
 end);
 
 AddOpcode("call", "\xFF", 1, function(inst, op, args)
