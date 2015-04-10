@@ -1,3 +1,5 @@
+local modules = {}
+
 local function require( path )
 	if type( path ) ~= "string" then
 		error( "bad argument #1 to 'require' (function expected got " .. type( path ) .. ")", 2 )		
@@ -5,6 +7,10 @@ local function require( path )
 
 	if not path:match( "^[%w/]+$" ) then
 		error( "bad argument #1 to 'require' (path contains illegal characters)", 2 )
+	end
+
+	if modules[ path ] ~= nil then
+		return modules[ path ]
 	end
 
 	local f, err =  loadfile( "user_modules/" .. path .. ".lua", "t", ENV )
@@ -17,6 +23,9 @@ local function require( path )
 	if not ret[1] then
 		error( ret[2], 2 )
 	end
+
+	-- Only one returned value is cached
+	modules[ path ] = ret[ 2 ]
 
 	return table.unpack( ret, 2 )
 end

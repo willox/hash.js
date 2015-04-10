@@ -1,23 +1,13 @@
-FAKE_META		= {}
-EOF				= "\n\x1A"
-
-hook		= require "hook" 
-timer		= require "timer" 
-cookie		= require "cookie"
-srequire	= require "srequire"
-senv		= require "senv" 
-
 require "superstring"
 
-ENV, ENV_META	= senv()
-
+ENV = require "env"
 
 ::start::
 
 --
--- Indicate the beginning of a new packet
+-- Indicate that we are ready to receive a packet
 --
-io.write( EOF ); io.flush()
+io.write( "\n\x1A" ); io.flush()
 
 --
 -- Read until EOF
@@ -60,14 +50,11 @@ end
 
 local thread	= coroutine.create( f )
 local start		= os.clock()
-local ops		= 0
 
 --
 -- Install our execution time limiter
 --
 debug.sethook( thread, function()
-
-	ops = ops + 128
 
 	if os.clock() > start + 0.5 then
 
@@ -109,4 +96,7 @@ end
 
 io.write( table.concat( ret, "\t" ) )
 
+--
+-- repl
+---
 goto start

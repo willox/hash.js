@@ -1,5 +1,5 @@
 local meta = getmetatable ""
-meta.__metatable = FAKE_META
+meta.__metatable = false
 
 function meta:__call( )
 
