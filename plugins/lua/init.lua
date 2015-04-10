@@ -1,6 +1,6 @@
 require "superstring"
 
-local ENV = require "env"
+ENV = require "env"
 
 ::start::
 

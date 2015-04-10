@@ -1,5 +1,3 @@
-local ENV = require "env"
-
 local meta = getmetatable ""
 meta.__metatable = true
 

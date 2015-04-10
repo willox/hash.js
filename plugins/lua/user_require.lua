@@ -1,5 +1,3 @@
-local ENV = require "env"
-
 local function require( path )
 	if type( path ) ~= "string" then
 		error( "bad argument #1 to 'require' (function expected got " .. type( path ) .. ")", 2 )		
