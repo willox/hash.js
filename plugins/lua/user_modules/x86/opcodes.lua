@@ -610,13 +610,13 @@ AddOpcode("int", "\xCD", 0, function(inst, op, args)
 end);
 
 for i = 0, 7 do
-	AddOpcode("mov", string.char(0xB0 + i), 1, function(inst, op, args)
+	AddOpcode("mov", string.char(0x0B0 + i), 1, function(inst, op, args)
 		inst:mov8(i, inst.data:uint8(args));
 	end);
 end
 
 for i = 0, 7 do
-	AddOpcode("mov", string.char(0xB8 + i), 4, function(inst, op, args)
+	AddOpcode("mov", string.char(0x0B8 + i), 4, function(inst, op, args)
 		inst:mov32(i, inst.data:uint32(args));
 	end);
 end
