@@ -1,5 +1,5 @@
 local meta = getmetatable ""
-meta.__metatable = true
+meta.__metatable = false
 
 function meta:__call( )
 

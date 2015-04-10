@@ -31,7 +31,7 @@ local function ProtectTable( tab, target )
 
 	local meta			= {}
 	meta.__index		= index
-	meta.__metatable	= true
+	meta.__metatable	= false
 
 	function meta:__newindex( k, v )
 

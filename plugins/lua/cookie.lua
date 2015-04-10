@@ -53,7 +53,7 @@ Load()
 
 local meta = {}
 meta.__index = cookies
-meta.__metatable = true
+meta.__metatable = false
 
 function meta:__newindex( k, v )
 
