@@ -7,7 +7,7 @@ var lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
 	cwd: __dirname + "/lua"
 } );
 
-var cmdbuf = [];
+var cmdbuf = [ "> require 'autorun'" ];
 var processing = false;
 
 function QueueCommand( cmd ) {
