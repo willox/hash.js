@@ -3,6 +3,8 @@ getmetatable"".__index = function(self,k)
 	return string[k];
 end
 
+local function print() end
+
 local MEMORY_SIZE = 7; -- bytes of each ram of node
 
 eax, ecx, edx, ebx, esp, ebp, esi, edi, eflags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
@@ -73,13 +75,16 @@ end
 
 function regs:push(data)
 	assert(type(data) == "number");
-	self.stack[#self.stack + 1] = data;
+	local stack = inst:get32(esp);
+	print(debug.traceback());
+	self.inst:setmemory(stack, self.inst:str32(data));
+	inst:mov32(esp, stack - 4);
 end
 
 function regs:pop()
-	local ret = self.stack[#self.stack];
-	self.stack[#self.stack] = nil;
-	return ret;
+	local stack = self:get32(esp);
+	self:mov32(esp, stack + 4);
+	return self.inst:uint32(self.inst:readmemory(stack + 4, 4));
 end
 
 local data = {};
@@ -150,16 +155,20 @@ function data:reg1(str)
 end
 
 function data:str8(data)
-	return data:byte();
+	return string.char(data[1])
 end
 
 function data:str16(data)
-	return data[1]:byte() | data[2]:byte() << 8;
+	local string_char = string.char;
+	return 
+		string_char(data & 0xFF)..string_char((data & 0xFF00) >> 8);
 end
 
 function data:str32(data)
-	return data[1]:byte() | data[2]:byte() << 8
-		| data[3]:byte() << 16 | data[4]:byte() << 24;
+	local string_char = string.char;
+	return 
+		string_char(data & 0xFF)..string_char((data & 0xFF00) >> 8)..
+			string_char((data & 0xFF0000) >> 16)..string_char((data & 0xFF000000) >> 24);
 end
 
 
@@ -262,6 +271,14 @@ function inst:int8(data)
 	return self.data:int8(data);
 end
 
+function inst:uint16(data)
+	return self.data:uint16(data);
+end
+
+function inst:int16(data)
+	return self.data:int16(data);
+end
+
 function inst:uint32(data)
 	return self.data:uint32(data);
 end
@@ -340,6 +357,7 @@ function NewInstance(ram)
 	
 	local _regs = {stack = {}};
 	_inst.regs = _regs;
+	_regs.inst = _inst;
 	
 	for k,v in next, regs do
 		_regs[k] = v;
@@ -350,8 +368,8 @@ function NewInstance(ram)
 		[ecx] = 0,
 		[edx] = 0,
 		[ebx] = 0,
-		[esp] = 0,
-		[ebp] = 0,
+		[esp] = 2*1024,
+		[ebp] = 2*1024,
 		[esi] = 0,
 		[edi] = 0,
 		[eflags] = 0,
@@ -419,7 +437,7 @@ local function RunCode(inst, bytes, offset)
 	
 	local func = current_table[FUNCTION];
 	local args = bytes:sub(offset, offset + current_table[ARGSIZE] - 1);
-	
+	print(current_table[NAME]);
 	func(inst, bytes:sub(1, offset - 1), args);
 end
 
@@ -436,5 +454,5 @@ function inst:run(bytes)
 	return self;
 end
 
-_G.inst = NewInstance();
-_G.inst:run"\xB8\x80\x00\x00\x00\xC6\x00\x01\x8A\x00"
+x86 = NewInstance();
+x86:run"\xA1\x09\x00\x00\x00\xFF\xD0\xEB\x0A\x55\x89\xE5\x83\xEC\x08\x89\xEC\x5D\xC3"
