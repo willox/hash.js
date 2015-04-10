@@ -1,5 +1,7 @@
+local ENV = require "env"
+
 local meta = getmetatable ""
-meta.__metatable = FAKE_META
+meta.__metatable = true
 
 function meta:__call( )
 
