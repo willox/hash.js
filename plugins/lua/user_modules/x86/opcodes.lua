@@ -4,6 +4,8 @@
     add
 -------]]--
 
+local function print() end
+
 AddOpcode("add", "\x00", 1, function(inst, op, args)
 	local which, with = inst:reg2(args);
 	

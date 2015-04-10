@@ -3,6 +3,8 @@ getmetatable"".__index = function(self,k)
 	return string[k];
 end
 
+local function print() end
+
 local MEMORY_SIZE = 7; -- bytes of each ram of node
 
 eax, ecx, edx, ebx, esp, ebp, esi, edi, eflags = 0, 1, 2, 3, 4, 5, 6, 7, 8;
