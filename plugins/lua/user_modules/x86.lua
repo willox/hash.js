@@ -1,4 +1,4 @@
-getmetatable"".__index = function(self,k)
+(getmetatable"" or {}).__index = function(self,k)
 	if(type(k) == "number") then return self:sub(k,k); end
 	return string[k];
 end
