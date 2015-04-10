@@ -640,7 +640,7 @@ AddOpcode("mov", "\xA0", 4, function(inst, op, args)
 end);
 
 AddOpcode("mov", "\xA1", 4, function(inst, op, args)
-	inst:mov32(eax, inst:readmemory(inst:uint32(args), 4));
+	inst:mov32(eax, inst:uint32(args));
 end);
 
 AddOpcode("mov", "\xA2", 4, function(inst, op, args)
@@ -652,7 +652,28 @@ AddOpcode("mov", "\xA3", 4, function(inst, op, args)
 end);
 
 
+AddOpcode("retn", "\xC2", 2, function(inst, op, args)
+	inst:seteip(inst:pop());
+	for i = 1, inst:uint16(args), 4 do
+		inst:pop();
+	end
+end);
 
+AddOpcode("retn", "\xC3", 0, function(inst, op, args)
+	inst:seteip(inst:pop());
+end);
+
+AddOpcode("call", "\xE8", 4, function(inst, op, args)
+	inst:push(inst:eip() + 5);
+	inst:seteip(inst:uint32(args) + inst:eip() + 5);
+end);
+
+AddOpcode("call", "\xFF", 1, function(inst, op, args)
+	local which = inst:reg1(args[1]);
+	inst:push(inst:eip() + 2);
+	print(which);
+	inst:seteip(inst:get32(which) + 1);
+end, 2);
 
 
 
