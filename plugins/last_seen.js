@@ -132,9 +132,4 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 
 } );
 
-bot.registerCommand( "_inchat", function() {
-	for ( k in bot.Client.chatRooms[ bot.GroupID ] )
-		bot.sendMessage( k );
-});
-
 } )( bot );
