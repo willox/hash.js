@@ -89,11 +89,11 @@ bot.on( "UserDisconnected", function( name, sid ) {
 
 // Command //
 
-bot.registerCommand( "lastseen", function( name, steamID, args ) {
+bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 
 	db.all( "SELECT user, name, time FROM last_seen WHERE name LIKE ? \
 	  ORDER BY name LIMIT 11",
-	  "%" + args[0] + "%",
+	  "%" + arg_str + "%",
 	  function( err, rows ) {
 
 		if ( err ) {
@@ -102,7 +102,7 @@ bot.registerCommand( "lastseen", function( name, steamID, args ) {
 		}
 
 		if ( rows.length == 0 )
-			return bot.sendMessage( "Nobody found with the name '" + args[0]
+			return bot.sendMessage( "Nobody found with the name '" + arg_str
 			  + "'.");
 
 		var output = "";
@@ -133,9 +133,9 @@ bot.registerCommand( "lastseen", function( name, steamID, args ) {
 
 } );
 
-bot.registerCommand( "lastseenid", function( name, steamID, args ) {
+bot.registerCommand( "lastseenid", function( name, steamID, _, arg_str ) {
 
-	db.get( "SELECT name, time FROM last_seen WHERE user = ?", args[0],
+	db.get( "SELECT name, time FROM last_seen WHERE user = ?", arg_str,
 	  function( err, row ) {
 
 		if ( err ) {
@@ -144,7 +144,7 @@ bot.registerCommand( "lastseenid", function( name, steamID, args ) {
 		}
 
 		if ( !row )
-			return bot.sendMessage( "Nobody found with the id '" + args[0]
+			return bot.sendMessage( "Nobody found with the id '" + arg_str
 			  + "'.");
 
 		bot.sendMessage( getLastSeenMsg( name, row.name, row.time ) );
