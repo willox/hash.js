@@ -1,5 +1,3 @@
-( function( bot ) {
-
 // Returns a random integer between 1 and max
 function randInt( max ) {
 	return Math.floor( Math.random() * ( max - 1 ) ) + 1;
@@ -33,5 +31,3 @@ bot.registerCommand( "roll", function( name, _, _, arg_str ) {
 	}
 
 } );
-
-} )( bot );
