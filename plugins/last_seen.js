@@ -91,9 +91,13 @@ bot.on( "UserDisconnected", function( name, sid ) {
 
 bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 
-	db.all( "SELECT user, name, time FROM last_seen WHERE name LIKE ? \
+    var _ref;
+
+	db.all( "SELECT user, name, time FROM last_seen \
+	  WHERE name LIKE ? OR user = ? \
 	  ORDER BY name LIMIT 11",
 	  "%" + arg_str + "%",
+	  arg_str,
 	  function( err, rows ) {
 
 		if ( err ) {
@@ -128,26 +132,6 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 			}
 
 		bot.sendMessage( output );
-
-	} );
-
-} );
-
-bot.registerCommand( "lastseenid", function( name, steamID, _, arg_str ) {
-
-	db.get( "SELECT name, time FROM last_seen WHERE user = ?", arg_str,
-	  function( err, row ) {
-
-		if ( err ) {
-			console.error( err );
-			return bot.sendMessage( "Error!" );
-		}
-
-		if ( !row )
-			return bot.sendMessage( "Nobody found with the id '" + arg_str
-			  + "'.");
-
-		bot.sendMessage( getLastSeenMsg( name, row.name, row.time ) );
 
 	} );
 
