@@ -3,7 +3,7 @@
 // Database //
 
 db.run( "CREATE TABLE IF NOT EXISTS last_seen(\
-  user INTEGER PRIMARY KEY, \
+  user TEXT PRIMARY KEY, \
   name TEXT, \
   time TEXT )" );
 
@@ -116,16 +116,11 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 			rows.pop();
 		}
 
-		// This doesn't work properly for some reason
-		// Client.chatRooms seems to be returning some out of date list
-		// So everyone is displayed as "offline"
-
 		for ( var x = 0; x < 10; x++ )
 			if ( rows[x] != null ) {
 				var row = rows[x];
-				var user = row.user.toString();
 
-				if ( bot.Client.chatRooms[ bot.GroupID ][ user ] != null )
+				if ( bot.Client.chatRooms[ bot.GroupID ][ row.user ] != null )
 					output += row.name + " is in the chat right now!";
 				else
 					output += getLastSeenMsg( null, row.name, row.time ) + "\n";
@@ -136,5 +131,10 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 	} );
 
 } );
+
+bot.registerCommand( "_inchat", function() {
+	for ( k in bot.Client.chatRooms[ bot.GroupID ] )
+		bot.sendMessage( k );
+});
 
 } )( bot );
