@@ -1,5 +1,3 @@
-( function( bot ) {
-
 // Database //
 
 db.run( "CREATE TABLE IF NOT EXISTS last_seen(\
@@ -131,5 +129,3 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 	} );
 
 } );
-
-} )( bot );
