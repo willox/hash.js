@@ -58,7 +58,7 @@ debug.sethook( thread, function()
 
 	if os.clock() > start + 0.5 then
 
-		error( "Execution time too long.", 2 )
+		error( "maximum execution time exceeded", 2 )
 
 	end
 
