@@ -54,6 +54,6 @@ function OnMessage( name, steamID, msg ) {
 
 bot.registerCommand( "excite", function() {
 
-	excited = !exited;
+	excited = !excited;
 	
 });
