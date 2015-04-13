@@ -13,6 +13,8 @@ function Init() {
 
 	cmdbuf = [ "> require 'autorun'" ];
 	processing = false;
+
+	lua.stdout.on( "data", OnStdOut );
 }
 
 
@@ -122,7 +124,7 @@ bot.on( "UserDisconnected", function( name, steamID ) {
 	QueueHook( "Disconnected", [ name, steamID ] );
 } );
 
-lua.stdout.on( "data", function( data ) {
+function OnStdOut( data ) {
 
 	//
 	// Handle multiple packets in a single chunk, or less
