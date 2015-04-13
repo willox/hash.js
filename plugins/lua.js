@@ -157,7 +157,7 @@ function OnStdOut( data ) {
 	if ( buf.length == 1 && buf[0].length == 0 )
 		processing = false;
 
-} );
+}
 
 bot.registerCommand( "restart", function() {
 
