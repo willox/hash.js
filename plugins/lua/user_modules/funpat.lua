@@ -3,7 +3,7 @@ local patterns = {
 }
 
 local function ShouldReply(msg)
-	if #msg > 50 and math.random() > 0.40 then return true end
+	if #msg > 200 and math.random() > 0.10 then return true end
 
 	return math.random() > 0.97
 end
