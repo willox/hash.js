@@ -3,8 +3,6 @@ local patterns = {
 }
 
 local function ShouldReply(msg)
-	math.randomseed(os.time())
-
 	if #msg > 50 and math.random() > 0.40 then return true end
 
 	return math.random() > 0.97
