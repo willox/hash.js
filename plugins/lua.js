@@ -2,13 +2,19 @@ var child_process	= require( "child_process" );
 var request			= require( "request" );
 var EOF				= "\n\x1A";
 var http			= require( "http" );
+var lua				= null;
+var cmdbuf			= null;
+var processing		= null;
 
-var lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
-	cwd: __dirname + "/lua"
-} );
+function Init() {
+	lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
+		cwd: __dirname + "/lua"
+	} );
 
-var cmdbuf = [ "> require 'autorun'" ];
-var processing = false;
+	cmdbuf = [ "> require 'autorun'" ];
+	processing = false;
+}
+
 
 function QueueCommand( cmd ) {
 
@@ -150,3 +156,12 @@ lua.stdout.on( "data", function( data ) {
 		processing = false;
 
 } );
+
+bot.registerCommand( "restart", function() {
+
+	lua.kill();
+	Init();
+
+} );
+
+Init();
