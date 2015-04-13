@@ -1,5 +1,6 @@
 var cleverbot = new ( require( "cleverbot-node" ) );
 var busy = false;
+var excited = false;
 
 var phrases = [
 	"hello",
@@ -17,6 +18,10 @@ function ShouldReply( msg ) {
 	// Don't reply if we are already replying
 	if ( busy )
 		return false;
+		
+	// 10% chance to reply if excited
+	if ( excited )
+		return Math.random() > 0.90;
 
 	// 25% chance to reply if first word is a defined phrase
 	var firstWordLower = msg.toLowerCase().split( " " )[ 0 ];
@@ -25,7 +30,7 @@ function ShouldReply( msg ) {
 		return Math.random() > 0.75;
 
 	// 3% chance by default
-	return Math.random() > 0.985;
+	return Math.random() > 0.96;
 
 }
 
@@ -46,3 +51,9 @@ function OnMessage( name, steamID, msg ) {
 	} );
 
 }
+
+bot.registerCommand( "excite", function() {
+
+	excited = !exited;
+	
+});
