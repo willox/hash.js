@@ -12,10 +12,6 @@ local function Handle (name, communityId, message)
 		if a then
 			if p == "p" then
 				persistent = message
-
-				if message == "p///" then
-					persistent = false
-				end
 			end
 
 			for i = 1, sed.messages:getSize () do
