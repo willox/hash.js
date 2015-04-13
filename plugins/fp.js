@@ -1,3 +1,6 @@
+if ( true )
+	return;
+
 var http 		= require( "http" );
 var xml2js 		= require( "xml2js" );
 var entities 	= new ( require( "html-entities" ).AllHtmlEntities );

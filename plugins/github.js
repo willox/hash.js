@@ -1,3 +1,6 @@
+if ( true )
+	return;
+
 var config 	= require( "../config" );
 var github 	= require( "../lib/github" )( config.GitHub );
 var gitio 	= require( "../lib/gitio" );
