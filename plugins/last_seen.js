@@ -36,11 +36,11 @@ function niceTimeSpan( seconds ) {
 		return plur( seconds, " second" );
 }
 
-function getLastSeenMsg( name, new_name, time ) {
-	var msg = new_name + " was last seen ";
+function getLastSeenMsg( name, cur_name, time ) {
+	var msg = cur_name + " was last seen ";
 	msg += niceTimeSpan( ( new Date() - new Date( time ) ) / 1000 );
 	msg += " ago";
-	if ( name && name != new_name )
+	if ( name && name != cur_name )
 		msg += " as " + name;
 	msg += ".";
 
@@ -57,7 +57,7 @@ bot.on( "UserConnected", function( name, sid ) {
 		if ( !err && row ) {
 			// Visited Before
 
-			bot.sendMessage( getLastSeenMsg( name, row.name, row.time ) );
+			bot.sendMessage( getLastSeenMsg( row.name, name, row.time ) );
 
 			db.run( "UPDATE last_seen \
 			  SET time = ?, name = ? WHERE user = ?",
