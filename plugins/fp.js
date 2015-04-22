@@ -1,7 +1,4 @@
-if ( true )
-	return;
-
-var http 		= require( "http" );
+var request		= require( "request" );
 var xml2js 		= require( "xml2js" );
 var entities 	= new ( require( "html-entities" ).AllHtmlEntities );
 
@@ -82,30 +79,23 @@ function HandlePosts( posts ) {
 
 }
 
-function OnTicker( res ) {
+function OnTicker( error, res, body ) {
 
-	var buf = [];
+	if ( error ) {
+		console.trace( error );
+		return;
+	}
 
-	res.on( "data", function( chunk ) {
-		buf.push( chunk );
-	} );
+	xml2js.parseString( body, function( err, res ) {
 
-	res.on( "end", function() {
+		// Facepunch is dodgy
+		if ( err )
+			return; 
 
-		buf = buf.join( "" );
+		if ( !res || !res.newposts || !res.newposts.post )
+			return;
 
-		xml2js.parseString( buf, function( err, res ) {
-
-			// Facepunch is dodgy
-			if ( err )
-				return; 
-
-			if ( !res || !res.newposts || !res.newposts.post )
-				return;
-
-			HandlePosts( res.newposts.post );
-
-		} );
+		HandlePosts( res.newposts.post );
 
 	} );
 
@@ -113,11 +103,14 @@ function OnTicker( res ) {
 
 function RequestTicker() {
 
-	http.get( {
-		hostname: "facepunch.com",
-		port: 80,
-		path: "/fp_ticker.php?aj=1&lasttime=" + lastPostTime
-	}, OnTicker );
+	var options = {
+		qs: {
+			aj:			1,
+			lasttime:	lastPostTime
+		}
+	}
+
+	request( "http://facepunch.com/fp_ticker.php", options, OnTicker );
 
 }
 
