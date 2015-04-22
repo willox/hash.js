@@ -2,6 +2,7 @@ db.run( "CREATE TABLE IF NOT EXISTS memories ( id INTEGER PRIMARY KEY AUTOINCREM
 
 var last_id = null;
 var last_msg = null;
+var silent = true;
 
 bot.on( "Message", function( name, steamID, msg ) {
 
@@ -22,10 +23,14 @@ bot.on( "Message", function( name, steamID, msg ) {
 	}
 	
 	last_msg = name + ": " + msg;
+	silent = false;
 
 } );
 
 function Spout() {
+
+	if ( silent )
+		return;
 
 	db.get( "SELECT id, memory FROM memories ORDER BY RANDOM() LIMIT 1", function( err, row ) {
 
@@ -37,6 +42,8 @@ function Spout() {
 		}
 
 	} );
+
+	silent = true;
 	
 }
 
