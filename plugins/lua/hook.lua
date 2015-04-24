@@ -38,7 +38,11 @@ local function Call( event, ... )
 		local success, err = pcall( v, ... )
 		
 		if not success then
+			
+			print( err )
+			
 			hooks[ event ][ k ] = nil
+			
 		end
 
 	end
