@@ -34,8 +34,12 @@ local function Call( event, ... )
 	end
 
 	for k, v in pairs( hooks[ event ] ) do
-
-		v( ... )
+		
+		local success, err = pcall( v, ... )
+		
+		if not success then
+			hooks[ event ][ k ] = nil
+		end
 
 	end
 
