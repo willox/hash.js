@@ -57,7 +57,7 @@ bot.on( "UserConnected", function( name, sid ) {
 		if ( !err && row ) {
 			// Visited Before
 
-			bot.sendMessage( getLastSeenMsg( row.name, name, row.time ) );
+			//bot.sendMessage( getLastSeenMsg( row.name, name, row.time ) );
 
 			db.run( "UPDATE last_seen \
 			  SET time = ?, name = ? WHERE user = ?",
