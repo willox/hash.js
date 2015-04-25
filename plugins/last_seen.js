@@ -57,7 +57,8 @@ bot.on( "UserConnected", function( name, sid ) {
 		if ( !err && row ) {
 			// Visited Before
 
-			if ( row.time > day ) {
+			var elapsed = ( new Date() - new Date( row.time ) ) / 1000;
+			if ( elapsed >= (2*day) ) {
 				bot.sendMessage( getLastSeenMsg( row.name, name, row.time ) );
 			}
 
