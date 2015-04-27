@@ -109,7 +109,8 @@ local INDEX = {
 
 	os					= {
 							time	= os.time,
-							clock	= os.clock
+							clock	= os.clock,
+							date	= os.date
 	}
 }
 
