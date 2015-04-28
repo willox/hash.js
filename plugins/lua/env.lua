@@ -17,7 +17,6 @@ local function ProtectTable( tab, target )
 
 			index[ k ] = ret
 
-		elseif not getmetatable( v ) and type( v ) == "table" then
 
 			index[ k ] = ProtectTable( tab[ k ] )
 
