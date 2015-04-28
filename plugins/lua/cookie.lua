@@ -49,11 +49,24 @@ local function Save()
 
 end
 
+local function Size()
+
+	local fs = io.open( "cookies.dat", "r" )
+
+	local size = fs:seek( "end" )
+
+	fs:close()
+	
+	return size
+
+end
+
 Load()
 
 local meta = {}
 meta.__index = cookies
 meta.__metatable = false
+meta.__len = Size
 
 function meta:__newindex( k, v )
 
