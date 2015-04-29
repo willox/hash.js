@@ -143,8 +143,8 @@ function OnStdOut( data ) {
 		buf = buf.join( "" );
 
 		// Filter out unwanted shit
-		buf = buf.replace( "\0", "\\0" );
-		buf = buf.replace( "\t", "    " );
+		buf = buf.replace( /\0/g, "\\0" );
+		buf = buf.replace( /\t/g, "    " );
 
 		// Ignore empty packets
 		if ( buf.trim().length > 0 )
