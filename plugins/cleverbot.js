@@ -11,6 +11,9 @@ var phrases = [
 	"where"
 ];
 
+var botNames = ["hash","#","bot","emneknagg"];
+var botNameLength = botNames.length;
+
 bot.on( "Message", OnMessage );
 
 function ShouldReply( msg ) {
@@ -18,7 +21,20 @@ function ShouldReply( msg ) {
 	// Don't reply if we are already replying
 	if ( busy )
 		return false;
-		
+
+	// 90% chance to reply if the bot's name is spoken.
+	///Loop through the names of the bot
+
+	for(i=0; i != botNameLength; i++) {
+		//if one of the words is equal to an entry in botNames
+
+		if(msg.toLowerCase().indexOf(botNames[i]) != -1) {
+
+			//Make the bot speak 90% of the time
+			return Math.random() > 0.10;
+		}
+	}
+
 	// 10% chance to reply if excited
 	if ( excited )
 		return Math.random() > 0.90;
@@ -55,5 +71,5 @@ function OnMessage( name, steamID, msg ) {
 bot.registerCommand( "excite", function() {
 
 	excited = !excited;
-	
+
 });
