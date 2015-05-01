@@ -70,6 +70,15 @@ function OnMessage( name, steamID, msg ) {
 
 bot.registerCommand( "excite", function() {
 
-	excited = !excited;
+	if(excited == true) {
+		excited = false;
+
+		bot.sendMessage("Excited: false");
+	}
+	else {
+		excited = true;
+
+		bot.sendMessage("Excited: true");
+	}
 
 });
