@@ -5,10 +5,7 @@ var excited = false;
 var phrases = [
 	"hello",
 	"hey",
-	"hi",
-	"what's",
-	"how",
-	"where"
+	"hi"
 ];
 
 bot.on( "Message", OnMessage );
@@ -19,9 +16,9 @@ function ShouldReply( msg ) {
 	if ( busy )
 		return false;
 
-	// 90% chance to reply if the bot's name is spoken.
+	// 80% chance to reply if the bot's name is spoken.
 	if ( msg.match( /\bHash\b/i ) )
-		return Math.random() > 0.10;
+		return Math.random() > 0.20;
 
 	// 10% chance to reply if excited
 	if ( excited )
@@ -33,8 +30,8 @@ function ShouldReply( msg ) {
 	if ( phrases.indexOf( firstWordLower ) != -1 )
 		return Math.random() > 0.75;
 
-	// 3% chance by default
-	return Math.random() > 0.96;
+	// 1.5% chance by default
+	return Math.random() > 0.985;
 
 }
 
