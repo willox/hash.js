@@ -11,7 +11,8 @@ var phrases = [
 	"where"
 ];
 
-var botNames = ["hash","bot","emneknagg"];
+//List of bot names in regex form
+var botNames = [/\bhash\b/i, /\bbot\b/i, /\bemneknagg\b/i];
 var botNameLength = botNames.length;
 
 bot.on( "Message", OnMessage );
@@ -28,7 +29,7 @@ function ShouldReply( msg ) {
 	for(i=0; i != botNameLength; i++) {
 		//if one of the words is equal to an entry in botNames
 
-		if(msg.toLowerCase().indexOf(botNames[i]) != -1) {
+		if(msg.match(botNames[i])) {
 
 			//Make the bot speak 90% of the time
 			return Math.random() > 0.10;
