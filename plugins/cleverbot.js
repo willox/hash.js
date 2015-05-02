@@ -13,7 +13,6 @@ var phrases = [
 
 //List of bot names in regex form
 var botNames = [/\bhash\b/i, /\bbot\b/i, /\bemneknagg\b/i];
-var botNameLength = botNames.length;
 
 bot.on( "Message", OnMessage );
 
@@ -26,7 +25,7 @@ function ShouldReply( msg ) {
 	// 90% chance to reply if the bot's name is spoken.
 	///Loop through the names of the bot
 
-	for(i=0; i != botNameLength; i++) {
+	for(i=0; i != botNames.length; i++) {
 		//if one of the words is equal to an entry in botNames
 
 		if(msg.match(botNames[i])) {
