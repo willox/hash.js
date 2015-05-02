@@ -23,17 +23,9 @@ function ShouldReply( msg ) {
 		return false;
 
 	// 90% chance to reply if the bot's name is spoken.
-	///Loop through the names of the bot
-
-	for(i=0; i != botNames.length; i++) {
-		//if one of the words is equal to an entry in botNames
-
-		if(msg.match(botNames[i])) {
-
-			//Make the bot speak 90% of the time
+	for(i=0; i != botNames.length; i++)
+		if(msg.match(botNames[i]))
 			return Math.random() > 0.10;
-		}
-	}
 
 	// 10% chance to reply if excited
 	if ( excited )
