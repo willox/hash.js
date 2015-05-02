@@ -11,7 +11,7 @@ var phrases = [
 	"where"
 ];
 
-var botNames = ["hash","#","bot","emneknagg"];
+var botNames = ["hash","bot","emneknagg"];
 var botNameLength = botNames.length;
 
 bot.on( "Message", OnMessage );
