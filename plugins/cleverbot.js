@@ -11,6 +11,9 @@ var phrases = [
 	"where"
 ];
 
+//List of bot names in regex form
+var botNames = [/\bhash\b/i, /\bbot\b/i, /\bemneknagg\b/i];
+
 bot.on( "Message", OnMessage );
 
 function ShouldReply( msg ) {
@@ -18,7 +21,12 @@ function ShouldReply( msg ) {
 	// Don't reply if we are already replying
 	if ( busy )
 		return false;
-		
+
+	// 90% chance to reply if the bot's name is spoken.
+	for(i=0; i != botNames.length; i++)
+		if(msg.match(botNames[i]))
+			return Math.random() > 0.10;
+
 	// 10% chance to reply if excited
 	if ( excited )
 		return Math.random() > 0.90;
@@ -54,6 +62,15 @@ function OnMessage( name, steamID, msg ) {
 
 bot.registerCommand( "excite", function() {
 
-	excited = !excited;
-	
+	if(excited == true) {
+		excited = false;
+
+		bot.sendMessage("Excited: false");
+	}
+	else {
+		excited = true;
+
+		bot.sendMessage("Excited: true");
+	}
+
 });
