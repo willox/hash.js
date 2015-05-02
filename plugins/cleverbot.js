@@ -11,9 +11,6 @@ var phrases = [
 	"where"
 ];
 
-//List of bot names in regex form
-var botNames = [/\bhash\b/i, /\bbot\b/i, /\bemneknagg\b/i];
-
 bot.on( "Message", OnMessage );
 
 function ShouldReply( msg ) {
@@ -23,9 +20,8 @@ function ShouldReply( msg ) {
 		return false;
 
 	// 90% chance to reply if the bot's name is spoken.
-	for(i=0; i != botNames.length; i++)
-		if(msg.match(botNames[i]))
-			return Math.random() > 0.10;
+	if ( msg.match( /\bHash\b/i ) )
+		return Math.random() > 0.10;
 
 	// 10% chance to reply if excited
 	if ( excited )
@@ -49,10 +45,19 @@ function OnMessage( name, steamID, msg ) {
 
 	busy = true;
 
+	// Translate name from Hash to Cleverbot
+	msg = msg.replace( /\bHash\b/ig, "Cleverbot" );
+
 	cleverbot.write( msg, function( res ) {
 
-		if ( res && res.message )
+		if ( res && res.message ) {
+
+			// Translate name from Cleverbot to Hash
+			res.message = res.message.replace( /\bCleverbot\b/ig, "Hash" );
+
 			bot.sendMessage( res.message );
+
+		}
 
 		busy = false;
 
