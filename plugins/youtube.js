@@ -22,6 +22,10 @@ bot.on( "Message", function( name, steamID, msg ) {
 			return; // Fuck Node
 
 		var data = JSON.parse( body );
+
+		if ( !data.entry || !data.entry.gd$rating || !data.entry.title || !data.entry.title.$t )
+			return; // Fuck YouTube
+		
 		var entry = data.entry;
 
 		var starCount = Math.round( entry.gd$rating.average );
