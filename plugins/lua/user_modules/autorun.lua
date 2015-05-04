@@ -1,2 +1,2 @@
 require "sed"
-require "tablerandom.lua"
+require "tablerandom"
