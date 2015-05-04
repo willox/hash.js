@@ -24,14 +24,14 @@ function ShouldReply( msg ) {
 	if ( excited )
 		return Math.random() > 0.90;
 
-	// 25% chance to reply if first word is a defined phrase
+	// 10% chance to reply if first word is a defined phrase
 	var firstWordLower = msg.toLowerCase().split( " " )[ 0 ];
 
 	if ( phrases.indexOf( firstWordLower ) != -1 )
-		return Math.random() > 0.75;
+		return Math.random() > 0.9;
 
-	// 1.5% chance by default
-	return Math.random() > 0.985;
+	// 1% chance by default
+	return Math.random() > 0.99;
 
 }
 
