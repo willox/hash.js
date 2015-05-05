@@ -105,7 +105,10 @@ setInterval( function() {
 
 var buf = [];
 
-bot.on( "Message", function( name, steamID, msg ) {
+bot.on( "Message", function( name, steamID, msg, group ) {
+
+	if ( steamID == group )
+		return; // Don't allow Lua to be ran outside of the group chat
 
 	QueueCommand( "SteamID = " + steamID );
 

@@ -49,7 +49,7 @@ function getLastSeenMsg( name, cur_name, time ) {
 
 // Event //
 
-bot.on( "UserConnected", function( name, sid ) {
+bot.on( "UserConnected", function( name, sid, group ) {
 	db.get( "SELECT name, time FROM last_seen WHERE user = ?",
 	  sid,
 	  function( err, row ) {
@@ -59,7 +59,7 @@ bot.on( "UserConnected", function( name, sid ) {
 
 			var elapsed = ( new Date() - new Date( row.time ) ) / 1000;
 			if ( elapsed >= (2*day) ) {
-				bot.sendMessage( getLastSeenMsg( row.name, name, row.time ) );
+				bot.sendMessage( getLastSeenMsg( row.name, name, row.time ), group );
 			}
 
 			db.run( "UPDATE last_seen \
@@ -69,7 +69,7 @@ bot.on( "UserConnected", function( name, sid ) {
 		} else {
 			// New friend!
 
-			bot.sendMessage( "Hi " + name + "! Welcome to the chat!" );
+			bot.sendMessage( "Hi " + name + "! Welcome to the chat!", group );
 
 			db.run( "INSERT INTO last_seen \
 			  ( user, name, time ) VALUES ( ?, ?, ? )",
@@ -90,7 +90,7 @@ bot.on( "UserDisconnected", function( name, sid ) {
 
 // Command //
 
-bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
+bot.registerCommand( "lastseen", function( name, steamID, _, arg_str, group ) {
 
     var _ref;
 
@@ -103,12 +103,12 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 
 		if ( err ) {
 			console.error( err );
-			return bot.sendMessage( "Error!" );
+			return bot.sendMessage( "Error!", group );
 		}
 
 		if ( rows.length == 0 )
 			return bot.sendMessage( "Nobody found with the name '" + arg_str
-			  + "'.");
+			  + "'.", group );
 
 		var output = "";
 
@@ -127,7 +127,7 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str ) {
 					output += getLastSeenMsg( null, row.name, row.time ) + "\n";
 			}
 
-		bot.sendMessage( output );
+		bot.sendMessage( output, group );
 
 	} );
 

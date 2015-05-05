@@ -3,7 +3,7 @@ function randInt( max ) {
 	return Math.floor( Math.random() * ( max - 1 ) ) + 1;
 }
 
-bot.registerCommand( "roll", function( name, _, _, arg_str ) {
+bot.registerCommand( "roll", function( name, _, _, arg_str, group ) {
 
 	if ( /(\d+)?d\d+/.test( arg_str ) ) {
 
@@ -23,11 +23,11 @@ bot.registerCommand( "roll", function( name, _, _, arg_str ) {
 		msg += num == 1 ? "" : "s";
 		msg += ": " + results.join( ", " );
 
-		bot.sendMessage( msg );
+		bot.sendMessage( msg, group );
 
 	} else {
 		// Just roll d20
-		bot.sendMessage( name + " rolls a d20: " + randInt( 20 ) )
+		bot.sendMessage( name + " rolls a d20: " + randInt( 20 ), group )
 	}
 
 } );

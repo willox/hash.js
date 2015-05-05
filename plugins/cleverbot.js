@@ -35,7 +35,7 @@ function ShouldReply( msg ) {
 
 }
 
-function OnMessage( name, steamID, msg ) {
+function OnMessage( name, steamID, msg, group ) {
 
 	if ( !ShouldReply( msg ) )
 		return;
@@ -52,7 +52,7 @@ function OnMessage( name, steamID, msg ) {
 			// Translate name from Cleverbot to Hash
 			res.message = res.message.replace( /\bCleverbot\b/ig, "Hash" );
 
-			bot.sendMessage( res.message );
+			bot.sendMessage( res.message, group );
 
 		}
 
@@ -61,18 +61,3 @@ function OnMessage( name, steamID, msg ) {
 	} );
 
 }
-
-bot.registerCommand( "excite", function() {
-
-	if(excited == true) {
-		excited = false;
-
-		bot.sendMessage("Excited: false");
-	}
-	else {
-		excited = true;
-
-		bot.sendMessage("Excited: true");
-	}
-
-});

@@ -9,7 +9,7 @@ var String_Prototype_Repeat_Is_NonStandard = [
 	"★★★★★"
 ];
 
-bot.on( "Message", function( name, steamID, msg ) {
+bot.on( "Message", function( name, steamID, msg, group ) {
 	
 	var match = msg.match( /(youtube\.com\/watch\?v=|youtu\.be\/)([A-Z0-9-_]+)/i );
 
@@ -30,7 +30,7 @@ bot.on( "Message", function( name, steamID, msg ) {
 
 		var starCount = Math.round( entry.gd$rating.average );
 
-		bot.sendMessage( "YouTube: " + entry.title.$t + " [" + String_Prototype_Repeat_Is_NonStandard[ starCount ] + "]" );
+		bot.sendMessage( "YouTube: " + entry.title.$t + " [" + String_Prototype_Repeat_Is_NonStandard[ starCount ] + "]", group );
 
 	} );
 } );
