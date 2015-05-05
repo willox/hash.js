@@ -37,11 +37,13 @@ bot.registerCommand( "chat", function( name, steamID ) {
 
 		bot.Listeners.push( steamID );
 		bot.sendMessage( "Joined group chat.", steamID );
+		bot.sendMessage( name + " entered chat." );
 
 	} else {
 
 		bot.Listeners.splice( index, 1 );
 		bot.sendMessage( "Left group chat.", steamID );
+		bot.sendMessage( name + " disconnected." );
 
 	}
 
