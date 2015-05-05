@@ -96,7 +96,7 @@ end
 
 local out = table.concat( ret, "\t" )
 
-if code == out then
+if not silent_error and code:gsub("[\r\n]$", ""):gsub("^['\"]", ""):gsub("['\"]$", "") == out then
 	goto start
 end
 
