@@ -23,7 +23,7 @@ bot.on("Message",function(name,steamID,msg,group) {
         if(!j_data[0] || !j_data[0].data || !j_data[0].data.children || !j_data[0].data.children[0] || !j_data[0].data.children[0].data)
             return; //Abandon ship
 
-        var thread_data = !j_data[0].data.children[0].data;
+        var thread_data = j_data[0].data.children[0].data;
 
         var title = thread_data.title;
         var upvote_perc = thread_data.upvote_ratio * 100;
