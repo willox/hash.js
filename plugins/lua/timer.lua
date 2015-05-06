@@ -1,12 +1,7 @@
 local timers = {}
 local simple_timers = {}
-local processing = false
 
 local function Simple( delay, callback )
-
-	if ( processing ) then
-		error( "can't recursively create timers", 2 )
-	end
 
 	if ( type( callback ) ~= "function" ) then
 		error( "bad argument #2 to 'Simple' (function expected, got " .. type( callback ) .. ")", 2 )
@@ -22,10 +17,6 @@ local function Simple( delay, callback )
 end
 
 local function Create( id, delay, reps, callback )
-
-	if ( processing ) then
-		error( "can't recursively create timers", 2 )
-	end
 
 	if ( type( delay ) ~= "number" ) then
 		error( "bad argument #2 to 'Create' (number expected, got " .. type( delay ) .. ")", 2 )
@@ -64,8 +55,6 @@ local function RemoveAll()
 end
 
 local function Tick()
-
-	processing = true
 
 	for i = #simple_timers, 1, -1 do
 
@@ -114,8 +103,6 @@ local function Tick()
 		end			
 
 	end
-
-	processing = false
 
 end
 
