@@ -105,7 +105,10 @@ setInterval( function() {
 
 var buf = [];
 
-bot.on( "Message", function( name, steamID, msg ) {
+bot.on( "Message", function( name, steamID, msg, group ) {
+
+	if ( steamID == group )
+		return; // Don't allow Lua to be ran outside of the group chat
 
 	QueueCommand( "SteamID = " + steamID );
 
@@ -143,8 +146,8 @@ function OnStdOut( data ) {
 		buf = buf.join( "" );
 
 		// Filter out unwanted shit
-		buf = buf.replace( "\0", "\\0" );
-		buf = buf.replace( "\t", "    " );
+		buf = buf.replace( /\0/g, "\\0" );
+		buf = buf.replace( /\t/g, "    " );
 
 		// Ignore empty packets
 		if ( buf.trim().length > 0 )

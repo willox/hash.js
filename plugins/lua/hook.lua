@@ -3,7 +3,7 @@ local hooks = {}
 local function Add( event, id, callback )
 
 	if ( type( callback ) ~= "function" ) then
-		error( "bad argument #3 to 'Add' (function expected got " .. type( callback ) .. ")", 2 )
+		error( "bad argument #3 to 'Add' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
 	hooks[ event ] = hooks[ event ] or {}

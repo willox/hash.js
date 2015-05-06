@@ -1,6 +1,6 @@
 local function include( path )
 	if type( path ) ~= "string" then
-		error( "bad argument #1 to 'include' (function expected got " .. type( path ) .. ")", 2 )		
+		error( "bad argument #1 to 'include' (string expected, got " .. type( path ) .. ")", 2 )		
 	end
 
 	if not path:match( "^[%w/]+$" ) then

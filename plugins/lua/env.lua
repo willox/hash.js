@@ -73,7 +73,6 @@ local INDEX = {
 	_VERSION			= _VERSION,
 
 	assert				= assert,
-	collectgarbage		= collectgarbage,
 	coroutine			= coroutine,
 	error				= error,
 	getmetatable		= getmetatable,

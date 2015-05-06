@@ -118,7 +118,7 @@ setInterval( RequestTicker, 2500 );
 
 // Commands for controlling what threads we want
 
-bot.registerCommand( "fplist", function() {
+bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
 	
 	db.all( "SELECT id, thread FROM threads", function( err, rows ) {
 
@@ -133,7 +133,7 @@ bot.registerCommand( "fplist", function() {
 			data += rows[i].id + " - " + rows[i].thread + "\n";
 		}
 
-		bot.sendMessage( data );
+		bot.sendMessage( data, group );
 
 	} );
 

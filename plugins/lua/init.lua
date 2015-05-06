@@ -94,7 +94,13 @@ for k, v in ipairs( ret ) do
 	ret[ k ] = tostring( v )
 end
 
-io.write( table.concat( ret, "\t" ) )
+local out = table.concat( ret, "\t" )
+
+if not silent_error and code:gsub("[\r\n]$", ""):gsub("^['\"]", ""):gsub("['\"]$", "") == out then
+	goto start
+end
+
+io.write( out )
 
 --
 -- repl

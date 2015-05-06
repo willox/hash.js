@@ -2,7 +2,7 @@ local modules = {}
 
 local function require( path )
 	if type( path ) ~= "string" then
-		error( "bad argument #1 to 'require' (function expected got " .. type( path ) .. ")", 2 )		
+		error( "bad argument #1 to 'require' (string expected, got " .. type( path ) .. ")", 2 )		
 	end
 
 	if not path:match( "^[%w/]+$" ) then

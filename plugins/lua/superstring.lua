@@ -22,3 +22,17 @@ function meta:__index(k)
 	return string[k]
 	
 end
+
+function meta:__mod( arg )
+
+	if ( type( arg ) == "string" ) then
+
+		return string.format( self, arg )
+
+	else
+
+		return string.format( self, table.unpack( arg ) )
+
+	end
+
+end

@@ -9,7 +9,7 @@ local function Simple( delay, callback )
 	end
 
 	if ( type( callback ) ~= "function" ) then
-		error( "bad argument #2 to 'Simple' (function expected got " .. type( callback ) .. ")", 2 )
+		error( "bad argument #2 to 'Simple' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
 	table.insert( simple_timers, {
@@ -28,15 +28,15 @@ local function Create( id, delay, reps, callback )
 	end
 
 	if ( type( delay ) ~= "number" ) then
-		error( "bad argument #2 to 'Create' (number expected got " .. type( delay ) .. ")", 2 )
+		error( "bad argument #2 to 'Create' (number expected, got " .. type( delay ) .. ")", 2 )
 	end
 
 	if ( type( reps ) ~= "number" ) then
-		error( "bad argument #3 to 'Create' (number expected got " .. type( reps ) .. ")", 2 )
+		error( "bad argument #3 to 'Create' (number expected, got " .. type( reps ) .. ")", 2 )
 	end
 
 	if ( type( callback ) ~= "function" ) then
-		error( "bad argument #4 to 'Create' (function expected got " .. type( callback ) .. ")", 2 )
+		error( "bad argument #4 to 'Create' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
 	timers[ id ] = {
