@@ -31,7 +31,7 @@ function meta:__mod( arg )
 
 	else
 
-		return string.format( self, unpack( arg ) )
+		return string.format( self, table.unpack( arg ) )
 
 	end
 
