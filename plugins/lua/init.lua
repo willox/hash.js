@@ -71,7 +71,7 @@ end, "", 128 )
 --
 local ret = { pcall( coroutine.resume, thread ) }
 
-local success, err = ret[ 2 ], ret[ 3 ]
+local success, err = ret[ 1 ] and ret[ 2 ], ret[ 1 ] and ret[ 3 ] or ret [ 2 ]
 
 if not success then
 
