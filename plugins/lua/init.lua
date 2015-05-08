@@ -98,13 +98,7 @@ for k, v in ipairs( ret ) do
 
 end
 
-local out = table.concat( ret, "\t" )
-
-if not silent_error and code:gsub("[\r\n]$", ""):gsub("^['\"]", ""):gsub("['\"]$", "") == out then
-	goto start
-end
-
-io.write( out )
+io.write( table.concat( ret, "\t" ) )
 
 --
 -- repl
