@@ -18,3 +18,5 @@ function safe_tostring( obj )
 	return ret
 
 end
+
+return safe_tostring
