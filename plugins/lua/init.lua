@@ -92,12 +92,12 @@ table.remove( ret, 1 )
 --
 for k, v in ipairs( ret ) do
 
-	local success, ret[ k ] = pcall( tostring, v )
+	local success, v = pcall( tostring, v )
 
 	if not success then
 
 		if not silent_error then
-			io.write( ret[ k ] )
+			io.write( v )
 		end
 
 		goto start
