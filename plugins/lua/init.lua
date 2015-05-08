@@ -91,7 +91,19 @@ table.remove( ret, 1 )
 -- Transform our ret values in to strings
 --
 for k, v in ipairs( ret ) do
-	ret[ k ] = tostring( v )
+
+	local success, ret[ k ] = pcall( tostring, v )
+
+	if not success then
+
+		if not silent_error then
+			io.write( ret[ k ] )
+		end
+
+		goto start
+
+	end
+
 end
 
 local out = table.concat( ret, "\t" )
