@@ -104,6 +104,16 @@ for k, v in ipairs( ret ) do
 
 	end
 
+	if type( v )  ~= "string" then
+
+		if not silent_error then
+			io.write( "failed to coerce return value " .. k .. " to string" )
+		end
+
+		goto start
+
+	end
+
 	ret[ k ] = v
 
 end
