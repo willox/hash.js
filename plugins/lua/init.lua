@@ -104,6 +104,8 @@ for k, v in ipairs( ret ) do
 
 	end
 
+	ret[ k ] = v
+
 end
 
 local out = table.concat( ret, "\t" )
