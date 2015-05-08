@@ -37,12 +37,6 @@ local function Remove( event, id )
 
 end
 
-local function RemoveAll()
-
-	hooks = {}
-
-end
-
 local function Call( event, ... )
 
 	if not hooks[ event ] then
@@ -65,7 +59,7 @@ local function Call( event, ... )
 
 end
 
-function GetTable()
+local function GetTable()
 
 	local ret = {}
 
@@ -79,7 +73,7 @@ function GetTable()
 
 end
 
-function StopPersist()
+local function StopPersist()
 
 	persist = false
 
@@ -91,4 +85,5 @@ return {
 	RemoveAll = RemoveAll,
 	Call = Call,
 	GetTable = GetTable,
+	StopPersist = StopPersist
 }
