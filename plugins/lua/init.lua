@@ -1,5 +1,7 @@
 require "superstring"
 
+local tostring = require "safe_tostring"
+
 ENV = require "env"
 
 ::start::
@@ -98,16 +100,6 @@ for k, v in ipairs( ret ) do
 
 		if not silent_error then
 			io.write( v )
-		end
-
-		goto start
-
-	end
-
-	if type( v )  ~= "string" then
-
-		if not silent_error then
-			io.write( "failed to coerce return value " .. k .. " to string" )
 		end
 
 		goto start
