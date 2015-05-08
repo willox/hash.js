@@ -30,7 +30,7 @@ local function Remove( event, id )
 	end
 
 	if persistHooks[ event ] and persistHooks[ event ][ id ] then
-		error( "attempt to persistent hook", 2 )
+		error( "attempt to remove persistent hook", 2 )
 	end
 
 	hooks[ event ][ id ] = nil
