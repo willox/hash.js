@@ -1,6 +1,7 @@
 require "superstring"
 
-local tostring = require "safe_tostring"
+local tostring	= require "stostring"
+local scall		= require "scall"
 
 ENV = require "env"
 
@@ -50,29 +51,16 @@ if err then
 
 end
 
-local thread	= coroutine.create( f )
-local start		= os.clock()
-
---
--- Install our execution time limiter
---
-debug.sethook( thread, function()
-
-	if os.clock() > start + 0.5 then
-
-		error( "maximum execution time exceeded", 2 )
-
-	end
-
-end, "", 128 )
-
 --
 -- Try to run our function
 --
-local ret = { pcall( coroutine.resume, thread ) }
+local ret = { scall( f ) }
 
-local success, err = ret[ 1 ] and ret[ 2 ], ret[ 1 ] and ret[ 3 ] or ret [ 2 ]
+local success, err = ret[ 1 ], ret[ 2 ]
 
+--
+-- Our function has failed
+--
 if not success then
 
 	if not silent_error then
@@ -84,9 +72,8 @@ if not success then
 end
 
 --
--- Remove pcall success and coroutine success bools
+-- Remove scall success success bool
 --
-table.remove( ret, 1 )
 table.remove( ret, 1 )
 
 --
