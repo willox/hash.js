@@ -16,6 +16,10 @@ local encoders = {
 
 	string = function( v )
 		return string.pack( ">s4", v )
+	end,
+
+	["function"] = function( v )
+		return string.pack( ">s4", string.dump( v ) )
 	end
 
 }

@@ -20,6 +20,14 @@ local decoders = {
 
 	string = function( data, pos )
 		return string.unpack( ">s4", data, pos )
+	end,
+
+	["function"] = function( data, pos )
+
+		local v, nPos = string.unpack( ">s4", data, pos )
+
+		return ( load( v, "serialized", "b", ENV ) ), nPos
+
 	end
 
 }
