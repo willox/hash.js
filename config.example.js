@@ -1,6 +1,9 @@
 var config = {
-	User: "???",
-	Pass: "???",
+	User:	"???",
+	Pass:	"???",
+	Sentry:	"sentry.sha",
+	Auth:	"???", 
+	
 	Group: "103582791436028776",
 
 	Admins: [

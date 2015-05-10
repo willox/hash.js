@@ -23,6 +23,29 @@ bot.registerCommand( "update", function( name, steamID ) {
 
 } );
 
+bot.registerCommand( "add", function( name, steamID ) {
+
+	bot.addFriend( steamID );
+
+} );
+
+bot.registerCommand( "chat", function( name, steamID ) {
+
+	var index = bot.Listeners.indexOf( steamID );
+
+	if ( index == -1 ) {
+
+		bot.Listeners.push( steamID );
+		bot.sendMessage( name + " entered chat." );
+
+	} else {
+
+		bot.sendMessage( name + " disconnected." );
+		bot.Listeners.splice( index, 1 );
+		
+	}
+
+} );
 
 //
 // CLI Output 

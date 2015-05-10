@@ -1,7 +1,7 @@
 local meta = getmetatable ""
 meta.__metatable = false
 
-function meta:__call( )
+function meta:__call( ... )
 
 	local f, err = load( self, "string", "t", ENV )
 
@@ -9,7 +9,7 @@ function meta:__call( )
 		error( err, 2 )
 	end
 
-	return f()
+	return f( ... )
 
 end
 
@@ -21,4 +21,18 @@ function meta:__index(k)
 	
 	return string[k]
 	
+end
+
+function meta:__mod( arg )
+
+	if ( type( arg ) == "string" ) then
+
+		return string.format( self, arg )
+
+	else
+
+		return string.format( self, table.unpack( arg ) )
+
+	end
+
 end

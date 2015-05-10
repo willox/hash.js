@@ -1,7 +1,7 @@
 var config 	= require( "../config" );
 var github 	= require( "../lib/github" )( config.GitHub );
 var gitio 	= require( "../lib/gitio" );
-var https 	= require( "https" );
+var request = require( "request" );
 var last = null;
 
 
@@ -28,36 +28,30 @@ github.on( "data", function( notification ) {
 		last = null;
 	}, 2000 );
 
-	https.get( {
-		host: "api.github.com",
-		path: url,
-		method: "GET",
-		headers: {"User-Agent": "Node-JS"}
-	}, function( res ) {
+	var options = {
+		headers: {
+			"User-Agent": "Node-JS"
+		}
+	};
 
-		var buf = [];
+	request( notification.subject.url, options, function( error, req, body ) {
 
-		res.on( "data", function( chunk ) {
-			buf.push( chunk );
-		} );
+		if ( error ) {
+			console.trace( error );
+			return;
+		}
 
-		res.on( "end", function() {
+		var obj = JSON.parse( body );
 
-			buf = buf.join( "" );
+		var url = obj.html_url;
 
-			var obj = JSON.parse( buf );
+		// Shortern the URL
+		gitio( url, function( err, shortUrl ) {
 
-			url = obj.html_url;
-
-			// Shortern the URL
-			gitio( url, function( err, shortUrl ) {
-
-				if ( err )
-					bot.sendMessage( notification.subject.title + "\n" + url );
-				else
-					bot.sendMessage( notification.subject.title + " - " + shortUrl );
-
-			} );
+			if ( err )
+				bot.sendMessage( notification.subject.title + "\n" + url );
+			else
+				bot.sendMessage( notification.subject.title + " - " + shortUrl );
 
 		} );
 

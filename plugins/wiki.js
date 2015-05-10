@@ -58,7 +58,7 @@ http.get( {
 
 } );
 
-bot.on( "Message", function( name, steamID, msg ) {
+bot.on( "Message", function( name, steamID, msg, group ) {
 	
 	var matches = msg.match( /(\S*)\( ?\.\.\. ?\)/g );
 
@@ -70,7 +70,7 @@ bot.on( "Message", function( name, steamID, msg ) {
 		var match = matches[ i ];
 
 		if ( methods.hasOwnProperty( match ) )
-			bot.sendMessage( "http://wiki.garrysmod.com/page/" + methods[ match ] );
+			bot.sendMessage( "http://wiki.garrysmod.com/page/" + methods[ match ], group );
 
 	}
 

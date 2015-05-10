@@ -2,13 +2,21 @@ var child_process	= require( "child_process" );
 var request			= require( "request" );
 var EOF				= "\n\x1A";
 var http			= require( "http" );
+var lua				= null;
+var cmdbuf			= null;
+var processing		= null;
 
-var lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
-	cwd: __dirname + "/lua"
-} );
+function Init() {
+	lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
+		cwd: __dirname + "/lua"
+	} );
 
-var cmdbuf = [ "> require 'autorun'" ];
-var processing = false;
+	cmdbuf = [ "> require 'autorun'" ];
+	processing = false;
+
+	lua.stdout.on( "data", OnStdOut );
+}
+
 
 function QueueCommand( cmd ) {
 
@@ -94,10 +102,19 @@ setInterval( function() {
 
 }, 1000 );
 
+setInterval( function() {
+
+	QueueCommand( "> cookie.Save()" );
+
+}, 30000 );
+
 
 var buf = [];
 
-bot.on( "Message", function( name, steamID, msg ) {
+bot.on( "Message", function( name, steamID, msg, group ) {
+
+	if ( steamID == group )
+		return; // Don't allow Lua to be ran outside of the group chat
 
 	QueueCommand( "SteamID = " + steamID );
 
@@ -116,7 +133,7 @@ bot.on( "UserDisconnected", function( name, steamID ) {
 	QueueHook( "Disconnected", [ name, steamID ] );
 } );
 
-lua.stdout.on( "data", function( data ) {
+function OnStdOut( data ) {
 
 	//
 	// Handle multiple packets in a single chunk, or less
@@ -135,8 +152,8 @@ lua.stdout.on( "data", function( data ) {
 		buf = buf.join( "" );
 
 		// Filter out unwanted shit
-		buf = buf.replace( "\0", "\\0" );
-		buf = buf.replace( "\t", "    " );
+		buf = buf.replace( /\0/g, "\\0" );
+		buf = buf.replace( /\t/g, "    " );
 
 		// Ignore empty packets
 		if ( buf.trim().length > 0 )
@@ -149,4 +166,13 @@ lua.stdout.on( "data", function( data ) {
 	if ( buf.length == 1 && buf[0].length == 0 )
 		processing = false;
 
+}
+
+bot.registerCommand( "restart", function() {
+
+	lua.kill();
+	Init();
+
 } );
+
+Init();

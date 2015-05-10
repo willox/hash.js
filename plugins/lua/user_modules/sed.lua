@@ -1,6 +1,6 @@
 local CircularBuffer = require ("circularbuffer")
 
-sed = sed or {}
+local sed = {}
 sed.messages = CircularBuffer (20)
 
 hook.Add ("Message", "sed",

@@ -2,3 +2,4 @@ node_modules
 config.js
 store.db
 plugins/lua/cookies.dat
+sentry.sha
