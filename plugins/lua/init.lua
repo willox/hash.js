@@ -20,11 +20,11 @@ io.write( "\n\x1A" ); io.flush()
 local code = io.read "a"
 
 --
--- Only display errors if the code starts with ">"
+-- Only display errors if the code starts with "]"
 --
 local silent_error = true
 
-if code:sub( 1, 1 ) == ">" then
+if code:sub( 1, 1 ) == "]" then
 
 	code = code:sub( 2 )
 	silent_error = false
