@@ -21,6 +21,10 @@ local function ProtectTable( tab, target )
 
 			index[ k ] = ProtectTable( tab[ k ] )
 
+		elseif type( v ) == "function" then
+
+			index[ k ] = function( ... ) return v( ... ) end -- Wrap so that we can store everything in cookies! 
+
 		else
 
 			index[ k ] = tab[ k ]
