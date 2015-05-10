@@ -1,7 +1,7 @@
 local meta = getmetatable ""
 meta.__metatable = false
 
-function meta:__call( )
+function meta:__call( ... )
 
 	local f, err = load( self, "string", "t", ENV )
 
@@ -9,7 +9,7 @@ function meta:__call( )
 		error( err, 2 )
 	end
 
-	return f()
+	return f( ... )
 
 end
 
