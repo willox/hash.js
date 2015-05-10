@@ -1,9 +1,11 @@
+ENV = {}
+
 require "superstring"
 
 local tostring	= require "stostring"
 local scall		= require "scall"
 
-ENV = require "env"
+require "env"
 
 ::start::
 

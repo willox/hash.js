@@ -1,5 +1,3 @@
-local ENV = {}
-
 --
 -- Returns a copy of a table with all current members read-only
 -- If target is defined, the returned result will be equal to target
