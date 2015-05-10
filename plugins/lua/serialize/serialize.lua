@@ -19,7 +19,11 @@ local encoders = {
 	end,
 
 	["function"] = function( v )
-		return string.pack( ">s4", string.dump( v ) )
+
+		local success, data = pcall( string.dump, v )
+
+		return string.pack( ">s4", success and data or string.dump( function() end ) )
+		
 	end
 
 }
