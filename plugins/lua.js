@@ -102,6 +102,12 @@ setInterval( function() {
 
 }, 1000 );
 
+setInterval( function() {
+
+	QueueCommand( "> cookie.Save()" );
+
+}, 30000 );
+
 
 var buf = [];
 
