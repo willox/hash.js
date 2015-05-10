@@ -1,34 +1,27 @@
+local serialize		= require "serialize.serialize"
+local deserialize	= require "serialize.deserialize"
+local types			= require "serialize.types"
+
 local cookies = {}
 
-local function encode( str )
-
-	str = string.format( "%q", str )
-	str = string.gsub( str, "\\\n", "\\n" )
-
-	return str
-
-end
-
-local function decode( str )
-
-	local f = load( "return " .. str, "decode", "t", {} )
-
-	return f()
-
-end
-
+--
 -- Ensure our file exists
+--
 io.open( "cookies.dat", "a" ):close()
 
 local function Load()
 
-	for line in io.lines( "cookies.dat" ) do
+	local fs = io.open( "cookies.dat", "r" )
 
-		local k, v = string.unpack( "zz", line )
+	local success, data = pcall( deserialize, fs:read( "a" ) )
 
-		cookies[ decode( k ) ] = decode( v )
-
+	if success then
+		cookies = data
+	else
+		cookies = {}
 	end
+
+	fs:close()
 
 end
 
@@ -38,13 +31,7 @@ local function Save()
 
 	local fs = io.open( "cookies.dat", "w" )
 
-	for k, v in pairs( cookies ) do
-
-		fs:write( string.pack( "zz", encode( k ), encode( v ) ) )
-		fs:write( "\n" )
-
-	end
-
+	fs:write( serialize( cookies ) )
 	fs:close()
 
 end
@@ -70,12 +57,16 @@ meta.__len = Size
 
 function meta:__newindex( k, v )
 
-	k = tostring( k )
+	if k == self or v == self then
+		error( "attempt to store cookie table within itself", 2 )
+	end
 
-	if v ~= nil then
+	if not types[ type( k ) ] and type( k ) ~= "table" then
+		error( "attempt to create cookie with invalid key type (" .. type( k ) .. ")", 2 )
+	end
 
-		v = tostring( v )
-		
+	if not types[ type( v ) ] and type( v ) ~= "table" then
+		error( "attempt to create cookie with invalid value type (" .. type( v ) .. ")", 2 )
 	end
 
 	cookies[ k ] = v
