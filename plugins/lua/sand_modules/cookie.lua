@@ -51,14 +51,27 @@ end
 Load()
 
 local meta = {}
-meta.__index = cookies
 meta.__metatable = false
 meta.__len = Size
+
+function meta:__index( k )
+
+	if k == "Save" then
+		return Save
+	end
+
+	return rawget( cookies, k )
+
+end
 
 function meta:__newindex( k, v )
 
 	if k == self or v == self then
 		error( "attempt to store cookie table within itself", 2 )
+	end
+
+	if k == "Save" then
+		error( "attempt to modify protected member 'Save'", 2 )
 	end
 
 	if not types[ type( k ) ] and type( k ) ~= "table" then
@@ -70,8 +83,6 @@ function meta:__newindex( k, v )
 	end
 
 	cookies[ k ] = v
-
-	Save()
 
 end
 
