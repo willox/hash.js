@@ -1,3 +1,5 @@
 return {
-	write = io.write
+	write = function( ... )
+		io.write( ... )
+	end
 }
