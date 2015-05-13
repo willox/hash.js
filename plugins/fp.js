@@ -62,7 +62,7 @@ function HandlePosts( posts ) {
 					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
 
 						console.log( postID, IntToBase62( postID ) );
-						bot.sendMessage( rows[i].thread + " - http://fcpn.ch/" + IntToBase62( postID ) );
+						bot.sendMessage( rows[i].thread + " - http://fcpn.ch#" + IntToBase62( postID ) );
 						break;
 
 					}
