@@ -11,7 +11,7 @@ function Init() {
 		cwd: __dirname + "/lua"
 	} );
 
-	cmdbuf = [ "> require 'autorun'" ];
+	cmdbuf = [ "] require 'autorun'" ];
 	processing = false;
 
 	lua.stdout.on( "data", OnStdOut );
@@ -68,7 +68,7 @@ function LuaQuote( str ) {
 
 function QueueHook( event, args ) {
 
-	var buf = [ "> hook.Call(", LuaQuote( event ) ];
+	var buf = [ "] hook.Call(", LuaQuote( event ) ];
 
 	if ( args && args.length > 0 ) {
 
@@ -90,7 +90,7 @@ function QueueHook( event, args ) {
 
 function Require( path ) {
 
-	QueueCommand( "> require(" + LuaQuote( path ) + ")" );
+	QueueCommand( "] require(" + LuaQuote( path ) + ")" );
 
 }
 
@@ -98,13 +98,13 @@ setInterval( function() {
 
 	QueueHook( "Tick" );
 
-	QueueCommand( "> timer.Tick()" );
+	QueueCommand( "] timer.Tick()" );
 
 }, 1000 );
 
 setInterval( function() {
 
-	QueueCommand( "> cookie.Save()" );
+	QueueCommand( "] cookie.Save()" );
 
 }, 30000 );
 
