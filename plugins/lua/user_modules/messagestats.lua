@@ -34,13 +34,7 @@ end)
 
 stats = stats or {};
 
-function stats.MeanLength()
-	local max = 0;
-	for i = 1, #cookie.texts do 
-		max = max + cookie.texts[i];
-	end
-	return max / #cookie.texts;
-end
+function stats.MeanLength() return cookie.texts.mean end
 
 function stats.TotalCharsSent(id)
 	if(id) then
