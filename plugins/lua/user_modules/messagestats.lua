@@ -1,4 +1,7 @@
-cookie.texts = cookie.texts or {};
+cookie.texts = cookie.texts or {
+	mean = 0;
+	tracked = 0;
+};
 
 local function add(len)
 	local mean = cookie.texts.mean;
