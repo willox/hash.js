@@ -78,7 +78,7 @@ function meta:__newindex( k, v )
 		error( "attempt to create cookie with invalid key type (" .. type( k ) .. ")", 2 )
 	end
 
-	if not types[ type( v ) ] and type( v ) ~= "table" then
+	if not types[ type( v ) ] and type( v ) ~= "table" and v ~= nil then
 		error( "attempt to create cookie with invalid value type (" .. type( v ) .. ")", 2 )
 	end
 
