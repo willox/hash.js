@@ -100,7 +100,7 @@ setInterval( function() {
 
 	QueueCommand( "] timer.Tick()" );
 
-}, 1000 );
+}, 500 );
 
 setInterval( function() {
 
