@@ -29,7 +29,7 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 
 		var entry = data.entry;
 
-		var starCount = Math.round( 5 * (data.items[0].statistics.likeCount/(data.items[0].statistics.likeCount + data.items[0].statistics.dislikeCount)) );
+		var starCount = Math.round( 5 * (parseInt(data.items[0].statistics.likeCount)/(parseInt(data.items[0].statistics.likeCount) + parseInt(data.items[0].statistics.dislikeCount))) );
 
 		bot.sendMessage( "YouTube: " + data.items[0].snippet.title + " [" + String_Prototype_Repeat_Is_NonStandard[ starCount ] + "]", group );
 
