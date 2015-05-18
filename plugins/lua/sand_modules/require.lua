@@ -5,7 +5,7 @@ local function require( path )
 		error( "bad argument #1 to 'require' (string expected, got " .. type( path ) .. ")", 2 )		
 	end
 
-	if not path:match( "^[%w/]+$" ) then
+	if not path:match( "^[%w_/]+$" ) then
 		error( "bad argument #1 to 'require' (path contains illegal characters)", 2 )
 	end
 
