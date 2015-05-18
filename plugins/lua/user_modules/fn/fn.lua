@@ -12,6 +12,23 @@ f.toFunction = function (func)
 	end
 end
 
+f.toString = function (v)
+	local type = type (v)
+	
+	if type == "string" then
+		return string.format ("%q", v)
+	elseif type == "table" then
+		if getmetatable (v) == f.mt.list then
+			return tostring (v)
+		end
+		
+		return "{ " .. tostring (v) .. " }"
+	end
+	
+	-- Default to tostring
+	return tostring (v)
+end
+
 f.apply  = function (f, x) return function (...) return f (x, ...) end end
 f.call   = function (f, ...) return f (...) end
 f.concat = table.concat

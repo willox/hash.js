@@ -39,6 +39,14 @@ f.mt.list.methods.sum    = f.sum
 f.mt.list.methods.prod   = f.prod
 f.mt.list.methods.concat = f.concat
 
+f.mt.list.methods.tostring = function (self)
+	if #self == 0 then return "{}" end
+	
+	return "{ " .. self:map (f.toString):concat (", ") .. " }"
+end
+
+f.mt.list.__tostring = f.mt.list.methods.tostring
+
 f.mt.list.__index = function (self, k)
 	if f.mt.list.methods [k] then
 		return f.mt.list.methods [k]
