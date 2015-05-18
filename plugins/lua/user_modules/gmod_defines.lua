@@ -175,15 +175,15 @@ function PrintTable( t, indent, done )
 	for i = 1, #keys do
 		key = keys[ i ]
 		value = t[ key ]
-		print( string.rep( "\t", indent ) )
+		io.write( string.rep( "\t", indent ) )
 
 		if  ( type( value ) == "table" and not done[ value ] ) then
 			done[ value ] = true
-			print( tostring( key ) .. ":" .. "\n" )
+			io.write( tostring( key ) .. ":" .. "\n" )
 			PrintTable( value, indent + 2, done )
 		else
-			print( tostring( key ) .. "\t=\t" )
-			print( tostring( value ) .. "\n" )
+			io.write( tostring( key ) .. "\t=\t" )
+			io.write( tostring( value ) .. "\n" )
 		end
 	end
 end
