@@ -4,6 +4,7 @@ require "superstring"
 
 local tostring	= require "stostring"
 local scall		= require "scall"
+local EOF       = "\x00"
 
 require "env"
 
@@ -12,12 +13,22 @@ require "env"
 --
 -- Indicate that we are ready to receive a packet
 --
-io.write( "\n\x1A" ); io.flush()
+io.write( EOF ); io.flush()
 
 --
--- Read until EOF
+-- Read until EOF marker
 --
-local code = io.read "a"
+local code = ""
+while( true ) do
+	local data  = io.read() -- Read single line
+
+	if ( string.sub(data, -1) == EOF ) then
+		code = code .. string.sub(data, 0, -2) -- Remove the EOF
+		break
+	else
+		code = code .. data .. "\n" -- Put the newline back
+	end
+end
 
 --
 -- Only display errors if the code starts with "]"
@@ -28,7 +39,7 @@ if code:sub( 1, 1 ) == "]" then
 
 	code = code:sub( 2 )
 	silent_error = false
-	
+
 end
 
 --
