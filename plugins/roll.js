@@ -30,4 +30,4 @@ bot.registerCommand( "roll", function( name, _, _, arg_str, group ) {
 		bot.sendMessage( name + " rolls a d20: " + randInt( 20 ), group )
 	}
 
-} );
+}, "Rolls N dice with N sides. [Example: .roll 2d6]" );

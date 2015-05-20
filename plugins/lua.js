@@ -173,6 +173,6 @@ bot.registerCommand( "restart", function() {
 	lua.kill();
 	Init();
 
-} );
+}, "Restarts the Lua engine." );
 
 Init();

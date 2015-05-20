@@ -17,6 +17,7 @@ function LoadPlugins() {
 	// Load our main plugin first
 	plugins.unshift( "../main.js" );
 
+	bot.setMaxListeners(0); // Disable max listeners warning
 	plugins.forEach( function( plugin ) {
 
 		if ( path.extname( plugin ) != ".js" )
