@@ -5,5 +5,6 @@ require "fn"
 require "vectors"
 require "http_codes"
 require "algo"
+require "imagereply"
 
 hook.StopPersist()
