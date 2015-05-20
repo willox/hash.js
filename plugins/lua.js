@@ -1,13 +1,13 @@
 var child_process	= require( "child_process" );
 var request			= require( "request" );
-var EOF				= "\n\x1A";
+var EOF				= "\x00";
 var http			= require( "http" );
 var lua				= null;
 var cmdbuf			= null;
 var processing		= null;
 
 function Init() {
-	lua = child_process.spawn( "lua.exe", [ "init.lua" ], {
+	lua = child_process.spawn( "lua", [ "init.lua" ], {
 		cwd: __dirname + "/lua"
 	} );
 
@@ -15,6 +15,9 @@ function Init() {
 	processing = false;
 
 	lua.stdout.on( "data", OnStdOut );
+	lua.stderr.on( "data", function( data ) {
+		console.log("[Lua STDERR] " + data);
+	} );
 }
 
 
@@ -30,14 +33,12 @@ function ProcessCommand() {
 		return;
 
 	var cmd = cmdbuf.shift();
-
 	if ( !cmd )
 		return;
 
 	processing = true;
 
-	lua.stdin.write( cmd );
-	lua.stdin.write( EOF );
+	lua.stdin.write( cmd + EOF + "\n" );
 
 }
 
@@ -120,7 +121,7 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.replace( EOF, "\\n\\x1A" ) );
+	QueueCommand( msg.replace( EOF, "\\x00" ) );
 
 } );
 
@@ -138,7 +139,6 @@ function OnStdOut( data ) {
 	//
 	// Handle multiple packets in a single chunk, or less
 	//
-
 	data = data.toString();
 
 	var datas = data.split( EOF );
