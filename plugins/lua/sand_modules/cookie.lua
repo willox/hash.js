@@ -26,12 +26,14 @@ local function Load()
 end
 
 local function Save()
+	
+	local data = serialize( cookies )
 
 	os.remove( "cookies.dat" )
 
 	local fs = io.open( "cookies.dat", "wb" )
 
-	fs:write( serialize( cookies ) )
+	fs:write( data )
 	fs:close()
 
 end
