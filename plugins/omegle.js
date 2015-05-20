@@ -62,4 +62,4 @@ bot.registerCommand( "omegle", function( name, steamID ) {
 	else
 		Connect();
 
-} );
+}, "[ADMIN] Connect the group chat to a random omegle user." );

@@ -131,4 +131,4 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str, group ) {
 
 	} );
 
-} );
+}, "Returns the last time a user was seen in the group chat by name or username." );

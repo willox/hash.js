@@ -90,7 +90,7 @@ function OnTicker( error, res, body ) {
 
 		// Facepunch is dodgy
 		if ( err )
-			return; 
+			return;
 
 		if ( !res || !res.newposts || !res.newposts.post )
 			return;
@@ -119,7 +119,7 @@ setInterval( RequestTicker, 2500 );
 // Commands for controlling what threads we want
 
 bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
-	
+
 	db.all( "SELECT id, thread FROM threads", function( err, rows ) {
 
 		var data = "Listening for:";
@@ -137,7 +137,7 @@ bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
 
 	} );
 
-} );
+}, "List all monitored strings to search for in the ticker." );
 
 bot.registerCommand( "fpadd", function( name, steamID, args, argstr ) {
 
@@ -145,10 +145,10 @@ bot.registerCommand( "fpadd", function( name, steamID, args, argstr ) {
 		// We don't want to error if inserting a duplicate (let it fail silently who gives a shit)
 	} );
 
-} );
+}, "Add a string to monitor for in the FP ticker. (Does not take threadid!)" );
 
 bot.registerCommand( "fpremove", function( name, steamID, args, argstr ) {
 
 	db.run( "DELETE FROM threads WHERE id = ? OR thread = ?", argstr, argstr );
 
-} );
+}, "Remove the target monitor string by ID." );

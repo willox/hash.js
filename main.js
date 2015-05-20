@@ -8,9 +8,36 @@ bot.on( "Connected", function() {
 
 	this.setStatus( "Online" );
 	this.setChat( config.Group );
-	
+
 } );
 
+
+//
+// Default Command Functions
+//
+
+function commandlist(name, steamID, args, argstr, group) {
+
+	var helptext = "Current Commands:\n";
+	for ( var key in this.Commands ) {
+		if (this.Commands.hasOwnProperty(key)) {
+			var cmdinfo = this.Commands[key];
+			var cmdhelp = cmdinfo.helptext;
+
+			helptext += "\t." + key;
+			if ( cmdhelp ) {
+				helptext += " : " + cmdhelp;
+			}
+			helptext += "\n";
+		}
+	}
+	// TODO: Send multiple messages if helptext exceeds steam message limit
+	bot.sendMessage(helptext, steamID);
+	if (steamID != group) {
+		bot.sendMessage( "I have private messaged you the commands " + name + "." );
+	}
+
+}
 
 //
 // Default Commands
@@ -19,15 +46,15 @@ bot.on( "Connected", function() {
 bot.registerCommand( "update", function( name, steamID ) {
 
 	if ( bot.isAdmin( steamID ) )
-		process.exit( 1 ); 
+		process.exit( 1 );
 
-} );
+}, "[ADMIN] Forces the bot to rejoin the group chat." );
 
 bot.registerCommand( "add", function( name, steamID ) {
 
 	bot.addFriend( steamID );
 
-} );
+}, "Makes the bot send you a friend request." );
 
 bot.registerCommand( "chat", function( name, steamID ) {
 
@@ -42,13 +69,16 @@ bot.registerCommand( "chat", function( name, steamID ) {
 
 		bot.sendMessage( name + " disconnected." );
 		bot.Listeners.splice( index, 1 );
-		
+
 	}
 
-} );
+}, "Join the group chat using the bot as a middleman." );
+
+bot.registerCommand( "help", commandlist, "This help text" );
+bot.registerCommand( "commands", commandlist, "This help text" );
 
 //
-// CLI Output 
+// CLI Output
 //
 
 function print( str ) {
@@ -65,7 +95,7 @@ bot.on( "Disconnected", function() {
 	print( "Lost Connection." );
 } );
 
-bot.on( "Message", function( name, steamID, msg ) {	
+bot.on( "Message", function( name, steamID, msg ) {
 	print( name + ": " + msg );
 } );
 
