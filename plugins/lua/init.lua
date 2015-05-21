@@ -35,6 +35,17 @@ end
 --
 local silent_error = true
 
+local header = code:sub( 1, 3 )
+code = code:sub( 4 )
+
+local LOAD_ENV  = ENV
+local CALL_FUNC = scall
+
+if ( header == "JS!" ) then
+	LOAD_ENV = _ENV
+	CALL_FUNC = pcall
+end
+
 if code:sub( 1, 1 ) == "]" then
 
 	code = code:sub( 2 )
@@ -45,10 +56,10 @@ end
 --
 -- Try our code with "return " prepended first
 --
-local f, err = load( "return " .. code, "eval", "t", ENV )
+local f, err = load( "return " .. code, "eval", "t", LOAD_ENV )
 
 if err then
-	f, err = load( code, "eval", "t", ENV )
+	f, err = load( code, "eval", "t", LOAD_ENV )
 end
 
 --
@@ -67,7 +78,7 @@ end
 --
 -- Try to run our function
 --
-local ret = { scall( f ) }
+local ret = { CALL_FUNC( f ) }
 
 local success, err = ret[ 1 ], ret[ 2 ]
 
