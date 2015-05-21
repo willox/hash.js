@@ -2,6 +2,7 @@ var request		= require( "request" );
 var xml2js 		= require( "xml2js" );
 var entities 	= new ( require( "html-entities" ).AllHtmlEntities );
 
+var maxTitleSize = 60;
 var lastPostTime = 0;
 var readyToGo = false;
 var handledPosts = {};
@@ -48,6 +49,11 @@ function HandlePosts( posts ) {
 		if ( handledPosts[ postID ] )
 			continue;
 
+		var hiddenregex = /^[* ]+$/gm;
+		if ( title.match(hiddenregex) ) { // Ignore gold member only threads
+			continue;
+		}
+
 		handledPosts[ postID ] = true;
 
 		// We need a new scope for our title and postID values
@@ -59,10 +65,10 @@ function HandlePosts( posts ) {
 
 					var lowerTitle = title.toLowerCase();
 
-					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
+ 					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
 
-						console.log( postID, IntToBase62( postID ) );
-						bot.sendMessage( rows[i].thread + " - http://fcpn.ch#" + IntToBase62( postID ) );
+						var prefix = (title.length <= maxTitleSize) ? title : title.substring(0, maxTitleSize-3) + "...";
+						bot.sendMessage( prefix + " - http://fcpn.ch#" + IntToBase62( postID ) );
 						break;
 
 					}
