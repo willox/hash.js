@@ -71,6 +71,16 @@ local function GetProtected()
 	
 end
 
+local function ResetProtected()
+
+	if ( GetLastHeader() == "US!" ) then -- confirm a user input this
+		
+		cookies._protected_user[ GetSandboxedSteamID() ] = nil
+	
+	end
+	
+end
+
 Load()
 
 local meta = {}
@@ -85,6 +95,10 @@ function meta:__index( k )
 	
 	if ( k == "GetProtected" ) then
 		return GetProtected
+	end
+	
+	if ( k == "ResetProtected" ) then
+		return ResetProtected
 	end
 	
 	if ( k == "_protected_user" ) then
@@ -111,6 +125,10 @@ function meta:__newindex( k, v )
 	
 	if ( k == "GetProtected" ) then
 		error( "attempt to modify protected member 'GetProtected'", 2 )
+	end
+	
+	if ( k == "ResetProtected" ) then
+		error( "attempt to modify protected member 'ResetProtected'", 2 )
 	end
 
 	if not types[ type( k ) ] and type( k ) ~= "table" then
