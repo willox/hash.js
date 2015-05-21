@@ -1,8 +1,9 @@
 local vectormeta = {}
 function vectormeta:__index(key)
+  if key == "x" or key == "y" or key == "z" then return self.comps[key] end
   local comps = {}
   local nonSwizzled = string.gsub(key, "[xyz]", function(comp)
-    table.insert(comps, rawget(self, comp))
+    table.insert(comps, self.comps[comp])
     return ""
   end)
   
@@ -11,7 +12,7 @@ function vectormeta:__index(key)
     return Vector(table.unpack(comps))
   end
   
-  return rawget(vectormeta, key)
+  return vectormeta[key]
 end
 
 function vectormeta:__tostring()
@@ -88,7 +89,7 @@ function Vector(x, y, z)
     z = z or 0
   end
   
-  return setmetatable({x=x, y=y, z=z}, vectormeta)
+  return setmetatable({comps = {x=x, y=y, z=z}}, vectormeta)
 end
 
 if true then return end
