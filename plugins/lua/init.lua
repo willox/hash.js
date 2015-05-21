@@ -29,7 +29,7 @@ io.write( EOF ); io.flush()
 -- The first char is "S" or "T", S = sandboxed, T = trusted
 -- The second char is "Y" or "N", Y = show errors, N = don't
 --
-local packet = io.read( io.read "n" or 0 ) or "YY\0"
+local packet = io.read( io.read "n" )
 
 local CODE_SANDBOX, CODE_SUPPRESS, CODE = packet:match "(.)(.)(.*)"
 
