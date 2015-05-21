@@ -2,6 +2,7 @@ var request		= require( "request" );
 var xml2js 		= require( "xml2js" );
 var entities 	= new ( require( "html-entities" ).AllHtmlEntities );
 
+var maxTitleSize = 60;
 var lastPostTime = 0;
 var readyToGo = false;
 var handledPosts = {};
@@ -48,6 +49,11 @@ function HandlePosts( posts ) {
 		if ( handledPosts[ postID ] )
 			continue;
 
+		var hiddenregex = /^[* ]+$/gm;
+		if ( title.match(hiddenregex) ) { // Ignore gold member only threads
+			continue;
+		}
+
 		handledPosts[ postID ] = true;
 
 		// We need a new scope for our title and postID values
@@ -59,10 +65,10 @@ function HandlePosts( posts ) {
 
 					var lowerTitle = title.toLowerCase();
 
-					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
+ 					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
 
-						console.log( postID, IntToBase62( postID ) );
-						bot.sendMessage( rows[i].thread + " - http://fcpn.ch/" + IntToBase62( postID ) );
+						var prefix = (title.length <= maxTitleSize) ? title : title.substring(0, maxTitleSize-3) + "...";
+						bot.sendMessage( prefix + " - http://fcpn.ch#" + IntToBase62( postID ) );
 						break;
 
 					}
@@ -90,7 +96,7 @@ function OnTicker( error, res, body ) {
 
 		// Facepunch is dodgy
 		if ( err )
-			return; 
+			return;
 
 		if ( !res || !res.newposts || !res.newposts.post )
 			return;
@@ -119,7 +125,7 @@ setInterval( RequestTicker, 2500 );
 // Commands for controlling what threads we want
 
 bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
-	
+
 	db.all( "SELECT id, thread FROM threads", function( err, rows ) {
 
 		var data = "Listening for:";
@@ -137,7 +143,7 @@ bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
 
 	} );
 
-} );
+}, "List all monitored strings to search for in the ticker." );
 
 bot.registerCommand( "fpadd", function( name, steamID, args, argstr ) {
 
@@ -145,10 +151,10 @@ bot.registerCommand( "fpadd", function( name, steamID, args, argstr ) {
 		// We don't want to error if inserting a duplicate (let it fail silently who gives a shit)
 	} );
 
-} );
+}, "Add a string to monitor for in the FP ticker. (Does not take threadid!)" );
 
 bot.registerCommand( "fpremove", function( name, steamID, args, argstr ) {
 
 	db.run( "DELETE FROM threads WHERE id = ? OR thread = ?", argstr, argstr );
 
-} );
+}, "Remove the target monitor string by ID." );

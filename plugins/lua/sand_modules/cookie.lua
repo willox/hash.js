@@ -11,7 +11,7 @@ io.open( "cookies.dat", "a" ):close()
 
 local function Load()
 
-	local fs = io.open( "cookies.dat", "r" )
+	local fs = io.open( "cookies.dat", "rb" )
 
 	local success, data = pcall( deserialize, fs:read( "a" ) )
 
@@ -26,19 +26,21 @@ local function Load()
 end
 
 local function Save()
+	
+	local data = serialize( cookies )
 
 	os.remove( "cookies.dat" )
 
-	local fs = io.open( "cookies.dat", "w" )
+	local fs = io.open( "cookies.dat", "wb" )
 
-	fs:write( serialize( cookies ) )
+	fs:write( data )
 	fs:close()
 
 end
 
 local function Size()
 
-	local fs = io.open( "cookies.dat", "r" )
+	local fs = io.open( "cookies.dat", "rb" )
 
 	local size = fs:seek( "end" )
 
@@ -78,8 +80,16 @@ function meta:__newindex( k, v )
 		error( "attempt to create cookie with invalid key type (" .. type( k ) .. ")", 2 )
 	end
 
-	if not types[ type( v ) ] and type( v ) ~= "table" then
+	if not types[ type( v ) ] and type( v ) ~= "table" and v ~= nil then
 		error( "attempt to create cookie with invalid value type (" .. type( v ) .. ")", 2 )
+	end
+
+	if type( k ) == "function" and not pcall( string.dump, k ) then
+		error( "attempt to store invalid function as key", 2 )
+	end
+
+	if type( v ) == "function" and not pcall( string.dump, v ) then
+		error( "attempt to store invalid function as value", 2 )
 	end
 
 	cookies[ k ] = v

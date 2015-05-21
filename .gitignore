@@ -3,3 +3,4 @@ config.js
 store.db
 plugins/lua/cookies.dat
 sentry.sha
+npm-debug.log

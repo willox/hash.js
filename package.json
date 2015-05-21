@@ -3,7 +3,13 @@
 	"author":		"Willox",
 	"version":		"1.0.1",
 	"description":	"A chat bot.",
-	
+	"license" :     "CC0-1.0",
+
+	"repository" : {
+		"type" : "git",
+		"url"  : "https://github.com/wiox/hash.js"
+	},
+
 	"scripts": {
 		"start": "node index.js"
 	},
