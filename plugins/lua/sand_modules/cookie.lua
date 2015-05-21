@@ -156,7 +156,9 @@ function meta:__pairs()
 	local t = {}
 
 	for k, v in pairs( cookies ) do
-		t[ k ] = v
+		if ( k ~= "_protected_user" ) then 
+			t[ k ] = v
+		end
 	end
 
 	return pairs( t )
