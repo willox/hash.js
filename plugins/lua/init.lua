@@ -15,7 +15,6 @@ function GetLastHeader()
 	return last_header
 	
 end
-
 ::start::
 
 --
@@ -24,36 +23,52 @@ end
 io.write( EOF ); io.flush()
 
 --
--- Read code from stdin
--- Input is preceded by two chars
--- The first char is "S" or "T", S = sandboxed, T = trusted
--- The second char is "Y" or "N", Y = show errors, N = don't
+-- Read until EOF marker
 --
-local packet = io.read( io.read "n" )
+local code = ""
+while( true ) do
+	local data  = io.read() -- Read single line
 
-local CODE_SANDBOX, CODE_SUPPRESS, CODE = packet:match "(.)(.)(.*)"
-
-CODE_SANDBOX	= CODE_SANDBOX	== "S"
-CODE_SUPPRESS	= CODE_SUPPRESS	== "Y"
+	if ( string.sub(data, -1) == EOF ) then
+		code = code .. string.sub(data, 0, -2) -- Remove the EOF
+		break
+	else
+		code = code .. data .. "\n" -- Put the newline back
+	end
+end
 
 --
--- If the code is sandboxed, it must used scall and the sandboxed environment
+-- Only display errors if the code starts with "]"
 --
-local CODE_ENV		= _ENV
-local CODE_CALL		= pcall
+local silent_error = true
 
-if CODE_SANDBOX then
-	CODE_ENV	= ENV
-	CODE_CALL	= scall
+last_header = code:sub( 1, 3 )
+code = code:sub( 4 )
+
+local LOAD_ENV  = ENV
+local CALL_FUNC = scall
+
+if ( last_header == "JS!" ) then
+	LOAD_ENV = _ENV
+	CALL_FUNC = pcall
+end
+
+
+
+if code:sub( 1, 1 ) == "]" then
+
+	code = code:sub( 2 )
+	silent_error = false
+
 end
 
 --
 -- Try our code with "return " prepended first
 --
-local f, err = load( "return " .. CODE, "eval", "t", CODE_ENV )
+local f, err = load( "return " .. code, "eval", "t", LOAD_ENV )
 
 if err then
-	f, err = load( CODE, "eval", "t", CODE_ENV )
+	f, err = load( code, "eval", "t", LOAD_ENV )
 end
 
 --
@@ -61,7 +76,7 @@ end
 --
 if err then
 
-	if not CODE_SUPPRESS then
+	if not silent_error then
 		io.write( err )
 	end
 
@@ -72,7 +87,7 @@ end
 --
 -- Try to run our function
 --
-local ret = { CODE_CALL( f ) }
+local ret = { CALL_FUNC( f ) }
 
 local success, err = ret[ 1 ], ret[ 2 ]
 
@@ -81,7 +96,7 @@ local success, err = ret[ 1 ], ret[ 2 ]
 --
 if not success then
 
-	if not CODE_SUPPRESS then
+	if not silent_error then
 		io.write( tostring( err ) )
 	end
 

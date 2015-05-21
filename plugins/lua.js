@@ -11,8 +11,7 @@ function Init() {
 		cwd: __dirname + "/lua"
 	} );
 
-	cmdbuf = [];
-	QueueCommand( "require 'autorun'", true, false );
+	cmdbuf = [ "US!] require 'autorun'" ];
 	processing = false;
 
 	lua.stdout.on( "data", OnStdOut );
@@ -21,19 +20,15 @@ function Init() {
 	} );
 }
 
-function QueueCommand( cmd, sandboxed, suppress_errors ) {
 
-	if ( suppress_errors )
-		cmd = "Y" + cmd
+function QueueCommand( cmd, nolimits, custom ) {
+
+	if(custom)
+		cmdbuf.push( custom + cmd ); // custom (sandboxed)
+	else if(nolimits)
+		cmdbuf.push( "JS!" + cmd ); // javascript - code (not sandboxed)
 	else
-		cmd = "N" + cmd
-
-	if ( sandboxed )
-		cmd = "S" + cmd
-	else
-		cmd = "T" + cmd
-
-	cmdbuf.push( cmd );
+		cmdbuf.push( "NS!" + cmd ); // no script (sandboxed)
 
 }
 
@@ -48,9 +43,7 @@ function ProcessCommand() {
 
 	processing = true;
 
-	lua.stdin.write( cmd.length.toString() );
-	lua.stdin.write( cmd );
-	lua.stdin.write( "\n" );
+	lua.stdin.write( cmd + EOF + "\n" );
 
 }
 
@@ -81,7 +74,7 @@ function LuaQuote( str ) {
 
 function QueueHook( event, args ) {
 
-	var buf = [ "hook.Call(", LuaQuote( event ) ];
+	var buf = [ "] hook.Call(", LuaQuote( event ) ];
 
 	if ( args && args.length > 0 ) {
 
@@ -97,13 +90,13 @@ function QueueHook( event, args ) {
 
 	buf.push( ")" );
 
-	QueueCommand( buf.join( "" ), true, false );
+	QueueCommand( buf.join( "" ), false );
 
 }
 
 function Require( path ) {
 
-	QueueCommand( "require(" + LuaQuote( path ) + ")", true, false );
+	QueueCommand( "] require(" + LuaQuote( path ) + ")", false );
 
 }
 
@@ -111,13 +104,13 @@ setInterval( function() {
 
 	QueueHook( "Tick" );
 
-	QueueCommand( "timer.Tick()", true, false );
+	QueueCommand( "] timer.Tick()", false );
 
 }, 500 );
 
 setInterval( function() {
 
-	QueueCommand( "cookie.Save()", true, false );
+	QueueCommand( "] cookie.Save()", true );
 
 }, 30000 );
 
@@ -129,18 +122,11 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 	if ( steamID == group )
 		return; // Don't allow Lua to be ran outside of the group chat
 
-	var suppress_errors = true;
-
-	if  ( msg.substr( 0, 1 ) == "]" ) {
-		msg = msg.substr( 1 );
-		suppress_errors = false;
-	}
-
-	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", false, false );
+	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.replace( EOF, "\\x00" ), true, suppress_errors );
+	QueueCommand( msg.replace( EOF, "\\x00" ), false, "US!" );
 
 } );
 
