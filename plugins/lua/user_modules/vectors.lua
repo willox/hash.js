@@ -16,7 +16,7 @@ function vectormeta:__index(key)
 end
 
 function vectormeta:__tostring()
-  return string.format("[%f %f %f]", self.x, self.y, self.z)
+  return string.format("Vector(%g, %g, %g)", self.x, self.y, self.z)
 end
 
 function vectormeta:__add(b)
