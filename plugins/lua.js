@@ -24,7 +24,7 @@ function Init() {
 function QueueCommand( cmd, nolimits, custom ) {
 
 	if(custom)
-		cmdbuf.push( custom + cmd ); // custom
+		cmdbuf.push( custom + cmd ); // custom (sandboxed)
 	else if(nolimits)
 		cmdbuf.push( "JS!" + cmd ); // javascript - code (not sandboxed)
 	else
