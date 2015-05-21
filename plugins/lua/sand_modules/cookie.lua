@@ -20,6 +20,8 @@ local function Load()
 	else
 		cookies = {}
 	end
+	
+	cookies._protected_user = cookies._protected_user or {}
 
 	fs:close()
 
@@ -50,6 +52,35 @@ local function Size()
 
 end
 
+local function GetProtected()
+	
+	if ( GetLastHeader() == "US!" ) then -- confirm a user input this
+		
+		local ret = cookies._protected_user[ GetSandboxedSteamID() ]
+		
+		if (not ret) then
+			ret = {}
+			cookies._protected_user[ GetSandboxedSteamID() ] = ret
+		end
+		
+		return ret
+		
+	end
+	
+	error( "attempt to get protected cookies from non user script code", 2 )
+	
+end
+
+local function ResetProtected()
+
+	if ( GetLastHeader() == "US!" ) then -- confirm a user input this
+		
+		cookies._protected_user[ GetSandboxedSteamID() ] = nil
+	
+	end
+	
+end
+
 Load()
 
 local meta = {}
@@ -60,6 +91,18 @@ function meta:__index( k )
 
 	if k == "Save" then
 		return Save
+	end
+	
+	if ( k == "GetProtected" ) then
+		return GetProtected
+	end
+	
+	if ( k == "ResetProtected" ) then
+		return ResetProtected
+	end
+	
+	if ( k == "_protected_user" ) then
+		return nil
 	end
 
 	return rawget( cookies, k )
@@ -74,6 +117,18 @@ function meta:__newindex( k, v )
 
 	if k == "Save" then
 		error( "attempt to modify protected member 'Save'", 2 )
+	end
+	
+	if ( k == "_protected_user" ) then
+		error( "attempt to modify protected member '_protected_user'", 2 )
+	end
+	
+	if ( k == "GetProtected" ) then
+		error( "attempt to modify protected member 'GetProtected'", 2 )
+	end
+	
+	if ( k == "ResetProtected" ) then
+		error( "attempt to modify protected member 'ResetProtected'", 2 )
 	end
 
 	if not types[ type( k ) ] and type( k ) ~= "table" then

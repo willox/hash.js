@@ -8,6 +8,13 @@ local EOF       = "\x00"
 
 require "env"
 
+local last_header
+
+function GetLastHeader()
+
+	return last_header
+	
+end
 ::start::
 
 --
@@ -35,16 +42,18 @@ end
 --
 local silent_error = true
 
-local header = code:sub( 1, 3 )
+last_header = code:sub( 1, 3 )
 code = code:sub( 4 )
 
 local LOAD_ENV  = ENV
 local CALL_FUNC = scall
 
-if ( header == "JS!" ) then
+if ( last_header == "JS!" ) then
 	LOAD_ENV = _ENV
 	CALL_FUNC = pcall
 end
+
+
 
 if code:sub( 1, 1 ) == "]" then
 
