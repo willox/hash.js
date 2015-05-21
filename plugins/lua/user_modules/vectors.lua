@@ -1,5 +1,18 @@
 local vectormeta = {}
-vectormeta.__index = vectormeta
+function vectormeta:__index(key)
+  local comps = {}
+  local nonSwizzled = string.gsub(key, "[xyz]", function(comp)
+    table.insert(comps, rawget(self, comp))
+    return ""
+  end)
+  
+  -- If we swizzled the whole input and there's at least one swizzled comp, we're gucci
+  if #nonSwizzled == 0 and #comps > 0 then
+    return Vector(table.unpack(comps))
+  end
+  
+  return rawget(vectormeta, key)
+end
 
 function vectormeta:__tostring()
   return string.format("[%f %f %f]", self.x, self.y, self.z)
@@ -65,8 +78,15 @@ function Vector(x, y, z)
     x, y, z = x.x, x.y, x.z
   end
   x = x or 0
-  y = y or x
-  z = z or x
+  
+  -- Prevent (x, y) vector turning into (x, y, x)
+  if x and not y and not z then
+    y = x
+    z = x
+  else
+    y = y or 0
+    z = z or 0
+  end
   
   return setmetatable({x=x, y=y, z=z}, vectormeta)
 end
@@ -76,6 +96,10 @@ if true then return end
 assert(Vector() == Vector(0, 0, 0))
 assert(Vector(0) == Vector(0, 0, 0))
 assert(Vector(1) == Vector(1, 1, 1))
+
+assert(Vector(1, 2) == Vector(1, 2, 0))
+
+assert(Vector(3, 1, 2).yzx == Vector(1, 2, 3))
 
 assert(-Vector(2, 5, 10) == Vector(-2, -5, -10))
 
