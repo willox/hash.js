@@ -35,7 +35,6 @@ local CODE_SANDBOX, CODE_SUPPRESS, CODE = packet:match "(.)(.)(.*)"
 
 CODE_SANDBOX	= CODE_SANDBOX	== "S"
 CODE_SUPPRESS	= CODE_SUPPRESS	== "Y"
-CODE			= CODE or "\0"
 
 --
 -- If the code is sandboxed, it must used scall and the sandboxed environment
