@@ -21,12 +21,14 @@ function Init() {
 }
 
 
-function QueueCommand( cmd, nolimits ) {
+function QueueCommand( cmd, nolimits, custom ) {
 
-	if(nolimits)
-		cmdbuf.push( "JS!" + cmd );
+	if(custom)
+		cmdbuf.push( custom + cmd ); // custom
+	else if(nolimits)
+		cmdbuf.push( "JS!" + cmd ); // javascript - code (not sandboxed)
 	else
-		cmdbuf.push( "US!" + cmd );
+		cmdbuf.push( "NS!" + cmd ); // no script (sandboxed)
 
 }
 
@@ -124,7 +126,7 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.replace( EOF, "\\x00" ), false );
+	QueueCommand( msg.replace( EOF, "\\x00" ), false, "US!" );
 
 } );
 

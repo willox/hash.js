@@ -77,6 +77,12 @@ function SetSandboxedSteamID( steamid )
 	
 end
 
+function GetSandboxedSteamID()
+
+	return sbox_steamid
+	
+end
+
 local SteamID = setmetatable( {}, {
 	__tostring = function()
 		return sbox_steamid
