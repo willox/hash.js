@@ -2,5 +2,6 @@ node_modules
 config.js
 store.db
 plugins/lua/cookies.dat
+plugins/lua/lua.exe
 sentry.sha
 npm-debug.log

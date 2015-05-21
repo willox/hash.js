@@ -67,6 +67,21 @@ local function ProtectTable( tab, target )
 
 end
 
+cookie = require "./sand_modules/cookie"
+
+local sbox_steamid
+
+function SetSandboxedSteamID( steamid )
+
+	sbox_steamid = steamid
+	
+end
+
+local SteamID = setmetatable( {}, {
+	__tostring = function()
+		return sbox_steamid
+	end
+} )
 
 local INDEX = {
 	_G					= ENV,
@@ -98,12 +113,13 @@ local INDEX = {
 	--
 	-- 3rd party libraries
 	--
-	cookie				= require "./sand_modules/cookie",
+	cookie				= cookie,
 	hook				= require "./sand_modules/hook",
 	include				= require "./sand_modules/include",
 	require				= require "./sand_modules/require",
 	timer				= require "./sand_modules/timer",
-
+	SteamID             = SteamID,
+	
 	--
 	-- Modified default libraries
 	--

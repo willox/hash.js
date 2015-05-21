@@ -11,7 +11,7 @@ function Init() {
 		cwd: __dirname + "/lua"
 	} );
 
-	cmdbuf = [ "] require 'autorun'" ];
+	cmdbuf = [ "US!] require 'autorun'" ];
 	processing = false;
 
 	lua.stdout.on( "data", OnStdOut );
@@ -21,9 +21,12 @@ function Init() {
 }
 
 
-function QueueCommand( cmd ) {
+function QueueCommand( cmd, nolimits ) {
 
-	cmdbuf.push( cmd );
+	if(nolimits)
+		cmdbuf.push( "JS!" + cmd );
+	else
+		cmdbuf.push( "US!" + cmd );
 
 }
 
@@ -85,13 +88,13 @@ function QueueHook( event, args ) {
 
 	buf.push( ")" );
 
-	QueueCommand( buf.join( "" ) );
+	QueueCommand( buf.join( "" ), false );
 
 }
 
 function Require( path ) {
 
-	QueueCommand( "] require(" + LuaQuote( path ) + ")" );
+	QueueCommand( "] require(" + LuaQuote( path ) + ")", false );
 
 }
 
@@ -99,13 +102,13 @@ setInterval( function() {
 
 	QueueHook( "Tick" );
 
-	QueueCommand( "] timer.Tick()" );
+	QueueCommand( "] timer.Tick()", false );
 
 }, 500 );
 
 setInterval( function() {
 
-	QueueCommand( "] cookie.Save()" );
+	QueueCommand( "] cookie.Save()", true );
 
 }, 30000 );
 
@@ -117,11 +120,11 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 	if ( steamID == group )
 		return; // Don't allow Lua to be ran outside of the group chat
 
-	QueueCommand( "SteamID = " + steamID );
+	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.replace( EOF, "\\x00" ) );
+	QueueCommand( msg.replace( EOF, "\\x00" ), false );
 
 } );
 
