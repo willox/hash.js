@@ -9,14 +9,16 @@ function vectormeta:__index(key)
   
   -- If we swizzled the whole input and there's at least one swizzled comp, we're gucci
   if #nonSwizzled == 0 and #comps > 0 then
-    return Vector(table.unpack(comps))
+    local v = Vector(table.unpack(comps))
+    v.swizzle = key
+    return v
   end
   
   return vectormeta[key]
 end
 
 function vectormeta:__tostring()
-  return string.format("[%f %f %f]", self.x, self.y, self.z)
+  return string.format("Vector(%g, %g, %g)%s", self.x, self.y, self.z, self.swizzle and ("." .. self.swizzle) or "")
 end
 
 function vectormeta:__add(b)
