@@ -1,4 +1,3 @@
-require("tablex")
 local charwidth = 2
 local spacewidth = 4
 
