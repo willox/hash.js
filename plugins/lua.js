@@ -7,6 +7,7 @@ var lua				= null;
 var cmdbuf			= null;
 var processing		= null;
 var userpackets     = {} // Lookup object for user submitted code. Matches crc -> code info
+var usernames       = {} // Table of steamid64 to the users name
 
 function Init() {
 	lua = child_process.spawn( "lua", [ "init.lua" ], {
@@ -76,14 +77,15 @@ function ParsePacket( data ) {
 		packet.data = data;
 
 	} else {
-		var parsed = /^\[(.*)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
+		var parsed = /^\[(.*):(.)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
 		if (!parsed) {
 			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
 			return packet
 		}
 
-		packet.crc  = parsed[1];
-		packet.data = parsed[2];
+		packet.crc   = Number(parsed[1]);
+		packet.islua = parsed[2] == "1" ? true : false;
+		packet.data  = parsed[3];
 	}
 
 	return packet;
@@ -182,16 +184,18 @@ setInterval( function() {
 var buf = [];
 
 bot.on( "Message", function( name, steamID, msg, group ) {
+	usernames[steamID] = name;
 
 	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", false, true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
 	QueueCommand( msg.replace( EOF, "\\x00" ), true, msg[0] == "]", steamID, group );
-
 } );
 
 bot.on( "UserConnected", function( name, steamID ) {
+	usernames[steamID] = name;
+
 	QueueHook( "Connected", [ name, steamID ] );
 } );
 
@@ -223,12 +227,25 @@ function OnStdOut( data ) {
 
 		// Ignore empty packets
 		if ( buf.trim().length > 0 ) {
-			var packet = ParsePacket( buf );
-			var crc    = packet.crc;
-			var info   = userpackets[crc];
+			var packet  = ParsePacket( buf );
+			var crc     = packet.crc;
+			var islua   = packet.islua;
+			var info    = userpackets[crc];
+			var showerr = info && info.showerrors || false;
 
-			if (packet.data) {
+			if ( packet.data && (islua || !islua && showerr) ) {
 				bot.sendMessage( packet.data, info ? info.groupid : null );
+			}
+
+			if (crc != 0) {
+				var steamid  = info ? info.steamid || 0  : 0;
+				var message  = info ? info.command || "" : "";
+				var username = usernames[steamid] || steamid.toString();
+				if (islua) {
+					QueueHook( "LuaMessage",  [ username, steamid, message ] );
+				} else {
+					QueueHook( "TextMessage", [ username, steamid, message ] );
+				}
 			}
 
 			userpackets[crc] = null;

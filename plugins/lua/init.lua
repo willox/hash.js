@@ -17,7 +17,7 @@ function io.write( ... )
 end
 function print( ... )
 	local args = { ... }
-	stdoutbuf = stdoutbuf .. table.concat( args )
+	stdoutbuf = stdoutbuf .. table.concat( args, " " )
 end
 
 require "env"
@@ -42,8 +42,9 @@ function ParseHeader(data)
 	return header
 end
 
-function CreatePacket( crc, data )
-	local header = HEADERSTART .. tostring(crc) .. HEADEREND
+function CreatePacket( crc, data, validlua )
+	local header = HEADERSTART .. tostring(crc) .. ":"
+	header = header .. (validlua and "1" or "0") .. HEADEREND
 	return header .. data
 end
 
@@ -116,14 +117,10 @@ end
 -- We've been passed invalid Lua
 --
 if err then
-
-	if showerror then
-		writepacket( CreatePacket( codecrc, err ) )
-		io.flush()
-	end
+	writepacket( CreatePacket( codecrc, err, false ) )
+	io.flush()
 
 	goto start
-
 end
 
 --
@@ -137,14 +134,10 @@ local success, err = ret[ 1 ], ret[ 2 ]
 -- Our function has failed
 --
 if not success then
-
-	if showerror then
-		writepacket( CreatePacket( codecrc, err ) )
-		io.flush()
-	end
+	writepacket( CreatePacket( codecrc, err, false ) )
+	io.flush()
 
 	goto start
-
 end
 
 --
@@ -152,17 +145,26 @@ end
 --
 table.remove( ret, 1 )
 
---
--- Transform our ret values in to strings
---
-for k, v in ipairs( ret ) do
+if ( #ret > 0 ) then -- Code returned something
 
-	ret[ k ] = tostring( v )
+	-- Transform our ret values in to strings
+	for k, v in ipairs( ret ) do
+		ret[ k ] = tostring( v )
+	end
+
+	local data = table.concat( ret, "\t" )
+	writepacket( CreatePacket( codecrc, stdoutbuf .. data, true ) )
+
+else -- Code returned nil, check if its `return lol` 'valid' or actually lua.
+
+	local isphrase = code:match( "^[%w ]+$" ) -- Match alphanumeric and space
+	if ( isphrase ) then
+		writepacket( CreatePacket( codecrc, stdoutbuf, false ) )
+	else
+		writepacket( CreatePacket( codecrc, stdoutbuf, true ) )
+	end
 
 end
-
-local data = table.concat( ret, "\t" )
-writepacket( CreatePacket( codecrc, stdoutbuf .. data ) )
 io.flush()
 
 --
