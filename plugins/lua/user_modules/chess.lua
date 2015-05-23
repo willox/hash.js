@@ -1,12 +1,10 @@
-local charwidth = 2
-local spacewidth = 4
-
 local WHITE, BLACK = 0, 1 -- 1 > 0 :^)
+
+local turn = WHITE
 
 local teams = {}
 
 local WPAWN, WROOK, WKNIGHT, WBISHOP, WQUEEN, WKING, BPAWN, BROOK, BKNIGHT, BBISHOP, BQUEEN, BKING = 1, 2, 3, 4, 5, 6, -1, -2, -3, -4, -5, -6
-local pieces = {pawn = WPAWN, rook = WROOK, knight = WKNIGHT, bishop = WBISHOP, queen = WQUEEN, king = WKING}
 local chars = {
 	[WPAWN] = "♙",
 	[WROOK] = "♖",
@@ -46,17 +44,6 @@ local function chessprint(msg)
 	print("[Chess]: "..msg)
 end
 
-local function findpiecepos(piece) -- fight me
-	for coli, column in ipairs(board) do
-		for rowi, bpiece in ipairs(column) do
-			if bpiece == piece then
-				return coli, rowi
-			end
-		end
-	end
-	return false
-end
-
 local function printboard()
 	for coli, column in ipairs(board) do
 		local ret = ""
@@ -71,22 +58,23 @@ local function printboard()
 	end
 end
 
-local function movepiece(sid64, piece, xy)
-	if not (teams[BLACK] and teams[WHITE]) then return end
-	if not (teams[BLACK] == sid64 or teams[WHITE] == sid64) then return end
-	piece = pieces[string.lower(piece)]
-	if not piece then err("Invalid piece. (must be pawn, rook, knight, bishop, queen, or king)") return end
-	if teams[BLACK] == sid64 then piece = -piece end
+local function movepiece(sid64, oldxy, xy)
+	if not (teams[BLACK] and teams[WHITE]) then err("Game not started.") return end
+	if not (teams[BLACK] == sid64 or teams[WHITE] == sid64) then err("You are not in this game.") return end
 
+	if teams[turn] ~= sid64 then err("It's not your turn!") return end
+
+	-- get on my level
+	local oldx, oldy = oldxy[1], oldxy[2]
+	local oldy = type(oldy) == "string" and string.byte(string.lower(oldy)) - 96 or oldy
+	if not tonumber(oldx) or oldx > 8 or oldx < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
+	if not tonumber(oldy) or oldy > 8 or oldy < 1 then err("Invalid vertical position (must be 1-8)") return end
 	local x, y = xy[1], xy[2]
 	local y = type(y) == "string" and string.byte(string.lower(y)) - 96 or y
 	if not tonumber(x) or x > 8 or x < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
 	if not tonumber(y) or y > 8 or y < 1 then err("Invalid vertical position (must be 1-8)") return end
 
-	local oldpiecey, oldpiecex = findpiecepos(piece)
-	if not oldpiecey then err("Invalid piece. (Is it in play?)") return end
-
-	board[oldpiecey][oldpiecex] = nil
+	board[oldy][oldx] = nil
 
 	local spot = board[y][x]
 	if spot ~= 0 then
@@ -96,6 +84,8 @@ local function movepiece(sid64, piece, xy)
 	board[y][x] = piece
 
 	printboard()
+
+	turn = (turn == WHITE) and BLACK or WHITE
 end
 
 local cmd = "!chess "
@@ -125,11 +115,15 @@ hook.Add("Message", "CHESSAGE", function(ply, sid64, msg)
 	elseif subcmd == "print" then
 		printboard()
 	elseif subcmd == "status" then
-		chessprint("White player: "..teams[WHITE], "Black player: "..teams[BLACK])
+		chessprint("White player: "..tostring(teams[WHITE]), "Black player: "..tostring(teams[BLACK]))
 	elseif subcmd == "help" then
 		chessprint("Commands: join, leave, print, status, help")
 		chessprint("To move: !chess <piece> <XY>")
+	elseif subcmd == "reset" then
+		if not (teams[BLACK] == sid64 or teams[WHITE] == sid64) then err("You are not playing.") return end
+		reset()
 	else
+		if not (teams[BLACK] == sid64 or teams[WHITE] == sid64) then err("You are not playing.") return end
 		local space = string.find(subcmd, " ")
 		if not space then return end
 		local piece, xy = string.sub(subcmd, 1, space), string.sub(subcmd, space + 1)
