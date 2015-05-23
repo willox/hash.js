@@ -5,7 +5,7 @@
 local function ProtectTable( tab, target, fakefunction )
 
 	fakefunction = fakefunction or {}
-	
+
 	local index = {}
 	local ret = target or {}
 
@@ -34,13 +34,13 @@ local function ProtectTable( tab, target, fakefunction )
 	local meta			= {}
 	meta.__metatable	= false
 	function meta:__index( k )
-		
-		if ( fakefunction[ k ] ) then 
+
+		if ( fakefunction[ k ] ) then
 			return rawget( index, k )(self)
 		end
-		
+
 		return rawget( index, k )
-		
+
 	end
 
 	function meta:__newindex( k, v )
@@ -84,13 +84,13 @@ local sbox_steamid
 function SetSandboxedSteamID( steamid )
 
 	sbox_steamid = steamid
-	
+
 end
 
 function GetSandboxedSteamID()
 
 	return sbox_steamid
-	
+
 end
 
 local INDEX = {
@@ -129,7 +129,7 @@ local INDEX = {
 	require				= require "./sand_modules/require",
 	timer				= require "./sand_modules/timer",
 	SteamID             = function(self) return sbox_steamid end,
-	
+
 	--
 	-- Modified default libraries
 	--

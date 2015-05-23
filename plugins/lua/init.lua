@@ -2,64 +2,105 @@ ENV = {}
 
 require "superstring"
 
-local tostring	= require "stostring"
-local scall		= require "scall"
-local EOF       = "\x00"
+local tostring    = require "stostring"
+local scall		  = require "scall"
+local EOF         = "\x00"
+local HEADERSTART = '['
+local HEADEREND   = ']'
+local writepacket = io.write
+
+-- Redefine io.write/print to save output to a per-user buffer for PMs.
+local stdoutbuf = ""
+function io.write( ... )
+	local args = { ... }
+	stdoutbuf = stdoutbuf .. table.concat( args )
+end
+function print( ... )
+	local args = { ... }
+	stdoutbuf = stdoutbuf .. table.concat( args )
+end
 
 require "env"
+require "user_modules/gmod_defines"
 
-local last_header
+function ParseHeader(data)
+	local header = {}
+	data = data:sub( 2, -2 ) -- Remove the header markers
 
-function GetLastHeader()
+	local headers = string.Explode( ":", data )
+	if ( #headers ~= 5 ) then
+		io.stderr:write( "ParseHeader called with invalid data: \"" .. data .. "\"\n" )
+		io.stderr:flush()
+	else
+		header.crc       = tonumber(headers[1]) or 0
+		header.sandbox   = headers[2] and headers[2]:sub(1, 1):lower() == "t" or false
+		header.showerror = headers[3] and headers[3]:sub(1, 1):lower() == "t" or false
+		header.steamid   = tonumber(headers[4]) or 0
+		header.groupid   = tonumber(headers[5]) or 0
+	end
 
-	return last_header
-	
+	return header
 end
+
+function CreatePacket( crc, data )
+	local header = HEADERSTART .. tostring(crc) .. HEADEREND
+	return header .. data
+end
+
 ::start::
+stdoutbuf = ""
 
 --
 -- Indicate that we are ready to receive a packet
 --
-io.write( EOF ); io.flush()
+writepacket( EOF ); io.flush()
 
 --
 -- Read until EOF marker
 --
-local code = ""
+local expectheader = true  -- Should the next line read be the code header
+local header       = nil   -- The header metadata for this code
+local code         = ""    -- The string of code to execute
+local codecrc      = 0     -- The CRC of the code and epoch seed. Used in the return packet.
+local showerror    = false -- Should any error data be returned to the user
+local sandboxcode  = true  -- Should this code run in our sandbox
+local steamid      = 0     -- STEAM64 of the user that executed this, 0 if internal.
+local groupid      = 0     -- Group ID that this code originated from. User SID if PM.
 while( true ) do
 	local data  = io.read() -- Read single line
 
-	if ( string.sub(data, -1) == EOF ) then
-		code = code .. string.sub(data, 0, -2) -- Remove the EOF
-		break
+	if ( expectheader ) then
+		if ( data:sub( 1, 1 ) == HEADERSTART and data:sub( -1 ) == HEADEREND ) then
+			header       = ParseHeader(data)
+			showerror    = header.showerror == true  and true or false -- Default to false
+			sandboxcode  = header.sandbox   ~= false and true or false -- Default to true
+			steamid      = header.steamid   or 0
+			groupid      = header.groupid   or 0
+			codecrc      = header.crc       or 0
+			expectheader = false
+		else
+			io.stderr:write( "io.read expected header, got \"" .. data .. "\" instead!\n" )
+			io.stderr:flush()
+		end
 	else
-		code = code .. data .. "\n" -- Put the newline back
+		if ( data:sub( -1 ) == EOF ) then
+			code = code .. data:sub( 0, -2 ) -- Remove the EOF
+			break
+		else
+			code = code .. data .. "\n" -- Put the newline back
+		end
 	end
 end
 
---
--- Only display errors if the code starts with "]"
---
-local silent_error = true
-
-last_header = code:sub( 1, 3 )
-code = code:sub( 4 )
-
+-- Set the environment to the sandbox
 local LOAD_ENV  = ENV
 local CALL_FUNC = scall
 
-if ( last_header == "JS!" ) then
-	LOAD_ENV = _ENV
+-- Use the un-sandboxed the environment if the header says so
+if ( sandboxcode == false ) then
+	--io.stderr:write("no sandbox: \"" .. code .. "\"\n"); io.stderr:flush();
+	LOAD_ENV  = _ENV
 	CALL_FUNC = pcall
-end
-
-
-
-if code:sub( 1, 1 ) == "]" then
-
-	code = code:sub( 2 )
-	silent_error = false
-
 end
 
 --
@@ -76,8 +117,9 @@ end
 --
 if err then
 
-	if not silent_error then
-		io.write( err )
+	if showerror then
+		writepacket( CreatePacket( codecrc, err ) )
+		io.flush()
 	end
 
 	goto start
@@ -96,8 +138,9 @@ local success, err = ret[ 1 ], ret[ 2 ]
 --
 if not success then
 
-	if not silent_error then
-		io.write( tostring( err ) )
+	if showerror then
+		writepacket( CreatePacket( codecrc, err ) )
+		io.flush()
 	end
 
 	goto start
@@ -118,9 +161,11 @@ for k, v in ipairs( ret ) do
 
 end
 
-io.write( table.concat( ret, "\t" ) )
+local data = table.concat( ret, "\t" )
+writepacket( CreatePacket( codecrc, stdoutbuf .. data ) )
+io.flush()
 
 --
--- repl
+-- repeat
 ---
 goto start

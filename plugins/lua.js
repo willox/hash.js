@@ -1,35 +1,92 @@
 var child_process	= require( "child_process" );
 var request			= require( "request" );
-var EOF				= "\x00";
 var http			= require( "http" );
+var crc32           = require( "buffer-crc32" ); // TODO: Find a hardware crc that's xplatform
+var EOF				= "\x00";
 var lua				= null;
 var cmdbuf			= null;
 var processing		= null;
+var userpackets     = {} // Lookup object for user submitted code. Matches crc -> code info
 
 function Init() {
 	lua = child_process.spawn( "lua", [ "init.lua" ], {
 		cwd: __dirname + "/lua"
 	} );
 
-	cmdbuf = [ "US!] require 'autorun'" ];
+	cmdbuf     = [];
 	processing = false;
 
 	lua.stdout.on( "data", OnStdOut );
 	lua.stderr.on( "data", function( data ) {
 		console.log("[Lua STDERR] " + data);
 	} );
+
+	QueueCommand("require 'autorun'", true, true);
 }
 
+function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 
-function QueueCommand( cmd, nolimits, custom ) {
+	if ( cmd ) {
+		if ( cmd[0] == "]" ) {
+			showerror = true
+			cmd = cmd.substring(1)
+		}
 
-	if(custom)
-		cmdbuf.push( custom + cmd ); // custom (sandboxed)
-	else if(nolimits)
-		cmdbuf.push( "JS!" + cmd ); // javascript - code (not sandboxed)
-	else
-		cmdbuf.push( "NS!" + cmd ); // no script (sandboxed)
+		if (steamid && groupid) { // Only calculate CRC on non-internal code
+			var epoch  = (new Date).getTime(); // `seed` the crc32 with epoch
+			var cmdcrc = crc32.signed( epoch + cmd );
+			// The chance of a collision is really low, but still possible.
+			// TODO?: Check for collisions and re-crc the command?
+		}
 
+		cmdbuf.push( {
+			command:       cmd,
+			crc:           cmdcrc    || 0,
+			sandbox:       sandbox   != null ? sandbox   : true,
+			showerrors:    showerror != null ? showerror : true,
+			steamid:       steamid   != null ? steamid   : 0,
+			groupid:       groupid   != null ? groupid   : 0
+		} );
+	}
+
+}
+
+function CreateHeader( cmd ) {
+	var header = "["
+
+	if ( cmd && typeof( cmd ) == "object" ) {
+
+		header += cmd.crc.toString()        + ":";
+		header += cmd.sandbox.toString()    + ":";
+		header += cmd.showerrors.toString() + ":";
+		header += cmd.steamid.toString()    + ":";
+		header += cmd.groupid.toString();
+
+	}
+
+	return header + "]\n"
+}
+
+function ParsePacket( data ) {
+	var packet = {}
+
+	if ( data[0] != "[" ) { // No header, dump to stdout
+		console.log( "Packet received with no header! \"" + data + "\"" );
+		packet.crc  = 0;
+		packet.data = data;
+
+	} else {
+		var parsed = /^\[(.*)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
+		if (!parsed) {
+			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
+			return packet
+		}
+
+		packet.crc  = parsed[1];
+		packet.data = parsed[2];
+	}
+
+	return packet;
 }
 
 function ProcessCommand() {
@@ -43,7 +100,14 @@ function ProcessCommand() {
 
 	processing = true;
 
-	lua.stdin.write( cmd + EOF + "\n" );
+	if (userpackets[cmd.crc]) { // Hopefully this will never happen...
+		console.log( "The CRC " + cmd.crc + " is not unique!\n", cmd );
+	}
+
+	if (cmd.crc != 0)
+		userpackets[cmd.crc] = cmd;
+
+	lua.stdin.write( CreateHeader( cmd ) + cmd.command + EOF + "\n" );
 
 }
 
@@ -74,7 +138,7 @@ function LuaQuote( str ) {
 
 function QueueHook( event, args ) {
 
-	var buf = [ "] hook.Call(", LuaQuote( event ) ];
+	var buf = [ "hook.Call(", LuaQuote( event ) ];
 
 	if ( args && args.length > 0 ) {
 
@@ -90,13 +154,13 @@ function QueueHook( event, args ) {
 
 	buf.push( ")" );
 
-	QueueCommand( buf.join( "" ), false );
+	QueueCommand( buf.join( "" ), true, true );
 
 }
 
 function Require( path ) {
 
-	QueueCommand( "] require(" + LuaQuote( path ) + ")", false );
+	QueueCommand( "require(" + LuaQuote( path ) + ")", true, true );
 
 }
 
@@ -104,13 +168,13 @@ setInterval( function() {
 
 	QueueHook( "Tick" );
 
-	QueueCommand( "] timer.Tick()", false );
+	QueueCommand( "timer.Tick()", true, true );
 
 }, 500 );
 
 setInterval( function() {
 
-	QueueCommand( "] cookie.Save()", true );
+	QueueCommand( "cookie.Save()", false, true );
 
 }, 30000 );
 
@@ -119,14 +183,11 @@ var buf = [];
 
 bot.on( "Message", function( name, steamID, msg, group ) {
 
-	if ( steamID == group )
-		return; // Don't allow Lua to be ran outside of the group chat
-
-	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", true );
+	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", false, true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
-	QueueCommand( msg.replace( EOF, "\\x00" ), false, "US!" );
+	QueueCommand( msg.replace( EOF, "\\x00" ), true, msg[0] == "]", steamID, group );
 
 } );
 
@@ -161,15 +222,25 @@ function OnStdOut( data ) {
 		buf = buf.replace( /\t/g, "    " );
 
 		// Ignore empty packets
-		if ( buf.trim().length > 0 )
-			bot.sendMessage( buf );
+		if ( buf.trim().length > 0 ) {
+			var packet = ParsePacket( buf );
+			var crc    = packet.crc;
+			var info   = userpackets[crc];
+
+			if (packet.data) {
+				bot.sendMessage( packet.data, info ? info.groupid : null );
+			}
+
+			userpackets[crc] = null;
+		}
 
 		buf = [ datas[ i + 1 ] ];
 	}
 
 	// We've received our packet. Prepare the next command!
-	if ( buf.length == 1 && buf[0].length == 0 )
+	if ( buf.length == 1 && buf[0].length == 0 ){
 		processing = false;
+	}
 
 }
 

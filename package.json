@@ -1,8 +1,8 @@
 {
-	"name":			"hash",
-	"author":		"Willox",
-	"version":		"1.0.1",
-	"description":	"A chat bot.",
+	"name":         "hash",
+	"author":       "Willox",
+	"version":      "1.0.1",
+	"description":  "A chat bot.",
 	"license" :     "CC0-1.0",
 
 	"repository" : {
@@ -15,13 +15,14 @@
 	},
 
 	"dependencies": {
-		"cleverbot-node":		"0.1.8",
-		"github-notifications":	"1.0.0",
-		"html-entities":		"1.1.2",
-		"omegle-client":		"1.0.0",
-		"request":				"2.55.0",
-		"sqlite3":				"3.0.5",
+		"cleverbot-node":       "0.1.8",
+		"github-notifications": "1.0.0",
+		"html-entities":        "1.1.2",
+		"omegle-client":        "1.0.0",
+		"request":              "2.55.0",
+		"sqlite3":              "3.0.5",
 		"steam":				"0.6.8",
-		"xml2js":				"0.4.6"
+		"xml2js":               "0.4.6",
+		"buffer-crc32":         "0.2.5"
 	}
 }
