@@ -65,8 +65,8 @@ local function ProtectTable( tab, target, fakefunction )
 			t[ k ] = v
 		end
 
-		for k, v in pairs( meta.__index ) do
-			t[ k ] = v
+		for k, v in pairs( index ) do
+			t[ k ] = self[ k ] -- you have to reindex it since of metatable indexing
 		end
 
 		return next, t, nil

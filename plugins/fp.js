@@ -68,7 +68,7 @@ function HandlePosts( posts ) {
  					if ( lowerTitle.indexOf( rows[i].thread.toLowerCase() ) != -1 ) {
 
 						var prefix = (title.length <= maxTitleSize) ? title : title.substring(0, maxTitleSize-3) + "...";
-						bot.sendMessage( prefix + " - http://fcpn.ch#" + IntToBase62( postID ) );
+						bot.sendMessage( prefix + " - http://facepunch.com/showthread.php?p=" + postID + "#post" + postID);
 						break;
 
 					}
