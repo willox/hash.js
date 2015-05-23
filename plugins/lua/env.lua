@@ -66,7 +66,7 @@ local function ProtectTable( tab, target, fakefunction )
 		end
 
 		for k, v in pairs( index ) do
-			t[ k ] = _ENV[ k ] -- you have to reindex it since of metatable indexing
+			t[ k ] = self[ k ] -- you have to reindex it since of metatable indexing
 		end
 
 		return next, t, nil
