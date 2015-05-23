@@ -1,4 +1,5 @@
-var config = require( "./config" );
+var config         = require( "./config" );
+var sortedcommands = [] // Array of all the commands sorted alphabetically
 
 //
 // Connection Handler
@@ -18,19 +19,46 @@ bot.on( "Connected", function() {
 
 function commandlist(name, steamID, args, argstr, group) {
 
-	var helptext = "Current Commands:\n";
-	for ( var key in this.Commands ) {
-		if (this.Commands.hasOwnProperty(key)) {
-			var cmdinfo = this.Commands[key];
-			var cmdhelp = cmdinfo.helptext;
+	// Only populate the sortedcommands array once.
+	if ( sortedcommands.length < 1 ) {
+		// Copy the command data into the array for sorting
+		for ( var key in this.Commands ) {
+			if (this.Commands.hasOwnProperty(key)) { // Ignore inherited members
+				var cmdinfo = this.Commands[key];
+				var cmdhelp = cmdinfo.helptext;
 
-			helptext += "\t." + key;
-			if ( cmdhelp ) {
-				helptext += " : " + cmdhelp;
+				sortedcommands.push({command: key, helptext: cmdhelp});
 			}
-			helptext += "\n";
 		}
+
+		// Sort the commands alphabetically
+		sortedcommands.sort(function(a, b){
+			a = a.command.toLowerCase();
+			b = b.command.toLowerCase();
+			switch ( a == b ? 0 : a < b ){
+				case 0:
+					return 0;
+				case true:
+					return -1;
+				case false:
+					return 1;
+				default:
+					return 0;
+			}
+		});
 	}
+
+	var helptext = "Current Commands:\n";
+	for ( var key in sortedcommands ) {
+		var commandinfo = sortedcommands[key];
+
+		helptext += "\t." + commandinfo.command;
+		if ( commandinfo.helptext ) {
+			helptext += " : " + commandinfo.helptext;
+		}
+		helptext += "\n";
+	}
+
 	// TODO: Send multiple messages if helptext exceeds steam message limit
 	bot.sendMessage(helptext, steamID);
 	if (steamID != group) {
