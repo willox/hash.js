@@ -239,11 +239,14 @@ function OnStdOut( data ) {
 
 			if (crc != 0) {
 				var steamid  = info ? info.steamid || 0  : 0;
+				var groupid  = info ? info.groupid || 0  : 0;
 				var message  = info ? info.command || "" : "";
 				var username = usernames[steamid] || steamid.toString();
 				if (islua) {
+					bot.emit(  "LuaMessage", username, steamid, message, groupid );
 					QueueHook( "LuaMessage",  [ username, steamid, message ] );
 				} else {
+					bot.emit(  "TextMessage", username, steamid, message, groupid );
 					QueueHook( "TextMessage", [ username, steamid, message ] );
 				}
 			}
