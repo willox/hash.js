@@ -45,8 +45,9 @@ local function chessprint(msg)
 end
 
 local function printboard()
+	print("\n")
 	for coli, column in ipairs(board) do
-		local ret = ""
+		local ret = coli
 		for rowi, piece in ipairs(column) do
 			if piece == 0 then
 				ret = ret .. ((rowi % 2) == (coli % 2) and " " or  "█")
@@ -56,6 +57,7 @@ local function printboard()
 		end
 		print(ret)
 	end
+	print("A  B  C  D  E  F  G  H")
 end
 
 local function movepiece(sid64, oldxy, xy)
@@ -66,13 +68,15 @@ local function movepiece(sid64, oldxy, xy)
 
 	-- get on my level
 	local oldx, oldy = oldxy[1], oldxy[2]
-	local oldy = type(oldy) == "string" and string.byte(string.lower(oldy)) - 96 or oldy
-	if not tonumber(oldx) or oldx > 8 or oldx < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
-	if not tonumber(oldy) or oldy > 8 or oldy < 1 then err("Invalid vertical position (must be 1-8)") return end
+	oldy = type(oldy) == "string" and string.byte(string.lower(oldy)) - 96 or oldy
+	oldx, oldy = tonumber(oldx), tonumber(oldy)
+	if not oldx or oldx > 8 or oldx < 1 then err("Invalid old horizontal position (must be 1-8 or a-h)") return end
+	if not oldy or oldy > 8 or oldy < 1 then err("Invalid old vertical position (must be 1-8)") return end
 	local x, y = xy[1], xy[2]
-	local y = type(y) == "string" and string.byte(string.lower(y)) - 96 or y
-	if not tonumber(x) or x > 8 or x < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
-	if not tonumber(y) or y > 8 or y < 1 then err("Invalid vertical position (must be 1-8)") return end
+	y = type(y) == "string" and string.byte(string.lower(y)) - 96 or y
+	x, y = tonumber(x), tonumber(y)
+	if not x or x > 8 or x < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
+	if not y or y > 8 or y < 1 then err("Invalid vertical position (must be 1-8)") return end
 
 	board[oldy][oldx] = nil
 
