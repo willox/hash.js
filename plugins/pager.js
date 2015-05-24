@@ -8,7 +8,7 @@
 );*/
 
 bot.on( "TextMessage", function( username, steamid, message, groupid ) {
-    console.log("TextMessage ", username, steamid, message, groupid);
+    //console.log("TextMessage ", username, steamid, message, groupid);
 } );
 
 bot.registerCommand( "pageradd", function( name, _, _, arg_str, group ) {

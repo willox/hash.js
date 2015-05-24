@@ -80,17 +80,12 @@ end
 cookie = require "./sand_modules/cookie"
 
 local sbox_steamid
-
 function SetSandboxedSteamID( steamid )
-
 	sbox_steamid = steamid
-
 end
 
 function GetSandboxedSteamID()
-
 	return sbox_steamid
-
 end
 
 local INDEX = {

@@ -93,12 +93,17 @@ while( true ) do
 	end
 end
 
+-- Return true if this code is being executed inside the sandbox
+function IsSandboxed()
+	return not (sandboxcode == false)
+end
+
 -- Set the environment to the sandbox
 local LOAD_ENV  = ENV
 local CALL_FUNC = scall
 
 -- Use the un-sandboxed the environment if the header says so
-if ( sandboxcode == false ) then
+if ( not IsSandboxed() ) then
 	--io.stderr:write("no sandbox: \"" .. code .. "\"\n"); io.stderr:flush();
 	LOAD_ENV  = _ENV
 	CALL_FUNC = pcall
