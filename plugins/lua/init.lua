@@ -17,7 +17,7 @@ function io.write( ... )
 end
 function print( ... )
 	local args = { ... }
-	stdoutbuf = stdoutbuf .. table.concat( args, " " )
+	stdoutbuf = stdoutbuf .. table.concat( args, " " ) .. "\n"
 end
 
 require "env"
