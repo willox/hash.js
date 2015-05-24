@@ -7,7 +7,6 @@ var lua				= null;
 var cmdbuf			= null;
 var processing		= null;
 var userpackets     = {} // Lookup object for user submitted code. Matches crc -> code info
-var usernames       = {} // Table of steamid64 to the users name
 
 function Init() {
 	lua = child_process.spawn( "lua", [ "init.lua" ], {
@@ -180,23 +179,24 @@ setInterval( function() {
 
 }, 30000 );
 
-
-var buf = [];
-
 bot.on( "Message", function( name, steamID, msg, group ) {
-	usernames[steamID] = name;
+
+	if ( steamID == group && !bot.isAdmin( steamID ) ) { // Only admins can PM the bot code
+		return;
+	}
 
 	QueueCommand( "SetLastExecutedSteamID( " + steamID + " )", false, true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 
 	QueueCommand( msg.replace( EOF, "\\x00" ), true, msg[0] == "]", steamID, group );
+
 } );
 
 bot.on( "UserConnected", function( name, steamID ) {
-	usernames[steamID] = name;
 
 	QueueHook( "Connected", [ name, steamID ] );
+
 } );
 
 
@@ -204,6 +204,7 @@ bot.on( "UserDisconnected", function( name, steamID ) {
 	QueueHook( "Disconnected", [ name, steamID ] );
 } );
 
+var buf = [];
 function OnStdOut( data ) {
 
 	//
@@ -241,7 +242,8 @@ function OnStdOut( data ) {
 				var steamid  = info ? info.steamid || 0  : 0;
 				var groupid  = info ? info.groupid || 0  : 0;
 				var message  = info ? info.command || "" : "";
-				var username = usernames[steamid] || steamid.toString();
+				var userinfo = bot.Client.users[steamid];
+				var username = userinfo ? userinfo.playerName : steamid.toString();
 				if (islua) {
 					bot.emit(  "LuaMessage", username, steamid, message, groupid );
 					QueueHook( "LuaMessage",  [ username, steamid, message ] );
