@@ -93,6 +93,11 @@ while( true ) do
 	end
 end
 
+-- Returns true if this call is not being executed by a user
+function IsInternal()
+	return (steamid == 0) and (groupid == 0)
+end
+
 -- Return true if this code is being executed inside the sandbox
 function IsSandboxed()
 	return not (sandboxcode == false)

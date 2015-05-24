@@ -54,13 +54,13 @@ end
 
 local function GetProtected()
 
-	if ( IsSandboxed() ) then -- confirm a user input this
+	if ( IsSandboxed() and not IsInternal() ) then -- confirm a user input this
 
-		local ret = cookies._protected_user[ GetSandboxedSteamID() ]
+		local ret = cookies._protected_user[ GetLastExecutedSteamID() ]
 
 		if (not ret) then
 			ret = {}
-			cookies._protected_user[ GetSandboxedSteamID() ] = ret
+			cookies._protected_user[ GetLastExecutedSteamID() ] = ret
 		end
 
 		return ret
@@ -73,9 +73,9 @@ end
 
 local function ResetProtected()
 
-	if ( IsSandboxed() ) then -- confirm a user input this
+	if ( IsSandboxed() and not IsInternal() ) then -- confirm a user input this
 
-		cookies._protected_user[ GetSandboxedSteamID() ] = nil
+		cookies._protected_user[ GetLastExecutedSteamID() ] = nil
 
 	end
 

@@ -79,13 +79,17 @@ end
 
 cookie = require "./sand_modules/cookie"
 
-local sbox_steamid
-function SetSandboxedSteamID( steamid )
-	sbox_steamid = steamid
+local last_steamid
+function SetLastExecutedSteamID( steamid )
+
+	last_steamid = steamid
+
 end
 
-function GetSandboxedSteamID()
-	return sbox_steamid
+function GetLastExecutedSteamID()
+
+	return last_steamid
+
 end
 
 local INDEX = {
@@ -123,7 +127,7 @@ local INDEX = {
 	include				= require "./sand_modules/include",
 	require				= require "./sand_modules/require",
 	timer				= require "./sand_modules/timer",
-	SteamID             = function(self) return sbox_steamid end,
+	SteamID             = function(self) return last_steamid end,
 
 	--
 	-- Modified default libraries
