@@ -234,7 +234,7 @@ function OnStdOut( data ) {
 			var showerr = info && info.showerrors || false;
 
 			if ( packet.data && (islua || !islua && showerr) ) {
-				bot.sendMessage( packet.data, info ? info.groupid : null );
+				bot.sendMessage( packet.data + "\n", info ? info.groupid : null );
 			}
 
 			if (crc != 0) {
