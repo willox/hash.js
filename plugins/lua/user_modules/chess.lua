@@ -2,6 +2,11 @@ local WHITE, BLACK = 0, 1 -- 1 > 0 :^)
 
 local turn = WHITE
 
+local teamstring = {
+	[WHITE] = "White",
+	[BLACK] = "Black",
+}
+
 local teams = {}
 
 local WPAWN, WROOK, WKNIGHT, WBISHOP, WQUEEN, WKING, BPAWN, BROOK, BKNIGHT, BBISHOP, BQUEEN, BKING = 1, 2, 3, 4, 5, 6, -1, -2, -3, -4, -5, -6
@@ -60,6 +65,12 @@ local function printboard()
 	print("A  B  C  D  E  F  G  H")
 end
 
+local function xytoxy(xy)
+	local x, y = string.lower(string.sub(xy, 1, 1)), tonumber(string.sub(xy, 2, 2))
+	x = type(x) == "string" and string.byte(x) - 96 or tonumber(x)
+	return x, y
+end
+
 local function movepiece(sid64, oldxy, xy)
 	if not (teams[BLACK] and teams[WHITE]) then err("Game not started.") return end
 	if not (teams[BLACK] == sid64 or teams[WHITE] == sid64) then err("You are not in this game.") return end
@@ -67,25 +78,24 @@ local function movepiece(sid64, oldxy, xy)
 	if teams[turn] ~= sid64 then err("It's not your turn!") return end
 
 	-- get on my level
-	local oldx, oldy = oldxy[1], oldxy[2]
-	oldy = type(oldy) == "string" and string.byte(string.lower(oldy)) - 96 or oldy
-	oldx, oldy = tonumber(oldx), tonumber(oldy)
+	local oldx, oldy = xytoxy(oldxy)
 	if not oldx or oldx > 8 or oldx < 1 then err("Invalid old horizontal position (must be 1-8 or a-h)") return end
 	if not oldy or oldy > 8 or oldy < 1 then err("Invalid old vertical position (must be 1-8)") return end
-	local x, y = xy[1], xy[2]
-	y = type(y) == "string" and string.byte(string.lower(y)) - 96 or y
-	x, y = tonumber(x), tonumber(y)
-	if not x or x > 8 or x < 1 then err("Invalid horizontal position (must be 1-8 or a-h)") return end
-	if not y or y > 8 or y < 1 then err("Invalid vertical position (must be 1-8)") return end
 
-	board[oldy][oldx] = nil
+	if not board[oldy][oldx] then err("There is no piece at the old position!") return end
 
-	local spot = board[y][x]
-	if spot ~= 0 then
-		print(chars[spot] .. " was captured and removed from play.")
+	local x, y = xytoxy(xy)
+	if not x or x > 8 or x < 1 then err("Invalid new horizontal position (must be 1-8 or a-h)") return end
+	if not y or y > 8 or y < 1 then err("Invalid new vertical position (must be 1-8)") return end
+
+	local newspot = board[y][x]
+	if newspot ~= 0 then
+		chessprint(newspot[spot] .. " was captured and removed from play.")
 	end
 
-	board[y][x] = piece
+	board[y][x] = board[oldy][oldx]
+
+	board[oldy][oldx] = nil
 
 	printboard()
 
@@ -119,7 +129,7 @@ hook.Add("Message", "CHESSAGE", function(ply, sid64, msg)
 	elseif subcmd == "print" then
 		printboard()
 	elseif subcmd == "status" then
-		chessprint("White player: "..tostring(teams[WHITE]), "Black player: "..tostring(teams[BLACK]))
+		chessprint("White player: "..tostring(teams[WHITE]), "Black player: "..tostring(teams[BLACK]) .. "; Turn: "..teamstring[turn])
 	elseif subcmd == "help" then
 		chessprint("Commands: join, leave, print, status, help")
 		chessprint("To move: !chess <piece> <XY>")
