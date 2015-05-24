@@ -62,7 +62,7 @@ local function printboard()
 		end
 		print(ret)
 	end
-	print("A  B  C  D  E  F  G  H")
+	print("  A  B  C  D  E  F  G  H")
 end
 
 local function xytoxy(xy)
