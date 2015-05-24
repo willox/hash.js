@@ -235,7 +235,7 @@ local board = nil;
 
 -- hash only
 function start_tetris()
-	board = make_board();
+	board = make_board(8, 8);
 	timer.Create("TETRIS", 1, 0, function()
 		if(not board) then timer.Remove("TETRIS"); return; end
 		if(board_tick(board, true)) then
