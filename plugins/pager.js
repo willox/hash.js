@@ -33,6 +33,7 @@ bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) 
     if ( argstr == "" ) {
         // help
     } else {
+        bot.addFriend( steamid );
         db.run( "INSERT OR IGNORE INTO pager_phrases VALUES ((?), (?))",
         [ steamid, argstr ] );
     }
