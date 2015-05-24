@@ -186,7 +186,7 @@ var buf = [];
 bot.on( "Message", function( name, steamID, msg, group ) {
 	usernames[steamID] = name;
 
-	QueueCommand( "SetSandboxedSteamID( " + steamID + " )", false, true );
+	QueueCommand( "SetLastExecutedSteamID( " + steamID + " )", false, true );
 
 	QueueHook( "Message", [ name, steamID, msg ] );
 

@@ -123,8 +123,12 @@ bot.on( "Disconnected", function() {
 	print( "Lost Connection." );
 } );
 
-bot.on( "Message", function( name, steamID, msg ) {
-	print( name + ": " + msg );
+bot.on( "Message", function( name, steamID, msg, group ) {
+	if ( steamID == group ) {
+		print( "[PM] " + name + ": " + msg );
+	} else {
+		print( name + ": " + msg ); // TODO: Group name
+	}
 } );
 
 

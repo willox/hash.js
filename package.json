@@ -21,7 +21,7 @@
 		"omegle-client":        "1.0.0",
 		"request":              "2.55.0",
 		"sqlite3":              "3.0.5",
-		"steam":				"0.6.8",
+		"steam":                "0.6.8",
 		"xml2js":               "0.4.6",
 		"buffer-crc32":         "0.2.5"
 	}
