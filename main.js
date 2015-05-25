@@ -38,12 +38,16 @@ function commandlist(name, steamID, args, argstr, group) {
 			switch ( a == b ? 0 : a < b ){
 				case 0:
 					return 0;
+					break;
 				case true:
 					return -1;
+					break;
 				case false:
 					return 1;
+					break;
 				default:
 					return 0;
+					break;
 			}
 		});
 	}
