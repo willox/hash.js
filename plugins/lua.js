@@ -33,8 +33,8 @@ function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 		}
 
 		if (steamid && groupid) { // Only calculate CRC on non-internal code
-			var epoch  = (new Date).getTime(); // `seed` the crc32 with epoch
-			var cmdcrc = crc32.signed( epoch + cmd );
+			var mtime  = (new Date).getTime(); // seed the crc32 with the epoch in milliseconds
+			var cmdcrc = crc32.signed( mtime + cmd );
 			// The chance of a collision is really low, but still possible.
 			// TODO?: Check for collisions and re-crc the command?
 		}
