@@ -143,10 +143,9 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
     var notifications = {}
     
     message = message || "";
-    message = message.toLowerCase();
     
     db.each( "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), lower(phrase))",
-        [ message ],       // Parameters
+        [ message.toLowerCase() ],       // Parameters
         function( error, row ) { // Row callback
             if ( row ) {
                 notifications[row.steamid] = {
