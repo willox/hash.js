@@ -10,6 +10,10 @@ var defaultsettings = {
     notifyawaytime: {
         default:  0,
         helptext: "Only notify (when in the group chat) after X seconds of inactivity. [0 to disable]."
+    },
+    casesensitivephrases: {
+        default: false,
+        helptext: "Should the pager phrases be matched case-sensitive or not."
     }
 }
 
@@ -140,28 +144,47 @@ bot.on( "UserConnected", function( name, steamID ) {
 
 bot.on( "TextMessage", function( username, steamid, message, groupid ) {
 
-    var notifications = {}
-    db.each( "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), phrase)",
-        [ message || "" ],       // Parameters
+    var usersettings = {}
+    db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
+        [ steamid ],             // Parameters
         function( error, row ) { // Row callback
             if ( row ) {
-                notifications[row.steamid] = {
-                    phrase:   row.phrase,
-                    message:  message,
-                    username: username
+                usersettings[row.key] = {
+                    datatype: row.valuetype,
+                    value:    row.value
                 }
             }
         },
         function( error, numrows ) { // Completion callback
-            for ( var key in notifications ) {
-                if ( notifications.hasOwnProperty( key ) ) {
-                    var info = notifications[key];
-                    TryPageUser( key, info.phrase, info.message, info.username );
-                }
+            var settings = ParsePagerSettings( usersettings );
+            var sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), phrase)";
+            var notifications = {}
+            if ( !settings.casesensitivephrases ) {
+                message  = message.toLowerCase();
+                sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), LOWER(phrase))";
             }
+
+            db.each( sqlquery, [ message || "" ], // Parameters
+                function( error, row ) { // Row callback
+                    if ( row ) {
+                        notifications[row.steamid] = {
+                            phrase:   row.phrase,
+                            message:  message,
+                            username: username
+                        }
+                    }
+                },
+                function( error, numrows ) { // Completion callback
+                    for ( var key in notifications ) {
+                        if ( notifications.hasOwnProperty( key ) ) {
+                            var info = notifications[key];
+                            TryPageUser( key, info.phrase, info.message, info.username );
+                        }
+                    }
+                }
+            );
         }
     );
-
 } );
 
 bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) {
