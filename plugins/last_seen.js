@@ -69,7 +69,7 @@ bot.on( "UserConnected", function( name, sid, group ) {
 		} else {
 			// New friend!
 
-			bot.sendMessage( "Hi " + name + "! Welcome to the chat!", group );
+			bot.sendMessage( name + " has joined chat for the first time!", group );
 
 			db.run( "INSERT INTO last_seen \
 			  ( user, name, time ) VALUES ( ?, ?, ? )",
