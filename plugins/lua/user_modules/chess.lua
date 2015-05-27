@@ -42,12 +42,12 @@ local function reset()
 end
 reset()
 
-local function err(msg)
-	print("[Chess Error]: "..msg)
+local function err(...)
+	print("[Chess Error]", ...)
 end
 
-local function chessprint(msg)
-	print("[Chess]: "..msg)
+local function chessprint(...)
+	print("[Chess]", ...)
 end
 
 local function printboard()
@@ -148,7 +148,10 @@ hook.Add("Message", "CHESSAGE", function(ply, sid64, msg)
 		if not space then chessprint("To move: !chess <old XY> <XY>") return end
 		local oldxy, xy = string.sub(subcmd, 1, space), string.sub(subcmd, space + 1)
 		if not (oldxy and xy) then chessprint("To move: !chess <old XY> <XY>") return end
-		movepiece(sid64, oldxy, xy)
+		local success, errmsg = pcall(function() movepiece(sid64, oldxy, xy) end)
+		if not success then
+			err(errmsg)
+		end
 	end
 end)
 
