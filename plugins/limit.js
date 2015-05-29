@@ -31,6 +31,6 @@ bot.registerCommand( "unlimit", function( name, steamID, _, argstr ) {
 
 	bot.setLimited( argstr, false );
 
-	db.run( "DELETE FROM VALUES WHERE user = ?", argstr );
+	db.run( "DELETE FROM limited WHERE user = ?", argstr );
 
 } );
