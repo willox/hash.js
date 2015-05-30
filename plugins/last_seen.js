@@ -36,8 +36,8 @@ function niceTimeSpan( seconds ) {
 		return plur( seconds, " second" );
 }
 
-function getLastSeenMsg( name, cur_name, time ) {
-	var msg = cur_name + " was last seen ";
+function getLastSeenMsg( name, cur_name, sid, time ) {
+	var msg = cur_name + " (" + sid + ") was last seen ";
 	msg += niceTimeSpan( ( new Date() - new Date( time ) ) / 1000 );
 	msg += " ago";
 	if ( name && name != cur_name )
@@ -59,7 +59,7 @@ bot.on( "UserConnected", function( name, sid, group ) {
 
 			var elapsed = ( new Date() - new Date( row.time ) ) / 1000;
 			if ( elapsed >= (2*day) ) {
-				bot.sendMessage( getLastSeenMsg( row.name, name, row.time ), group );
+				bot.sendMessage( getLastSeenMsg( row.name, name, sid, row.time ), group );
 			}
 
 			db.run( "UPDATE last_seen \
@@ -124,7 +124,7 @@ bot.registerCommand( "lastseen", function( name, steamID, _, arg_str, group ) {
 				if ( bot.Client.chatRooms[ bot.GroupID ][ row.user ] != null )
 					output += row.name + " is in the chat right now!";
 				else
-					output += getLastSeenMsg( null, row.name, row.time ) + "\n";
+					output += getLastSeenMsg( null, row.name, row.user, row.time ) + "\n";
 			}
 
 		bot.sendMessage( output, group );
