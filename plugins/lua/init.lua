@@ -21,7 +21,6 @@ end
 -- See luaB_print in lbaselib.c
 function print( ... )
 	local args  = { ... }
-	local nargs = #args
 
 	for k, v in pairs(args) do
 		v = tostring(v)
