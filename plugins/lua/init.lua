@@ -10,14 +10,24 @@ local HEADEREND   = ']'
 local writepacket = io.write
 
 -- Redefine io.write/print to save output to a per-user buffer for PMs.
+-- See g_write in liolib.c
 local stdoutbuf = ""
 function io.write( ... )
-	local args = { ... }
+	local args  = { ... }
+
 	stdoutbuf = stdoutbuf .. table.concat( args )
 end
+
+-- See luaB_print in lbaselib.c
 function print( ... )
-	local args = { ... }
-	stdoutbuf = stdoutbuf .. table.concat( args, " " ) .. "\n"
+	local args  = { ... }
+
+	for k, v in pairs(args) do
+		v = tostring(v)
+		stdoutbuf = stdoutbuf .. v .. "\t"
+	end
+
+	stdoutbuf = stdoutbuf .. "\n"
 end
 
 require "env"
