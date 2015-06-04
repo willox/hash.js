@@ -8,7 +8,7 @@ var phrases = [
 	"hi"
 ];
 
-bot.on( "Message", OnMessage );
+// bot.on( "Message", OnMessage ); // STOP POST
 
 function ShouldReply( msg ) {
 
