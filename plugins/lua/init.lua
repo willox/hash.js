@@ -110,7 +110,7 @@ end
 
 -- Return true if this code is being executed inside the sandbox
 function IsSandboxed()
-	return not (sandboxcode == false)
+	return sandboxcode
 end
 
 -- Set the environment to the sandbox
