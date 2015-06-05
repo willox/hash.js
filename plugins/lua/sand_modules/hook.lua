@@ -51,7 +51,7 @@ local function Call( event, ... )
 			
 			print( err )
 
-			hooks[ event ][ id ] = nil -- Even remove persistent hooks
+			hooks[ event ][ k ] = nil -- Even remove persistent hooks
 			
 		end
 
