@@ -31,6 +31,16 @@ f.mt.list.__index = {}
 f.mt.list.__len          = function (self) return #self.array end
 f.mt.list.__pairs        = function (self) return pairs (self.array) end
 f.mt.list.methods = {}
+
+f.mt.list.methods.clone = function (self)
+	local t = {}
+	for k, v in pairs (self.array) do
+		t [k] = v
+	end
+	
+	return f.list (t)
+end
+
 f.mt.list.methods.map    = function (r, mapF, ...)        return f.map    (mapF, r, ...)      end
 f.mt.list.methods.filter = function (r, filterF, ...)     return f.filter (filterF, r, ...)      end
 f.mt.list.methods.foldr  = function (r, binaryF, x0, ...) return f.foldr  (x0, binaryF, r, ...) end
@@ -38,6 +48,13 @@ f.mt.list.methods.foldl  = function (r, binaryF, x0, ...) return f.foldl  (x0, b
 f.mt.list.methods.sum    = f.sum
 f.mt.list.methods.prod   = f.prod
 f.mt.list.methods.concat = f.concat
+
+f.mt.list.methods.sort = function (self, comparator)
+	local t = self:clone ()
+	table.sort (t.array)
+	
+	return t
+end
 
 f.mt.list.methods.tostring = function (self)
 	if #self == 0 then return "{}" end
