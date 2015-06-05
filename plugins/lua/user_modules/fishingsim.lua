@@ -248,7 +248,7 @@ local chatcmd = "!fish "
 hook.Add("Message", "FishingSim", function(nick, sid, msg)
 	if not string.find(msg, "^"..chatcmd) then return end
 
-	local input = string.Explode(string.sub(msg, #chatcmd + 1), " ")
+	local input = string.Explode(" ", string.sub(msg, #chatcmd + 1))
 	local cmd, args = input[1], {}
 	if not (cmd and #cmd > 0 and commands[cmd]) then return end
 
