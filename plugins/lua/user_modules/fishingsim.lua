@@ -39,7 +39,7 @@ local function chance(ply)
 		ch = ch + (ch * 0.25)
 	end
 	ch = ch + (ply.castdistance - 15) * 0.5
-	return math.min(ch, 100)
+	return math.min(math.floor(ch), 100)
 end
 
 local function sf(a, b) return a.weight < b.weight end
@@ -169,6 +169,7 @@ local function sky()
 	else
 		local hour = fish.minutes / 60
 		local off = isnight() and ((hour >= 19) and hour - 18 or hour + 6) or (hour - 6)
+		print(off - 1 + (off > 6 and 4 or 0), width - off)
 		return string.rep(c.space, off - 1 + (off > 6 and 4 or 0)) .. (isnight() and c.moon or c.sun) .. string.rep(c.space, width - off)
 	end
 end
@@ -237,7 +238,8 @@ commands = {
 		fishprint("Fish again later, " .. ply.nick .. "!")
 	end,
 	print = function(ply)
-		printscene(ply)
+		local suc, err = pcall(function() printscene(ply) end)
+		if not suc then print("Zerf: " .. err) end
 	end,
 	status = function(ply)
 		fishprint("Weather: "..(fish.raining and "rainy" or "clear"))
