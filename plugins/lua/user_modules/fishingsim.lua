@@ -17,6 +17,10 @@ local fish = {
 	fishers = {},
 }
 
+local function clamp(x, min, max)
+	return (x < min and min) or (x > max and max) or x
+end
+
 local function fishprint(...)
 	print("[FishingSim]", ...)
 end
@@ -34,6 +38,7 @@ local function chance(ply)
 	if fish.raining then
 		ch = ch + (ch * 0.25)
 	end
+	ch = ch + (ply.castdistance - 15) * 0.5
 	return math.min(ch, 100)
 end
 
@@ -61,14 +66,17 @@ local function catch(ply)
 	else
 		fishprint(ply.nick .. " caught a fish! Nice! It was a "..type..".")
 	end
-	ply.casted = false
-	ply.fish = nil
+	fish.fishers[ply] = nil
 end
 
 local function cast(ply, distance)
-	if not tonumber(distance) then fishprint("Invalid cast distance!") return end
-	ply.castdistance = tonumber(distance)
-	ply.casted = true
+	distance = tonumber(distance)
+	if not distance then fishprint("Invalid cast distance!") return end
+	distance = clamp(distance, 15, 30)
+	ply.castdistance = distance
+
+	fishprint("Welcome to FishingSim, " .. ply.nick .. "! You cast your line " .. distance .. " units away!")
+	fish.fishers[ply] = true
 end
 
 local speeddist = {slow = 10, medium = 20, fast = 30}
@@ -122,6 +130,7 @@ local function think()
 	-- handle weather
 	if math.random(1, 100) == 42 then
 		fish.raining = not fish.raining
+		fishprint(fish.raining and "It started raining." or "The rain stopped.")
 	end
 
 	-- handle catching
@@ -208,9 +217,7 @@ end
 local function getfishers()
 	local ret = ""
 	for ply, _ in pairs(fish.fishers) do
-		if ply.casted then
-			ret = ret .. ply.nick .. ", "
-		end
+		ret = ret .. ply.nick .. ", "
 	end
 	return string.sub(ret, 1, -3)
 end
@@ -222,9 +229,7 @@ commands = {
 	end,
 	cast = function(ply, args)
 		if fish.fishers[ply] then fishprint(ply.nick .. " is already fishing!") return end
-		fish.fishers[ply] = true
 		cast(ply, args[1])
-		fishprint("Welcome to FishingSim, " .. ply.nick .. "!")
 	end,
 	leave = function(ply)
 		if not fish.fishers[ply] then fishprint(ply.nick .. " isn't fishing!") return end
