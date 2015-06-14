@@ -200,7 +200,6 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
                     for ( var key in notifications ) {
                         if ( notifications.hasOwnProperty( key ) ) {
                             var info = notifications[key];
-                            console.log( info );
 
                             if ( info.usewordbounds ) {
                                 var regex = new RegExp( "\\b" + info.phrase + "\\b" );
