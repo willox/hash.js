@@ -18,12 +18,33 @@ var defaultsettings = {
 }
 
 db.run( "CREATE TABLE IF NOT EXISTS pager_phrases (steamid VARCHAR(22),\
-        phrase VARCHAR(32), PRIMARY KEY (steamid, phrase))"
+        phrase VARCHAR(32), usewordbounds BOOLEAN, PRIMARY KEY (steamid, phrase))"
 );
 
 db.run( "CREATE TABLE IF NOT EXISTS pager_settings (steamid VARCHAR(22),\
         key VARCHAR(32), valuetype CHAR(1), value VARCHAR(32),\
         PRIMARY KEY (steamid, key))"
+);
+
+// Update DB schema if missing usewordbounds column
+var needswordboundscolumn = true;
+db.each( "PRAGMA table_info(pager_phrases)",
+    function( error, row ) {
+        if ( row.name == "usewordbounds" ) {
+            needswordboundscolumn = false;
+        }
+    },
+    function( error, numrows ) {
+        if ( needswordboundscolumn ) {
+            console.log( "pager_phrases schema is out of date. Updating." );
+            db.run( "ALTER TABLE pager_phrases ADD COLUMN usewordbounds BOOLEAN DEFAULT 0",
+            function( error ) {
+                if ( !error ) {
+                    console.log( "pager_phrases schema updated." );
+                }
+            } );
+        }
+    }
 );
 
 // Remove settings that don't have a member in the defaultsettings object.
@@ -158,19 +179,20 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
         },
         function( error, numrows ) { // Completion callback
             var settings = ParsePagerSettings( usersettings );
-            var sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), phrase)";
+            var sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr((?), phrase)";
             var notifications = {}
             if ( !settings.casesensitivephrases ) {
-                sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase))";
+                sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase))";
             }
 
             db.each( sqlquery, [ message || "" ], // Parameters
                 function( error, row ) { // Row callback
                     if ( row ) {
                         notifications[row.steamid] = {
-                            phrase:   row.phrase,
-                            message:  message,
-                            username: username
+                            phrase:        row.phrase,
+                            usewordbounds: row.usewordbounds == "1" ? true : false,
+                            message:       message,
+                            username:      username
                         }
                     }
                 },
@@ -178,6 +200,16 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
                     for ( var key in notifications ) {
                         if ( notifications.hasOwnProperty( key ) ) {
                             var info = notifications[key];
+                            console.log( info );
+
+                            if ( info.usewordbounds ) {
+                                var regex = new RegExp( "\\b" + info.phrase + "\\b" );
+                                var match = info.message.match( regex );
+                                if ( !match ) { // This phrase doesn't match the js word boundaries
+                                    continue;
+                                }
+                            }
+
                             TryPageUser( key, info.phrase, info.message, info.username );
                         }
                     }
@@ -190,23 +222,38 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
 bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) {
 
     if ( argstr == "" ) {
-        bot.sendMessage( "Use `.pageradd [phrase or word]` to add a notification string.", group );
+        var usage = "Use `.pageradd [phrase or word]` to add a notification string.\n";
+           usage += "    Note: You can wrap your word/phrase with double quotes to match the whole string.\n";
+           usage += "    Note: You can wrap your word/phrase with \\b tags to use word boundaries.\n";
+           usage += "    Example: `.pageradd \"\\bley\\b\"` will match the phrase 'ley' only when it is by itself.\n";
+        bot.sendMessage( usage, group );
         return
 
     } else {
-        var matchphrase = "";
-        db.each( "SELECT phrase FROM pager_phrases WHERE steamid=(?) AND instr((?), phrase)",
+        if ( argstr[0] == "\"" && argstr[argstr.length-1] == "\"" ) { // Allow exact phrase matching
+            argstr = argstr.substr( 1, argstr.length-2 ); // Remove beginning and ending quotes
+        }
+
+        var usewordbounds = false; // Should this phrase use word boundaries
+        var wordboundsmatch = argstr.match( /^\\b(.*)\\b$/ )
+        if ( wordboundsmatch && wordboundsmatch[1] ) {
+            usewordbounds = true;
+            argstr = wordboundsmatch[1];
+        }
+
+        var matchphrase = undefined;
+        db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?) AND instr((?), phrase)",
             [ steamid, argstr ],    // Parameters
             function( error, row ){ // Row callback
-                if ( row && row.phrase ) {
+                if ( row && row.phrase && row.usewordbounds == "0" ) {
                     matchphrase = row.phrase;
                 }
             },
             function( error, numrows ){ // Completion callback
-                if ( numrows < 1 ) {    // This phrase doesn't contain another substring phrase
+                if ( !matchphrase ) {   // This phrase doesn't contain another substring phrase
                     bot.addFriend( steamid );
-                    db.run( "INSERT OR IGNORE INTO pager_phrases VALUES ((?), (?))",
-                    [ steamid, argstr ] );
+                    db.run( "INSERT OR IGNORE INTO pager_phrases VALUES ((?), (?), (?))",
+                    [ steamid, argstr, usewordbounds ] );
                 } else {
                     var message = "The phrase \"" + argstr + "\" matches the already existing phrase ";
                     message += "\"" + matchphrase + "\".";
@@ -252,10 +299,17 @@ bot.registerCommand( "pagerls", function( name, steamid, args, argstr, group ) {
     var username = userinfo ? userinfo.playerName : steamid.toString();
     var message  = "Current Pager Phrases for " + username + ":\n";
 
-    db.each( "SELECT phrase FROM pager_phrases WHERE steamid=(?)",
+    db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?)",
         [ steamid ],             // Parameters
         function( error, row ) { // Row callback
-            message += phraseid + " - " + row.phrase + "\n";
+            message += phraseid + " - "
+
+            var usewordbounds = (row.usewordbounds == "1") ? true : false
+            if ( usewordbounds ) {
+                message += "\\b";
+            }
+
+            message += "\'" + row.phrase + "\'\n";
             phraseid++;
         },
         function( error, numrows ) { // Completion callback
