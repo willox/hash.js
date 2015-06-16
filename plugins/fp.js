@@ -157,7 +157,11 @@ bot.registerCommand( "fpadd", function( name, steamID, args, argstr, group ) {
 
 }, "Add a string to monitor for in the FP ticker. (Does not take threadid!)" );
 
-bot.registerCommand( "fpremove", function( name, steamID, args, argstr ) {
+bot.registerCommand( "fpremove", function( name, steamID, args, argstr, group ) {
+
+	if ( steamID == group && !bot.isAdmin( steamID ) ) { // Only admins can PM this command
+		return;
+	}
 
 	db.run( "DELETE FROM threads WHERE id = ? OR thread = ?", argstr, argstr );
 
