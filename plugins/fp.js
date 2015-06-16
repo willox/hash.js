@@ -145,7 +145,11 @@ bot.registerCommand( "fplist", function( name, user, args, argstr, group ) {
 
 }, "List all monitored strings to search for in the ticker." );
 
-bot.registerCommand( "fpadd", function( name, steamID, args, argstr ) {
+bot.registerCommand( "fpadd", function( name, steamID, args, argstr, group ) {
+
+	if ( steamID == group && !bot.isAdmin( steamID ) ) { // Only admins can PM this command
+		return;
+	}
 
 	db.run( "INSERT INTO threads ( thread ) VALUES( ? )", argstr, function() {
 		// We don't want to error if inserting a duplicate (let it fail silently who gives a shit)
