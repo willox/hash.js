@@ -9,7 +9,7 @@ local function scall( f, ... )
 	--
 	debug.sethook( thread, function()
 
-		if os.clock() > start + 1 then
+		if os.clock() > start + 2 then
 
 			error( "maximum execution time exceeded", 2 )
 
