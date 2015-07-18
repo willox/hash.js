@@ -105,7 +105,6 @@ local INDEX = {
 	ipairs				= ipairs,
 	next				= next,
 	pairs				= pairs,
-	pcall				= pcall,
 	print				= print,
 	rawequal			= rawequal,
 	select				= select,
