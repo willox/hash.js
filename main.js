@@ -2,7 +2,7 @@ var config         = require( "./config" );
 var sortedcommands = [] // Array of all the commands sorted alphabetically
 
 //
-// Connection Handler lol
+// Connection Handler
 //
 
 bot.on( "Connected", function() {
