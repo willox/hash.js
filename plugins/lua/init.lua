@@ -55,7 +55,8 @@ end
 function CreatePacket( crc, data, validlua )
 	local header = HEADERSTART .. tostring(crc) .. ":"
 	header = header .. (validlua and "1" or "0") .. HEADEREND
-	return header .. tostring( data )
+	data = string.gsub(data, "\x00", "")
+	return header .. tostring(data)
 end
 
 ::start::
