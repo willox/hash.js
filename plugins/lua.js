@@ -115,7 +115,6 @@ function ProcessCommand() {
 setInterval( ProcessCommand, 10 );
 
 function LuaQuote( str ) {
-
 	return "\"" + str.replace( /.|\r|\n/gm, function( c ) {
 
 		switch ( c ) {
@@ -127,6 +126,7 @@ function LuaQuote( str ) {
 
 			case "\r":
 				return "\\r";
+
 			case "\0":
 				return "\\0";
 
