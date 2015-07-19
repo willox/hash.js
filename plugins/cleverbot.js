@@ -11,7 +11,7 @@ var phrases = [
 
 var lastMessage = 0;
 
-cleverbot.setNick( "Hash.JS" );
+cleverbot.setNick( "Hash" );
 cleverbot.create( function( err, session ) {
 
 	if ( err )
