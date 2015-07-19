@@ -26,7 +26,7 @@ cleverbot.create( function( err, session ) {
 			return false;
 
 		// 0.5 messages per minute
-		if ( lastMessage + 120 > Date.now() )
+		if ( lastMessage + 120000 > Date.now() )
 			return false;
 		
 		// 80% chance to reply if the bot's name is spoken.
