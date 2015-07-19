@@ -15,7 +15,7 @@
 	},
 
 	"dependencies": {
-		"cleverbot-node":       "0.1.8",
+		"cleverbot":       		"1.0.4",
 		"github-notifications": "1.0.0",
 		"html-entities":        "1.1.2",
 		"omegle-client":        "1.0.0",
