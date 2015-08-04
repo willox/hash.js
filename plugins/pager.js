@@ -179,13 +179,13 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
         },
         function( error, numrows ) { // Completion callback
             var settings = ParsePagerSettings( usersettings );
-            var sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr((?), phrase)";
+            var sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr((?), phrase) AND steamid != (?)";
             var notifications = {}
             if ( !settings.casesensitivephrases ) {
-                sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase))";
+                sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase)) AND steamid != (?)";
             }
 
-            db.each( sqlquery, [ message || "" ], // Parameters
+            db.each( sqlquery, [ message || "", steamid ], // Parameters
                 function( error, row ) { // Row callback
                     if ( row ) {
                         notifications[row.steamid] = {
