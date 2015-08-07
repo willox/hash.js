@@ -4,10 +4,10 @@ require "superstring"
 
 local tostring    = require "stostring"
 local scall		  = require "scall"
-local EOF         = "\x00"
-local HEADERSTART = '['
-local HEADEREND   = ']'
-local writepacket = io.write
+EOF               = "\x00"
+HEADERSTART       = '['
+HEADEREND         = ']'
+writepacket       = io.write
 
 -- Redefine io.write/print to save output to a per-user buffer for PMs.
 -- See g_write in liolib.c
@@ -53,7 +53,7 @@ function ParseHeader(data)
 end
 
 function CreatePacket( crc, data, validlua )
-	local header = HEADERSTART .. tostring(crc) .. ":"
+	local header = HEADERSTART .. "Lua," .. tostring(crc) .. ":"
 	header = header .. (validlua and "1" or "0") .. HEADEREND
 	data = string.gsub(data, "\x00", "")
 	return header .. tostring(data)
@@ -80,12 +80,14 @@ local steamid      = 0     -- STEAM64 of the user that executed this, 0 if inter
 local groupid      = 0     -- Group ID that this code originated from. User SID if PM.
 while( true ) do
 	local data  = io.read() -- Read single line
+	
+	--io.stderr:write(data);
 
 	if ( expectheader ) then
 		if ( data:sub( 1, 1 ) == HEADERSTART and data:sub( -1 ) == HEADEREND ) then
 			header       = ParseHeader(data)
-			showerror    = header.showerror == true  and true or false -- Default to false
-			sandboxcode  = header.sandbox   ~= false and true or false -- Default to true
+			showerror    = header.showerror == true -- Default to false
+			sandboxcode  = header.sandbox   ~= false -- Default to true
 			steamid      = header.steamid   or 0
 			groupid      = header.groupid   or 0
 			codecrc      = header.crc       or 0
@@ -133,7 +135,6 @@ local f, err = load( "return " .. code, "eval", "t", LOAD_ENV )
 if err then
 	f, err = load( code, "eval", "t", LOAD_ENV )
 end
-
 --
 -- We've been passed invalid Lua
 --

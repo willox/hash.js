@@ -4,5 +4,6 @@ require "messagestats"
 require "fn"
 require "vectors"
 require "http_codes"
+require "algo"
 
 hook.StopPersist()
