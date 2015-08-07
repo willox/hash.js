@@ -1,4 +1,9 @@
 var config = require( "../config.js" );
+if ( !config.CleverBotUser || !config.CleverBotKey ) {
+	console.error( "Can not load cleverbot.js: CleverBotUser and CleverBotKey must be defined in config.js" );
+	return
+}
+
 var cleverbot = new ( require( "cleverbot" ) )( config.CleverBotUser, config.CleverBotKey );
 var busy = false;
 var excited = false;
@@ -28,7 +33,7 @@ cleverbot.create( function( err, session ) {
 		// 0.5 messages per minute
 		if ( lastMessage + 120000 > Date.now() )
 			return false;
-		
+
 		// 80% chance to reply if the bot's name is spoken.
 		if ( msg.match( /\bHash\b/i ) )
 			return Math.random() > 0.20;
