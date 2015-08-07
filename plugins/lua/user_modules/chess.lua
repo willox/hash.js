@@ -97,7 +97,7 @@ local function movepiece(sid64, oldxy, xy)
 
 	local newspot = board[y][x]
 	if newspot ~= 0 then
-		chessprint(newspot[spot] .. " was captured and removed from play.")
+		chessprint(newspot .. " was captured and removed from play.")
 	end
 
 	board[y][x] = board[oldy][oldx]
