@@ -39,6 +39,7 @@ function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 			// TODO?: Check for collisions and re-crc the command?
 		}
 
+		console.log("SENT: " + cmdcrc);
 		cmdbuf.push( {
 			command:       cmd,
 			crc:           cmdcrc    || 0,
@@ -85,6 +86,7 @@ function ParsePacket( data ) {
 		if(packet.type == "Lua") 
 		{
 			packet.crc   = Number(parsed[2]);
+			console.log("RECEIVED: " + packet.crc);
 			packet.islua = parsed[3] == "1" ? true : false;
 			packet.data  = parsed[4];
 		}
@@ -245,7 +247,7 @@ function OnStdOut( data ) {
 				var crc     = packet.crc;
 				var islua   = packet.islua;
 				var info    = userpackets[crc];
-				var showerr = info && info.showerrors || true;
+				var showerr = info ? info.showerrors : true;
 
 				if ( packet.data && (islua || !islua && showerr) ) {
 					bot.sendMessage( packet.data, info ? info.groupid : null );
