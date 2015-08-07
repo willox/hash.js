@@ -76,15 +76,33 @@ function ParsePacket( data ) {
 		packet.data = data;
 
 	} else {
-		var parsed = /^\[(.*):(.)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
+		var parsed = /^\[(.*?),(.*):(.+?)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
 		if (!parsed) {
 			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
 			return packet
 		}
-
-		packet.crc   = Number(parsed[1]);
-		packet.islua = parsed[2] == "1" ? true : false;
-		packet.data  = parsed[3];
+		packet.type = parsed[1];
+		if(packet.type == "Lua") 
+		{
+			packet.crc   = Number(parsed[2]);
+			packet.islua = parsed[3] == "1" ? true : false;
+			packet.data  = parsed[4];
+		}
+		else if(packet.type == "SimpleTimer")
+		{
+			packet.callbackid      = Number(parsed[2]);
+			packet.callbackdelayms = Number(parsed[3]) * 1000;
+		}
+		else if(packet.type == "Timer")
+		{
+			packet.callbackid      = parsed[2];
+			packet.callbackdelayms = Number(parsed[3]) * 1000;
+			packet.callbackreps    = Number(parsed[4]);
+		}
+		else 
+		{
+			console.log("ParsePacket unknown type received: " + packet.type);
+		}
 	}
 
 	return packet;
@@ -128,7 +146,7 @@ function LuaQuote( str ) {
 				return "\\r";
 
 			case "\0":
-				return "\\0";
+				return "\\x00";
 
 		}
 
@@ -167,14 +185,6 @@ function Require( path ) {
 
 setInterval( function() {
 
-	QueueHook( "Tick" );
-
-	QueueCommand( "timer.Tick()", true, true );
-
-}, 500 );
-
-setInterval( function() {
-
 	QueueCommand( "cookie.Save()", false, true );
 
 }, 30000 );
@@ -205,6 +215,7 @@ bot.on( "UserDisconnected", function( name, steamID ) {
 } );
 
 var buf = [];
+var timers = {};
 function OnStdOut( data ) {
 
 	//
@@ -229,31 +240,68 @@ function OnStdOut( data ) {
 		// Ignore empty packets
 		if ( buf.trim().length > 0 ) {
 			var packet  = ParsePacket( buf );
-			var crc     = packet.crc;
-			var islua   = packet.islua;
-			var info    = userpackets[crc];
-			var showerr = info && info.showerrors || false;
+			if(packet.type == "Lua") 
+			{
+				var crc     = packet.crc;
+				var islua   = packet.islua;
+				var info    = userpackets[crc];
+				var showerr = info && info.showerrors || true;
 
-			if ( packet.data && (islua || !islua && showerr) ) {
-				bot.sendMessage( packet.data, info ? info.groupid : null );
+				if ( packet.data && (islua || !islua && showerr) ) {
+					bot.sendMessage( packet.data, info ? info.groupid : null );
+				}
+
+				if (crc != 0) {
+					var steamid  = info ? info.steamid || 0  : 0;
+					var groupid  = info ? info.groupid || 0  : 0;
+					var message  = info ? info.command || "" : "";
+					var userinfo = bot.Client.users[steamid];
+					var username = userinfo ? userinfo.playerName : steamid.toString();
+					if (islua) {
+						bot.emit(  "LuaMessage", username, steamid, message, groupid );
+						QueueHook( "LuaMessage",  [ username, steamid, message ] );
+					} else {
+						bot.emit(  "TextMessage", username, steamid, message, groupid );
+						QueueHook( "TextMessage", [ username, steamid, message ] );
+					}
+				}
+
+				userpackets[crc] = null;
 			}
-
-			if (crc != 0) {
-				var steamid  = info ? info.steamid || 0  : 0;
-				var groupid  = info ? info.groupid || 0  : 0;
-				var message  = info ? info.command || "" : "";
-				var userinfo = bot.Client.users[steamid];
-				var username = userinfo ? userinfo.playerName : steamid.toString();
-				if (islua) {
-					bot.emit(  "LuaMessage", username, steamid, message, groupid );
-					QueueHook( "LuaMessage",  [ username, steamid, message ] );
-				} else {
-					bot.emit(  "TextMessage", username, steamid, message, groupid );
-					QueueHook( "TextMessage", [ username, steamid, message ] );
+			else if(packet.type == "SimpleTimer")
+			{
+				setTimeout(function(packet)
+				{
+					QueueCommand("SimpleTimerCallback( " + packet.callbackid + " )", false, false);
+					
+				}, packet.callbackdelayms, packet);
+				
+			}
+			else if(packet.type == "Timer") 
+			{
+				if(timers[packet.callbackid])
+				{
+					clearInterval(timers[packet.callbackid]);
+				}
+				
+				if(packet.callbackreps != -1)
+				{
+					var i = 0;
+					timers[packet.callbackid] = setInterval(function(packet)
+					{
+						QueueCommand("TimerCallback( " + LuaQuote(packet.callbackid) + ", " + 
+							(i != 0 && i > packet.callbackreps ? "true" : "false") + " )", false, false);
+						
+						if(i != 0 && i > packet.callbackreps)
+						{
+							clearInterval(timers[packet.callbackid]);
+						}
+						i++;
+						
+					}, packet.callbackdelayms, packet);
 				}
 			}
-
-			userpackets[crc] = null;
+			
 		}
 
 		buf = [ datas[ i + 1 ] ];
@@ -269,6 +317,11 @@ function OnStdOut( data ) {
 bot.registerCommand( "restart", function() {
 
 	lua.kill();
+	for (var k in timers)
+	{
+		clearInterval(timers[k]);
+		timers[k] = undefined;
+	}
 	Init();
 
 }, "Restarts the Lua engine." );
