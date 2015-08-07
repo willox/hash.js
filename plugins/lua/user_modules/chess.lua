@@ -148,10 +148,7 @@ hook.Add("Message", "CHESSAGE", function(ply, sid64, msg)
 		if not space then chessprint("To move: !chess <old XY> <XY>") return end
 		local oldxy, xy = string.sub(subcmd, 1, space), string.sub(subcmd, space + 1)
 		if not (oldxy and xy) then chessprint("To move: !chess <old XY> <XY>") return end
-		local success, errmsg = pcall(function() movepiece(sid64, oldxy, xy) end)
-		if not success then
-			err(errmsg)
-		end
+		movepiece(sid64, oldxy, xy) -- pray that it works :D
 	end
 end)
 
