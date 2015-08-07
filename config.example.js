@@ -2,8 +2,10 @@ var config = {
 	User:	"???",
 	Pass:	"???",
 	Sentry:	"sentry.sha",
-	Auth:	"???", 
-	
+	Auth:	"???",
+
+	AcceptItems: true,
+
 	Group: "103582791436028776",
 
 	Admins: [
