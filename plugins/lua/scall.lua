@@ -17,14 +17,26 @@ local function scall( f, ... )
 
 		end
 
-	end, "", 128 )
+	end, "", 512 )
 
 	--
 	-- Try to run our function
 	--
 	local ret = { pcall( coroutine.resume, thread, ... ) }
-
-	local success, err = ret[ 1 ] and ret[ 2 ], ret[ 1 ] and ret[ 3 ] or ret [ 2 ]
+	
+	
+	
+	local success, err
+	
+	if ( coroutine.status( thread ) == "dead" ) then 
+		
+		success, err = ret[ 1 ] and ret[ 2 ], ret[ 1 ] and ret[ 3 ] or ret [ 2 ]
+		
+	else
+		
+		success, err = false, tostring( ret[ 3 ] )
+		
+	end
 
 	if not success then
 

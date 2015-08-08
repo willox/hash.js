@@ -92,6 +92,8 @@ function GetLastExecutedSteamID()
 
 end
 
+local stostring = require "stostring"
+
 local INDEX = {
 	_G					= ENV,
 	_VERSION			= _VERSION,
@@ -117,6 +119,19 @@ local INDEX = {
 	string				= string,
 	table				= table,
 	utf8				= utf8,
+	pcall               = function(f, ...)
+		
+		local rets = { pcall( f, ... ) }
+		
+		if ( not rets[1] and stostring(rets[2]):lower():find( "maximum execution time exceeded", 1, true ) ) then
+
+			coroutine.yield( rets[2] )
+			
+		end
+		
+		return table.unpack( rets )
+	
+	end,
 
 	--
 	-- 3rd party libraries
