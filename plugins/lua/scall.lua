@@ -1,4 +1,6 @@
 
+local tostring;
+
 local function scall( f, ... )
 
 	local start		= os.clock()
@@ -10,7 +12,7 @@ local function scall( f, ... )
 	debug.sethook( thread, function()
 
 		if os.clock() > start + 2 then
-
+			
 			error( "maximum execution time exceeded", 2 )
 
 		end
@@ -26,7 +28,7 @@ local function scall( f, ... )
 
 	if not success then
 
-		return false, err
+		return false, tostring(err)
 
 	end
 
@@ -34,5 +36,9 @@ local function scall( f, ... )
 	return true, table.unpack( ret, 3 )
 
 end
+
+package.loaded.scall = scall
+
+tostring             = require"stostring" -- circular dependancy
 
 return scall
