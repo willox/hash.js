@@ -80,7 +80,7 @@ local steamid      = 0     -- STEAM64 of the user that executed this, 0 if inter
 local groupid      = 0     -- Group ID that this code originated from. User SID if PM.
 while( true ) do
 	local data  = io.read() -- Read single line
-	
+
 	--io.stderr:write(data);
 
 	if ( expectheader ) then
@@ -135,6 +135,7 @@ local f, err = load( "return " .. code, "eval", "t", LOAD_ENV )
 if err then
 	f, err = load( code, "eval", "t", LOAD_ENV )
 end
+
 --
 -- We've been passed invalid Lua
 --

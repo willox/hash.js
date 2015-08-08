@@ -32,14 +32,13 @@ function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 			cmd = cmd.substring(1)
 		}
 
-		if (steamid && groupid) { // Only calculate CRC on non-internal code
+		if (steamid) { // Only calculate CRC on non-internal code
 			var mtime  = (new Date).getTime(); // seed the crc32 with the epoch in milliseconds
 			var cmdcrc = crc32.signed( mtime + cmd );
 			// The chance of a collision is really low, but still possible.
 			// TODO?: Check for collisions and re-crc the command?
 		}
 
-		console.log("SENT: " + cmdcrc);
 		cmdbuf.push( {
 			command:       cmd,
 			crc:           cmdcrc    || 0,
@@ -83,10 +82,9 @@ function ParsePacket( data ) {
 			return packet
 		}
 		packet.type = parsed[1];
-		if(packet.type == "Lua") 
+		if(packet.type == "Lua")
 		{
 			packet.crc   = Number(parsed[2]);
-			console.log("RECEIVED: " + packet.crc);
 			packet.islua = parsed[3] == "1" ? true : false;
 			packet.data  = parsed[4];
 		}
@@ -101,7 +99,7 @@ function ParsePacket( data ) {
 			packet.callbackdelayms = Number(parsed[3]) * 1000;
 			packet.callbackreps    = Number(parsed[4]);
 		}
-		else 
+		else
 		{
 			console.log("ParsePacket unknown type received: " + packet.type);
 		}
@@ -242,7 +240,7 @@ function OnStdOut( data ) {
 		// Ignore empty packets
 		if ( buf.trim().length > 0 ) {
 			var packet  = ParsePacket( buf );
-			if(packet.type == "Lua") 
+			if(packet.type == "Lua")
 			{
 				var crc     = packet.crc;
 				var islua   = packet.islua;
@@ -275,35 +273,35 @@ function OnStdOut( data ) {
 				setTimeout(function(packet)
 				{
 					QueueCommand("SimpleTimerCallback( " + packet.callbackid + " )", false, false);
-					
+
 				}, packet.callbackdelayms, packet);
-				
+
 			}
-			else if(packet.type == "Timer") 
+			else if(packet.type == "Timer")
 			{
 				if(timers[packet.callbackid])
 				{
 					clearInterval(timers[packet.callbackid]);
 				}
-				
+
 				if(packet.callbackreps != -1)
 				{
 					var i = 0;
 					timers[packet.callbackid] = setInterval(function(packet)
 					{
-						QueueCommand("TimerCallback( " + LuaQuote(packet.callbackid) + ", " + 
+						QueueCommand("TimerCallback( " + LuaQuote(packet.callbackid) + ", " +
 							(i != 0 && i > packet.callbackreps ? "true" : "false") + " )", false, false);
-						
+
 						if(i != 0 && i > packet.callbackreps)
 						{
 							clearInterval(timers[packet.callbackid]);
 						}
 						i++;
-						
+
 					}, packet.callbackdelayms, packet);
 				}
 			}
-			
+
 		}
 
 		buf = [ datas[ i + 1 ] ];
