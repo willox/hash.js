@@ -5,8 +5,11 @@ var config = {
 	Auth:	"???",
 
 	AcceptItems: true,
-
+	
 	Group: "103582791436028776",
+	
+	CleverBotUser: "???",
+	CleverBotKey:  "???",
 
 	Admins: [
 		"76561197998909316",
