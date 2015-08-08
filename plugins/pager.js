@@ -383,7 +383,7 @@ bot.registerCommand( "pagersetting", function( name, steamid, args, argstr, grou
             function( error, numrows ) { // Completion callback
                 var settings = ParsePagerSettings( usersettings );
                 if ( settings[key] ) {
-                    bot.sendMessage( key + " = " + settings[key].toString() );
+                    bot.sendMessage( key + " = " + settings[key].toString(), group );
                 }
             }
         );
