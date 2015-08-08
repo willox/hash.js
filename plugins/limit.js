@@ -22,7 +22,7 @@ bot.registerCommand( "limit", function( name, steamID, _, argstr ) {
 
 	db.run( "INSERT INTO limited VALUES ( ? )", argstr )
 
-} );
+}, "[ADMIN] Limit a user from using the bot. [Takes a SID64]" );
 
 bot.registerCommand( "unlimit", function( name, steamID, _, argstr ) {
 
@@ -33,4 +33,4 @@ bot.registerCommand( "unlimit", function( name, steamID, _, argstr ) {
 
 	db.run( "DELETE FROM limited WHERE user = ?", argstr );
 
-} );
+}, "[ADMIN] Remove a user from the limit list. [Takes a SID64]" );
