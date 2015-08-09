@@ -314,67 +314,70 @@ function OnStdOut( data ) {
 			}
 			else if(packet.type == "HTTP")
 			{
-				
-				var steamid = packet.steamid;
-				
-				var userinfo = bot.Client.users[steamid];
-				var username = userinfo ? userinfo.playerName : steamid;
-				
-				
-								
-				console.log(username + " [" + steamid.toString() + "] HTTP request: " + packet.url)
-				
-				var parsed = url.parse(packet.url);
-				
-				var id = packet.id;
-				
-				if(!parsed)
-					QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Domain unresolved") + ")", false, true);
-				
-				else if(parsed.auth && parsed.auth !== "")
-					QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Auth rejected") + ")", false, true); // TROLLED
-					
-				else if(parsed.protocol !== "http:" && parsed.protocol !== "https:")
-					QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Invalid protocol") + ")", false, true);
-				
-				else if(!parsed.hostname || blacklisted.indexOf(parsed.hostname) > -1)
-					QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Hostname blacklisted") + ")", false, true);
-				
-				else 
+				if(blacklisted)
 				{
+					
+					var steamid = packet.steamid;
+					
+					var userinfo = bot.Client.users[steamid];
+					var username = userinfo ? userinfo.playerName : steamid;
+					
+					
+									
+					console.log(username + " [" + steamid.toString() + "] HTTP request: " + packet.url)
+					
+					var parsed = url.parse(packet.url);
+					
 					var id = packet.id;
-					var http_url = packet.url;
-					var packet = packet;
-					dns.lookup(parsed.hostname, function(err, addr, fam)
+					
+					if(!parsed)
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Domain unresolved") + ")", false, true);
+					
+					else if(parsed.auth && parsed.auth !== "")
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Auth rejected") + ")", false, true); // TROLLED
+						
+					else if(parsed.protocol !== "http:" && parsed.protocol !== "https:")
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Invalid protocol") + ")", false, true);
+					
+					else if(!parsed.hostname || blacklisted.indexOf(parsed.hostname) > -1)
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Hostname blacklisted") + ")", false, true);
+					
+					else 
 					{
-						if(err)
+						var id = packet.id;
+						var http_url = packet.url;
+						var packet = packet;
+						dns.lookup(parsed.hostname, function(err, addr, fam)
 						{
-							QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
-							return;
-						}
-						
-						if(blacklisted.indexOf(addr) > -1)
-							QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("IP blacklisted") + ")", false, true);
+							if(err)
+							{
+								QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+								return;
+							}
 							
-						else
-						    setTimeout(function(id, http_url)
-						    {
-						        request(http_url, function(err, status, body)
-						        {
-						            if(err)
-						            {
-						                QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
-						                return;
-						            }
-						            
-						            QueueCommand("HTTPCallback(" + id + ", " + status.statusCode + ", " + LuaQuote(body) + ")", false, true);
-						            
-						        });
-						    }, 1, id, http_url);
-						
-					});
+							if(blacklisted.indexOf(addr) > -1)
+								QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("IP blacklisted") + ")", false, true);
+								
+							else
+							    setTimeout(function(id, http_url)
+							    {
+							        request(http_url, function(err, status, body)
+							        {
+							            if(err)
+							            {
+							                QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+							                return;
+							            }
+							            
+							            QueueCommand("HTTPCallback(" + id + ", " + status.statusCode + ", " + LuaQuote(body) + ")", false, true);
+							            
+							        });
+							    }, 1, id, http_url);
+							
+						});
+					}
+				    
 				}
-			    
 			}
 
 		}
