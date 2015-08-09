@@ -1,12 +1,15 @@
 var child_process	= require( "child_process" );
+var blacklisted     = require( "../config" ).HTTPBlacklist;
 var request			= require( "request" );
 var http			= require( "http" );
+var dns             = require( "dns" );
+var url             = require( "url" );
 var crc32           = require( "buffer-crc32" ); // TODO: Find a hardware crc that's xplatform
 var EOF				= "\x00";
 var lua				= null;
 var cmdbuf			= null;
 var processing		= null;
-var userpackets     = {} // Lookup object for user submitted code. Matches crc -> code info
+var userpackets     = {}; // Lookup object for user submitted code. Matches crc -> code info
 
 function Init() {
 	lua = child_process.spawn( "lua", [ "init.lua" ], {
@@ -76,11 +79,13 @@ function ParsePacket( data ) {
 		packet.data = data;
 
 	} else {
-		var parsed = /^\[(.*?),(.*?):(.+?)\]([\s\S]*)$/m.exec(data); // '.' doesn't match newlines...
+		var parsed = /^\[(.*?[^\\]),(.*?[^\\]):(.+?)\]([\s\S]*)$/m.exec(data); // '.' doesn't match newlines...
 		if (!parsed) {
 			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
 			return packet
 		}
+		parsed[2] = parsed[2].replace(/\\:/g, ":");
+		parsed[1] = parsed[1].replace(/\\,/g, ",");
 		packet.type = parsed[1];
 		if(packet.type == "Lua")
 		{
@@ -98,6 +103,12 @@ function ParsePacket( data ) {
 			packet.callbackid      = parsed[2];
 			packet.callbackdelayms = Number(parsed[3]) * 1000;
 			packet.callbackreps    = Number(parsed[4]);
+		}
+		else if(packet.type == "HTTP")
+		{
+		    packet.url = parsed[2];
+		    packet.id = Number(parsed[3]);
+			packet.steamid = parsed[4];
 		}
 		else
 		{
@@ -299,6 +310,73 @@ function OnStdOut( data ) {
 						i++;
 
 					}, packet.callbackdelayms, packet);
+				}
+			}
+			else if(packet.type == "HTTP")
+			{
+				if(blacklisted)
+				{
+					
+					var steamid = packet.steamid;
+					
+					var userinfo = bot.Client.users[steamid];
+					var username = userinfo ? userinfo.playerName : steamid;
+					
+					
+									
+					console.log(username + " [" + steamid.toString() + "] HTTP request: " + packet.url)
+					
+					var parsed = url.parse(packet.url);
+					
+					var id = packet.id;
+					
+					if(!parsed)
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Domain unresolved") + ")", false, true);
+					
+					else if(parsed.auth && parsed.auth !== "")
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Auth rejected") + ")", false, true); // TROLLED
+						
+					else if(parsed.protocol !== "http:" && parsed.protocol !== "https:")
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Invalid protocol") + ")", false, true);
+					
+					else if(!parsed.hostname || blacklisted.indexOf(parsed.hostname) > -1)
+						QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("Hostname blacklisted") + ")", false, true);
+					
+					else 
+					{
+						var id = packet.id;
+						var http_url = packet.url;
+						var packet = packet;
+						dns.lookup(parsed.hostname, function(err, addr, fam)
+						{
+							if(err)
+							{
+								QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+								return;
+							}
+							
+							if(blacklisted.indexOf(addr) > -1)
+								QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote("IP blacklisted") + ")", false, true);
+								
+							else
+							    setTimeout(function(id, http_url)
+							    {
+							        request(http_url, function(err, status, body)
+							        {
+							            if(err)
+							            {
+							                QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+							                return;
+							            }
+							            
+							            QueueCommand("HTTPCallback(" + id + ", " + status.statusCode + ", " + LuaQuote(body) + ")", false, true);
+							            
+							        });
+							    }, 1, id, http_url);
+							
+						});
+					}
+				    
 				}
 			}
 

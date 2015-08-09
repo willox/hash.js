@@ -5,14 +5,14 @@ local simple_timers = {}
 
 local function CreateSimpleTimerPacket( id, delay )
 	local header = HEADERSTART .. "SimpleTimer," .. 
-		tostring(id) .. ":" .. tostring(delay) .. HEADEREND
+		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND
 	return header
 end
 
 local function CreateTimerPacket( id, delay, reps )
 	local header = HEADERSTART .. "Timer," .. 
-		tostring(id) .. ":" .. tostring(delay) .. HEADEREND ..
-		tostring(reps)
+		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND ..
+		PacketSafe(reps, 4)
 	return header
 end
 
@@ -61,9 +61,9 @@ local function Create( id, delay, reps, callback )
 		error( "bad argument #4 to 'Create' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
-	timers[ id ] = callback
+	timers[ "t"..id ] = callback
 	
-	writepacket(CreateTimerPacket(id, delay, reps));
+	writepacket(CreateTimerPacket("t"..id, delay, reps)); -- "t"..id because limitations in my regex string i cba to fix
 	writepacket(EOF);
 
 end

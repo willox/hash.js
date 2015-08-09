@@ -141,6 +141,7 @@ local INDEX = {
 	include				= require "./sand_modules/include",
 	require				= require "./sand_modules/require",
 	timer				= require "./sand_modules/timer",
+	http                = require "./sand_modules/http",
 	SteamID             = function(self) return last_steamid end,
 
 	--
