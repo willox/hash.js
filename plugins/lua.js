@@ -103,10 +103,9 @@ function ParsePacket( data ) {
 		}
 		else if(packet.type == "HTTP")
 		{
-			console.log("url: " + parsed[2]);
-			console.log("id: " + parsed[3]);
 		    packet.url = parsed[2];
 		    packet.id = Number(parsed[3]);
+			packet.steamid = parsed[4];
 		}
 		else
 		{
@@ -312,13 +311,19 @@ function OnStdOut( data ) {
 			}
 			else if(packet.type == "HTTP")
 			{
+				
+				var steamid = packet.steamid;
+				
+				var userinfo = bot.Client.users[steamid];
+				var username = userinfo ? userinfo.playerName : steamid;
+				
+				
+				console.log(username + " [" + steamid.toString() + "] HTTP request: " + packet.url)
+				
 			    setTimeout(function(id, url)
 			    {
 			        request(url, function(err, status, body)
 			        {
-			            
-			            console.log("ayy!");
-			            console.log(id);
 			            if(err)
 			            {
 			                QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);

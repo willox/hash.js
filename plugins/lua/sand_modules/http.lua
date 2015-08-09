@@ -7,7 +7,8 @@ local i = 1;
 
 local function CreateHTTPPacket( url, id )
 	local header = HEADERSTART .. "HTTP," .. 
-		PacketSafe(url, 2) .. ":" .. tostring(id) .. HEADEREND
+		PacketSafe(url, 2) .. ":" .. tostring(id) .. HEADEREND ..
+		GetLastExecutedSteamID( )
 	return header
 end
 
