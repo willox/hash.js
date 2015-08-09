@@ -32,7 +32,11 @@ local function HTTP ( url, callback )
 	assert( type(url) == "string", 
         "bad argument #1 to 'HTTP' (string expected, got " .. type( url ) .. ")",
          2
-     )
+    )
+	 
+	assert(url:len() >= 1,
+		"bad argument #1 to 'HTTP' (string len is zero)"
+	);
     
     callbacks[i] = callback
     

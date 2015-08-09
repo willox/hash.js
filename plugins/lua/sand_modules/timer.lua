@@ -61,9 +61,9 @@ local function Create( id, delay, reps, callback )
 		error( "bad argument #4 to 'Create' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
-	timers[ id ] = callback
+	timers[ "t"..id ] = callback
 	
-	writepacket(CreateTimerPacket(id, delay, reps));
+	writepacket(CreateTimerPacket("t"..id, delay, reps)); -- "t"..id because limitations in my regex string i cba to fix
 	writepacket(EOF);
 
 end
