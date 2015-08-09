@@ -1,4 +1,5 @@
 var child_process	= require( "child_process" );
+var blacklisted     = require( "../config" ).HTTPBlacklist;
 var request			= require( "request" );
 var http			= require( "http" );
 var dns             = require( "dns" );
@@ -313,14 +314,6 @@ function OnStdOut( data ) {
 			}
 			else if(packet.type == "HTTP")
 			{
-				 var blacklisted = [
-					 "127.0.0.1",
-					 "127.0.0.0",
-					 "0.0.0.0",
-					 "192.168.0.1",
-					 "192.168.200.1",
-				 ];
-				 
 				
 				var steamid = packet.steamid;
 				
