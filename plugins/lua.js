@@ -76,7 +76,7 @@ function ParsePacket( data ) {
 		packet.data = data;
 
 	} else {
-		var parsed = /^\[(.*?),(.*):(.+?)\]([^]*)/gm.exec(data); // '.' doesn't match newlines...
+		var parsed = /^\[(.*?),(.*?):(.+?)\](.*)$/m.exec(data); // '.' doesn't match newlines...
 		if (!parsed) {
 			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
 			return packet

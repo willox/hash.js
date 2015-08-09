@@ -52,11 +52,26 @@ function ParseHeader(data)
 	return header
 end
 
+local function SafePacketData(str)
+	
+	str = tostring(str);
+	
+	local exchange = {
+	
+		["\x00"] = "\\x00",
+		--["]"] = "\\]",
+	
+	};
+	
+	return str:gsub(".", exchange);
+	
+end
+
 function CreatePacket( crc, data, validlua )
 	local header = HEADERSTART .. "Lua," .. tostring(crc) .. ":"
 	header = header .. (validlua and "1" or "0") .. HEADEREND
-	data = string.gsub(tostring(data), "\x00", "")
-	return header .. tostring(data)
+	data = string.gsub(SafePacketData(data), "\x00", "")
+	return header .. SafePacketData(data)
 end
 
 ::start::
