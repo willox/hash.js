@@ -290,9 +290,9 @@ function OnStdOut( data ) {
 					timers[packet.callbackid] = setInterval(function(packet)
 					{
 						QueueCommand("TimerCallback( " + LuaQuote(packet.callbackid) + ", " +
-							(i != 0 && i > packet.callbackreps ? "true" : "false") + " )", false, false);
+							(packet.callbackreps != 0 && i > packet.callbackreps ? "true" : "false") + " )", false, false);
 
-						if(i != 0 && i > packet.callbackreps)
+						if(packet.callbackreps != 0 && i > packet.callbackreps)
 						{
 							clearInterval(timers[packet.callbackid]);
 						}
