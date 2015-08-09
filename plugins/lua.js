@@ -76,11 +76,13 @@ function ParsePacket( data ) {
 		packet.data = data;
 
 	} else {
-		var parsed = /^\[(.*?),(.*?):(.+?)\]([\s\S]*)$/m.exec(data); // '.' doesn't match newlines...
+		var parsed = /^\[(.*?[^\\]),(.*?[^\\]):(.+?)\]([\s\S]*)$/m.exec(data); // '.' doesn't match newlines...
 		if (!parsed) {
 			console.log ( "ParsePacket regex failed on data: \"" + data + "\"" );
 			return packet
 		}
+		parsed[2] = parsed[2].replace(/\\:/g, ":");
+		parsed[1] = parsed[1].replace(/\\,/g, ",");
 		packet.type = parsed[1];
 		if(packet.type == "Lua")
 		{
@@ -98,6 +100,13 @@ function ParsePacket( data ) {
 			packet.callbackid      = parsed[2];
 			packet.callbackdelayms = Number(parsed[3]) * 1000;
 			packet.callbackreps    = Number(parsed[4]);
+		}
+		else if(packet.type == "HTTP")
+		{
+			console.log("url: " + parsed[2]);
+			console.log("id: " + parsed[3]);
+		    packet.url = parsed[2];
+		    packet.id = Number(parsed[3]);
 		}
 		else
 		{
@@ -300,6 +309,27 @@ function OnStdOut( data ) {
 
 					}, packet.callbackdelayms, packet);
 				}
+			}
+			else if(packet.type == "HTTP")
+			{
+			    setTimeout(function(id, url)
+			    {
+			        request(url, function(err, status, body)
+			        {
+			            
+			            console.log("ayy!");
+			            console.log(id);
+			            if(err)
+			            {
+			                QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+			                return;
+			            }
+			            
+			            QueueCommand("HTTPCallback(" + id + ", " + status.statusCode + ", " + LuaQuote(body) + ")", false, true);
+			            
+			        });
+			    }, 1, packet.id, packet.url);
+			    
 			}
 
 		}

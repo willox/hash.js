@@ -5,14 +5,14 @@ local simple_timers = {}
 
 local function CreateSimpleTimerPacket( id, delay )
 	local header = HEADERSTART .. "SimpleTimer," .. 
-		tostring(id) .. ":" .. tostring(delay) .. HEADEREND
+		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND
 	return header
 end
 
 local function CreateTimerPacket( id, delay, reps )
 	local header = HEADERSTART .. "Timer," .. 
-		tostring(id) .. ":" .. tostring(delay) .. HEADEREND ..
-		tostring(reps)
+		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND ..
+		PacketSafe(reps, 4)
 	return header
 end
 

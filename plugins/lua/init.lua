@@ -52,26 +52,46 @@ function ParseHeader(data)
 	return header
 end
 
-local function SafePacketData(str)
+function PacketSafe(str, argnum)
 	
 	str = tostring(str);
 	
-	local exchange = {
+	local exchanges = {
+		[1] = {
+			
+			[","] = "\\,",
+			["\x00"] = "\\x00",
+			
+		},
+		[2] = {
+		
+			[":"] = "\\:",
+			["\x00"] = "\\x00",
+			
+		},
+		[3] = {
+		
+			["\x00"] = "\\x00",
+			--["]"] = "\\]",
+		
+		},
+		[4] = {
+		
+			["\x00"] = "\\x00",
+			--["]"] = "\\]",
+		
+		},
+	}
 	
-		["\x00"] = "\\x00",
-		--["]"] = "\\]",
-	
-	};
-	
-	return str:gsub(".", exchange);
+	return str:gsub(".", exchanges[argnum] or {});
 	
 end
 
 function CreatePacket( crc, data, validlua )
 	local header = HEADERSTART .. "Lua," .. tostring(crc) .. ":"
 	header = header .. (validlua and "1" or "0") .. HEADEREND
-	data = string.gsub(SafePacketData(data), "\x00", "")
-	return header .. SafePacketData(data)
+	data = string.gsub(PacketSafe(data, 4), "\x00", "")
+	return header .. PacketSafe(data, 4)
 end
 
 ::start::
