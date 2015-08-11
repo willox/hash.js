@@ -85,7 +85,7 @@ local function sha256_init()
 	return ctx;
 end
 
-function sha256_update(ctx, data)
+local sfunction sha256_update(ctx, data)
 	
 	local len = data:len();
 	
