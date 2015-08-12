@@ -1,7 +1,7 @@
 local function bt(x) return x & 0xFF; end
 local function dw(x) return x & 0xFFFFFFFF; end
 
-local function ROTLEFT(a,b) return dw((a<<b) | (a >> (32-b))); end
+local function ROTLEFT(a,b) return dw((a<<b) | (a >> (32-b))); endl
 local function ROTRIGHT(a,b) return dw((a>>b) | (a<<(32-b))) end
 local function CH(x,y,z) return (x & y) ~ (~x & z); end
 local function MAJ(x,y,z) return ((x&y) ~ (x&z)) ~ (y&z); end
@@ -85,7 +85,7 @@ local function sha256_init()
 	return ctx;
 end
 
-local sfunction sha256_update(ctx, data)
+local function sha256_update(ctx, data)
 	
 	local len = data:len();
 	
