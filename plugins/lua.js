@@ -96,12 +96,12 @@ function ParsePacket( data ) {
 		else if(packet.type == "SimpleTimer")
 		{
 			packet.callbackid      = Number(parsed[2]);
-			packet.callbackdelayms = Number(parsed[3]) * 1000;
+			packet.callbackdelayms = Math.max(Number(parsed[3]) * 1000, 250);
 		}
 		else if(packet.type == "Timer")
 		{
 			packet.callbackid      = parsed[2];
-			packet.callbackdelayms = Number(parsed[3]) * 1000;
+			packet.callbackdelayms = Math.max(Number(parsed[3]) * 1000, 200);
 			packet.callbackreps    = Number(parsed[4]);
 		}
 		else if(packet.type == "HTTP")
