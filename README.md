@@ -1,3 +1,3 @@
 hash.js
 ======
-Chat bot used in the "Garry's Mod Coders" Steam group chat. (http://steamcommunity.com/groups/gmodcoders)
+Chat bot used in the "Garry's Mod Lua" Steam group chat. (http://steamcommunity.com/groups/glua)
