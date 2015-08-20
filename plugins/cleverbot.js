@@ -3,6 +3,7 @@ if ( !config.CleverBotUser || !config.CleverBotKey ) {
 	console.error( "Can not load cleverbot.js: CleverBotUser and CleverBotKey must be defined in config.js" );
 	return
 }
+return // plugin broke again
 
 var cleverbot = new ( require( "cleverbot" ) )( config.CleverBotUser, config.CleverBotKey );
 var busy = false;
