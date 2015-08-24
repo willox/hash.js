@@ -1,4 +1,4 @@
-var omegle = new ( require( "omegle-client" ) . Client );
+var omegle = new ( require( "../lib/omegle" ).Client );
 
 var connected = false;
 
