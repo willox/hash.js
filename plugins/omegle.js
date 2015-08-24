@@ -2,11 +2,11 @@ var omegle = new ( require( "../lib/omegle" ).Client );
 
 var connected = false;
 
-function Connect() {
+function Connect(tags) {
 
 	bot.sendMessage( "Connecting to Omegle." );
 
-	omegle.start( function( e ) {
+	omegle.start(tags, function( e ) {
 
 		if ( e )
 			return;
@@ -52,7 +52,7 @@ bot.on( "Message", function( name, steamID, msg ) {
 
 } );
 
-bot.registerCommand( "omegle", function( name, steamID ) {
+bot.registerCommand( "omegle", function( name, steamID, args ) {
 
 	if ( !bot.isAdmin( steamID ) )
 		return;
@@ -60,6 +60,6 @@ bot.registerCommand( "omegle", function( name, steamID ) {
 	if ( connected )
 		Disconnect();
 	else
-		Connect();
+		Connect(args);
 
 }, "[ADMIN] Connect the group chat to a random omegle user." );
