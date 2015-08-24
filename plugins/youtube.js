@@ -30,6 +30,8 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 		var entry = data.entry;
 
 		var starCount = Math.round( 5 * (parseInt(data.items[0].statistics.likeCount)/(parseInt(data.items[0].statistics.likeCount) + parseInt(data.items[0].statistics.dislikeCount))) );
+		if ( starCount == 1/0 ) 
+			starCount = 0;// Fuck infinity
 
 		bot.sendMessage( "YouTube: " + data.items[0].snippet.title + " [" + String_Prototype_Repeat_Is_NonStandard[ starCount ] + "]", group );
 
