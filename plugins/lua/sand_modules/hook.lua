@@ -1,4 +1,6 @@
 local persist = true
+local javascript_call = true
+local override_callstate = true
 
 local persistHooks = {}
 local hooks = {}
@@ -38,8 +40,19 @@ local function Remove( event, id )
 end
 
 local function Call( event, ... )
+	
+	local before = javascript_call
+	
+	if not override_callstate then
+		javascript_call = false
+	end
+	
+	override_callstate = false
 
 	if not hooks[ event ] then
+		
+		javascript_call = before
+		
 		return
 	end
 
@@ -56,10 +69,16 @@ local function Call( event, ... )
 		end
 
 	end
+	
+	javascript_call = before
 
 end
 
 local function GetTable()
+	
+	local before = javascript_call
+	
+	javascript_call = false
 
 	local ret = {}
 
@@ -68,6 +87,8 @@ local function GetTable()
 		ret[ k ] = v
 
 	end
+	
+	javascript_call = before
 
 	return ret
 
@@ -79,11 +100,32 @@ local function StopPersist()
 
 end
 
+local function CalledFromSandbox()
+	
+	return not javascript_call
+	
+end
+
+-- called from javascript
+
+function HookCall( event, ... )
+	
+	override_callstate = true
+	
+	javascript_call = true
+	
+	Call ( event, ... )
+	
+	javascript_call = false
+	
+end
+
 return {
 	Add = Add,
 	Remove = Remove,
 	RemoveAll = RemoveAll,
 	Call = Call,
 	GetTable = GetTable,
-	StopPersist = StopPersist
+	StopPersist = StopPersist,
+	CalledFromSandbox = CalledFromSandbox,
 }

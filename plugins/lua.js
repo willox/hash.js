@@ -168,7 +168,7 @@ function LuaQuote( str ) {
 
 function QueueHook( event, args ) {
 
-	var buf = [ "hook.Call(", LuaQuote( event ) ];
+	var buf = [ "HookCall(", LuaQuote( event ) ];
 
 	if ( args && args.length > 0 ) {
 
@@ -184,7 +184,7 @@ function QueueHook( event, args ) {
 
 	buf.push( ")" );
 
-	QueueCommand( buf.join( "" ), true, true );
+	QueueCommand( buf.join( "" ), false, true );
 
 }
 
