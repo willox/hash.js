@@ -4,6 +4,7 @@ local override_callstate = true
 
 local persistHooks = {}
 local hooks = {}
+local fake_gettable = {}
 
 local function Add( event, id, callback )
 
@@ -75,10 +76,6 @@ local function Call( event, ... )
 end
 
 local function GetTable()
-	
-	local before = javascript_call
-	
-	javascript_call = false
 
 	local ret = {}
 
@@ -88,8 +85,6 @@ local function GetTable()
 
 	end
 	
-	javascript_call = before
-
 	return ret
 
 end
@@ -103,6 +98,12 @@ end
 local function CalledFromSandbox()
 	
 	return not javascript_call
+	
+end
+
+local function GetUniqueCallID()
+	
+	return unique_call_id
 	
 end
 
