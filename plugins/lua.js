@@ -1,5 +1,6 @@
 var child_process	= require( "child_process" );
-var blacklisted     = require( "../config" ).HTTPBlacklist;
+var config          = require( "../config" );
+var blacklisted     = config.HTTPBlacklist;
 var request			= require( "request" );
 var http			= require( "http" );
 var dns             = require( "dns" );
@@ -12,7 +13,7 @@ var processing		= null;
 var userpackets     = {}; // Lookup object for user submitted code. Matches crc -> code info
 
 function Init() {
-	lua = child_process.spawn( "lua", [ "init.lua" ], {
+	lua = child_process.spawn( config.LuaBin ? config.LuaBin : "lua", [ "init.lua" ], {
 		cwd: __dirname + "/lua"
 	} );
 
