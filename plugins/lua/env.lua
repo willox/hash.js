@@ -150,7 +150,8 @@ local INDEX = {
 	io					= require "./sand_modules/io",
 	os					= require "./sand_modules/os",
 	
-	maybe					= function() return math.random() >= 0.5 end
+	--this is added in lau!
+	--maybe					= function() return math.random() >= 0.5 end
 }
 
 function INDEX.load( chunk, chunkname, _, fenv )
@@ -167,5 +168,5 @@ end
 
 return ProtectTable( INDEX, ENV, {
 	SteamID = true, -- SteamID is a function but needs to remain backwards compat
-	maybe = true
+	--maybe = true
 })
