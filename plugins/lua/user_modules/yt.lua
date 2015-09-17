@@ -35,5 +35,3 @@ function yt.RandomVideo(str)
 		print(vidbase .. vid.id.videoId .. "\n" .. vid.snippet.title)
 	end)
 end
-
-return yt
