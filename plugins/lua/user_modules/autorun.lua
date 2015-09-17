@@ -1,12 +1,3 @@
-function lurl(url, callback)
-	http.Fetch(url, function(_, b)
-		local out = {load(b)()}
-		if callback then
-			callback(table.unpack(out))
-		end
-	end)
-end
-
 require "json"
 require "sed"
 require "gmod_defines"
@@ -17,5 +8,6 @@ require "http_codes"
 require "algo"
 require "imagereply"
 require "yt"
+--require "loadurl" -- Fix it and test your fix, zerf; nurd.
 
 hook.StopPersist()
