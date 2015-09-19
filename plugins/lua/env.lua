@@ -79,7 +79,7 @@ end
 
 cookie = require "./sand_modules/cookie"
 
-local last_steamid
+local last_steamid = 0
 function SetLastExecutedSteamID( steamid )
 
 	last_steamid = steamid
