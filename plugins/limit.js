@@ -13,14 +13,21 @@ db.run( "CREATE TABLE IF NOT EXISTS limited ( user TEXT PRIMARY KEY )", function
 
 } );
 
-bot.registerCommand( "limit", function( name, steamID, _, argstr ) {
+bot.registerCommand( "limit", function( name, steamID, args, argstr, group ) {
 
 	if ( !bot.isAdmin( steamID ) )
 		return;
 
+	if ( !argstr.match("^[0-9]+$") ) {
+		bot.sendMessage( "Argument must be the users SteamID64.", group );
+		return;
+	}
+
 	bot.setLimited( argstr, true );
 
-	db.run( "INSERT INTO limited VALUES ( ? )", argstr )
+	db.run( "INSERT INTO limited VALUES ( ? )", argstr, function( err ) {
+		// Ignore errors
+	} )
 
 }, "[ADMIN] Limit a user from using the bot. [Takes a SID64]" );
 
