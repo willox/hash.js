@@ -15,16 +15,16 @@
 	},
 
 	"dependencies": {
-		"github-notifications": "",
-		"html-entities":        "",
-		"omegle-client":        "",
-		"request":              "",
-		"sqlite3":              "",
-		"steam":                "",
-		"xml2js":               "",
-		"buffer-crc32":         "",
+		"github-notifications": "1.0.0",
+		"html-entities":        "1.1.2",
+		"omegle-client":        "1.0.0",
+		"request":              "2.55.0",
+		"sqlite3":              "3.0.5",
+		"steam":                "0.6.8",
+		"xml2js":               "0.4.6",
+		"buffer-crc32":         "0.2.5",
 		"steam-trade":          "git://github.com/seishun/node-steam-trade.git",
-		"steam-tradeoffers":    "",
-		"steam-web-api-key":    ""
+		"steam-tradeoffers":    "^2.0.1",
+		"steam-web-api-key":    "0.0.1"
 	}
 }
