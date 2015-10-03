@@ -129,9 +129,9 @@ bot.on( "Disconnected", function() {
 
 bot.on( "Message", function( name, steamID, msg, group ) {
 	if ( steamID == group ) {
-		print( "[PM] " + name + ": " + msg );
+		print( "[PM Received From] " + name + ": " + msg );
 	} else {
-		print( name + ": " + msg ); // TODO: Group name
+		print( "[Group Chat] " + name + ": " + msg ); // TODO: Group name
 	}
 } );
 
