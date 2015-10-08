@@ -361,7 +361,14 @@ function OnStdOut( data ) {
 							else
 							    setTimeout(function(id, http_url)
 							    {
-							        request(http_url, function(err, status, body)
+								var http_request_options = {
+								  url: http_url,
+								  headers: {
+								    'User-Agent': 'Some Dank Fuckin\' GLua Coders (Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB7.4; InfoPath.2; SV1; .NET CLR 3.3.69573; WOW64; en-US))'
+								  }
+								};
+
+							        request(http_request_options, function(err, status, body)
 							        {
 							            if(err)
 							            {
