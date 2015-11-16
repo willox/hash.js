@@ -150,6 +150,11 @@ local INDEX = {
 	io					= require "./sand_modules/io",
 	os					= require "./sand_modules/os",
 	
+	--
+	-- Bullshit
+	--
+	ping = "pong",
+	
 }
 
 function INDEX.load( chunk, chunkname, _, fenv )
