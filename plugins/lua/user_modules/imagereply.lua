@@ -142,7 +142,7 @@ local function scanMemes(_,__,msg)
     local explode = split(msg, " ")
 
     for _,word in ipairs(explode) do
-        local meme,ending = word:match("(.+)%.(.-)")
+        local meme,ending = word:match("^(.+)%.(.-)$")
 
         if meme and ending then
             local proceed = false
