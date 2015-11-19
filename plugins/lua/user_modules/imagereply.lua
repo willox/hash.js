@@ -142,11 +142,9 @@ local function scanMemes(_,__,msg)
     local explode = split(msg, " ")
 
     for _,word in ipairs(explode) do
-        local meme = string.sub(word,1,-5)
-        local ending = string.sub(word,-3)
-        local sep = string.sub(word,-4,-4)
+        local meme,ending = word:match("(.+)%.(.-)")
 
-        if(sep == ".") then
+        if meme and ending then
             local proceed = false
             for _,v in ipairs(cookie.maymays.imageendings) do
                 if(levenshtein(ending,v) < 2) then
