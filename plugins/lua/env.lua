@@ -137,6 +137,7 @@ local INDEX = {
 	-- 3rd party libraries
 	--
 	cookie				= cookie,
+	me				= function(self) return self.cookie.GetProtected() end, 
 	hook				= require "./sand_modules/hook",
 	include				= require "./sand_modules/include",
 	require				= require "./sand_modules/require",
@@ -171,4 +172,5 @@ end
 
 return ProtectTable( INDEX, ENV, {
 	SteamID = true, -- SteamID is a function but needs to remain backwards compat
+	me = true
 })
