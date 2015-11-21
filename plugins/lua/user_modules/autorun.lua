@@ -10,5 +10,6 @@ require "algo"
 require "imagereply"
 require "yt"
 require "wiki"
+require "memespeak"
 
 hook.StopPersist()
