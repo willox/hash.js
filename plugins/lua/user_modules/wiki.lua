@@ -1,7 +1,7 @@
 -- 
 
 hook.Add( "Message", "WikI!", function( _, _, msg )
-    local searchTerm = msg:match( "^what is (.-)%??" )
+    local searchTerm = msg:match( "^what is (.*)" )
     
     if not searchTerm then
       return
