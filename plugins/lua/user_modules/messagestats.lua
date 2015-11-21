@@ -4,6 +4,7 @@ cookie.texts.mean = cookie.texts.mean or 0;
 cookie.texts.tracked = cookie.texts.tracked or 0;
 cookie.texts.totallen = cookie.texts.totallen or 0;
 cookie.texts.ids = cookie.texts.ids or {};
+cookie.texts.cocks = cookie.texts.cocks or 0
 
 local function add(stmd, len)
 	local mean = cookie.texts.mean;
@@ -30,6 +31,10 @@ end
 
 hook.Add("Message", "Lengthometer", function(name,id, text) 
 	add(id, text:len());
+		
+	text:gsub("cock", function()
+		cookie.texts.cocks = cookie.texts.cocks + 1	
+	end )
 end)
 
 stats = stats or {};
