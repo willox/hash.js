@@ -184,7 +184,7 @@ end
 --
 -- Try to run our function
 --
-local ret = { CALL_FUNC( f ) }
+local ret = { CALL_FUNC( f, "Hello, friend." ) }
 
 local success, err = ret[ 1 ], ret[ 2 ]
 
