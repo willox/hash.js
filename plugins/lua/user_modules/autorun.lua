@@ -9,5 +9,6 @@ require "http_codes"
 require "algo"
 require "imagereply"
 require "yt"
+require "wiki"
 
 hook.StopPersist()
