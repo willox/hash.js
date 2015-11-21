@@ -9,7 +9,7 @@ hook.Add( "Message", "WikI!", function( _, _, msg )
     
     searchTerm = searchTerm:gsub( " ", "%%20" )
     
-    http.Fetch("https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=true&exchars=256&titles=" .. searchTerm,
+    http.Fetch("https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=true&exchars=256&redirects&titles=" .. searchTerm,
       function(c, b)
         pcall( function()
           local ex = select( 2, next( json.decode( b ) . query . pages ) ) . extract
