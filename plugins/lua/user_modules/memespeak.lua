@@ -31,9 +31,7 @@ hook.Add("Message", "memespeak", function(ply, id, txt)
 	if string.sub(txt, 1, 1) == ">" then
 		txt = string.sub(txt, 2)
 		txt = string.lower(txt)
-		for char, emote in pairs(emotes) do
-			txt = string.gsub(txt, char, emote)
-		end
+		txt = string.gsub(txt, ".", emotes)
 		print(txt)
 	end
 end)
