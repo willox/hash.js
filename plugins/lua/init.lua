@@ -151,6 +151,13 @@ function IsSandboxed()
 	return sandboxcode
 end
 
+-- Set the RNG seed for this run
+-- note: sandboxed applications can predict this seed,
+-- but there's no point in obscuring the seed any more
+-- than it is now by also using microseconds or whatever,
+-- because the sandbox has math.randomseed exposed anyway.
+math.randomseed( os.time() )
+
 -- Set the environment to the sandbox
 local LOAD_ENV  = ENV
 local CALL_FUNC = scall
