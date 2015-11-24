@@ -27,7 +27,7 @@ function print( ... )
 		stdoutbuf = stdoutbuf .. v .. "\t"
 	end
 
-	stdoutbuf = stdoutbuf:reverse():match"^%s+([%s%S]+)$":reverse() .. "\n"
+	stdoutbuf = stdoutbuf:match"^([%s%S]-)%s+$" .. "\n"
 end
 
 require "env"
@@ -218,9 +218,11 @@ if ( #ret > 0 ) then -- Code returned something
 	end
 
 	local data = table.concat( ret, "\t" )
-	writepacket( CreatePacket( codecrc, stdoutbuf:reverse():match"^%s+([%s%S]+)$":reverse() .. data, true ) )
+	writepacket( CreatePacket( codecrc, (stdoutbuf .. data):match"^([%s%S]-)%s+$", true ) )
 
 else -- Code returned nil, check if its `return lol` 'valid' or actually lua.
+
+	stdoutbuf = stdoutbuf:match"^([%s%S]-)%s+$"
 
 	local isphrase = code:match( "^[%w ]+$" ) -- Match alphanumeric and space
 	if ( isphrase ) then
