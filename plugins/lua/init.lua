@@ -21,13 +21,13 @@ end
 -- See luaB_print in lbaselib.c
 function print( ... )
 	local args  = { ... }
-
+	
 	for k, v in pairs(args) do
 		v = tostring(v)
 		stdoutbuf = stdoutbuf .. v .. "\t"
 	end
 
-	stdoutbuf = stdoutbuf .. "\n"
+	stdoutbuf = stdoutbuf:reverse():match"^%s+([%s%S]+)$":reverse() .. "\n"
 end
 
 require "env"
@@ -218,7 +218,7 @@ if ( #ret > 0 ) then -- Code returned something
 	end
 
 	local data = table.concat( ret, "\t" )
-	writepacket( CreatePacket( codecrc, stdoutbuf .. data, true ) )
+	writepacket( CreatePacket( codecrc, stdoutbuf:reverse():match"^%s+([%s%S]+)$":reverse() .. data, true ) )
 
 else -- Code returned nil, check if its `return lol` 'valid' or actually lua.
 
