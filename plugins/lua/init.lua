@@ -11,6 +11,23 @@ writepacket       = io.write
 
 -- Redefine io.write/print to save output to a per-user buffer for PMs.
 -- See g_write in liolib.c
+
+local function NormalizeMessage(message)
+
+	message = (message .. "\n"):gsub("[%s%S]-\n",
+		function(match)
+
+			match = match:gsub( "%s*$", "" )
+
+			return match .. "\n"
+
+		end
+	):sub(1,-2);
+
+	return message
+
+end
+
 local stdoutbuf = ""
 function io.write( ... )
 	local args  = { ... }
@@ -19,15 +36,17 @@ function io.write( ... )
 end
 
 -- See luaB_print in lbaselib.c
+-- modified for steam chat
 function print( ... )
 	local args  = { ... }
-	
+
+	stdoutbuf = stdoutbuf:len() > 0 and stdoutbuf.."\n" or stdoutbuf
+
 	for k, v in pairs(args) do
 		v = tostring(v)
 		stdoutbuf = stdoutbuf .. v .. "\t"
 	end
 
-	stdoutbuf = stdoutbuf:match"^([%s%S]-)%s+$" .. "\n"
 end
 
 require "env"
@@ -53,38 +72,38 @@ function ParseHeader(data)
 end
 
 function PacketSafe(str, argnum)
-	
-	str = tostring(str);
-	
+
+	str = tostring(str)
+
 	local exchanges = {
 		[1] = {
-			
+
 			[","] = "\\,",
 			["\x00"] = "\\x00",
-			
+
 		},
 		[2] = {
-		
+
 			[":"] = "\\:",
 			["\x00"] = "\\x00",
-			
+
 		},
 		[3] = {
-		
+
 			["\x00"] = "\\x00",
 			--["]"] = "\\]",
-		
+
 		},
 		[4] = {
-		
+
 			["\x00"] = "\\x00",
 			--["]"] = "\\]",
-		
+
 		},
 	}
-	
-	return str:gsub(".", exchanges[argnum] or {});
-	
+
+	return str:gsub(".", exchanges[argnum] or {})
+
 end
 
 function CreatePacket( crc, data, validlua )
@@ -100,7 +119,8 @@ stdoutbuf = ""
 --
 -- Indicate that we are ready to receive a packet
 --
-writepacket( EOF ); io.flush()
+writepacket( EOF )
+io.flush()
 
 --
 -- Read until EOF marker
@@ -116,7 +136,7 @@ local groupid      = 0     -- Group ID that this code originated from. User SID 
 while( true ) do
 	local data  = io.read() -- Read single line
 
-	--io.stderr:write(data);
+	--io.stderr:write(data)
 
 	if ( expectheader ) then
 		if ( data:sub( 1, 1 ) == HEADERSTART and data:sub( -1 ) == HEADEREND ) then
@@ -164,7 +184,7 @@ local CALL_FUNC = scall
 
 -- Use the un-sandboxed the environment if the header says so
 if ( not IsSandboxed() ) then
-	--io.stderr:write("no sandbox: \"" .. code .. "\"\n"); io.stderr:flush();
+	--io.stderr:write("no sandbox: \"" .. code .. "\"\n") io.stderr:flush()
 	LOAD_ENV  = _ENV
 	CALL_FUNC = pcall
 end
@@ -210,6 +230,8 @@ end
 --
 table.remove( ret, 1 )
 
+stdoutbuf = NormalizeMessage( stdoutbuf )
+
 if ( #ret > 0 ) then -- Code returned something
 
 	-- Transform our ret values in to strings
@@ -218,18 +240,13 @@ if ( #ret > 0 ) then -- Code returned something
 	end
 
 	local data = table.concat( ret, "\t" )
-	writepacket( CreatePacket( codecrc, (stdoutbuf .. data):match"^([%s%S]-)%s+$", true ) )
+	writepacket( CreatePacket( codecrc, NormalizeMessage( stdoutbuf .. data ), true ) )
 
 else -- Code returned nil, check if its `return lol` 'valid' or actually lua.
 
-	stdoutbuf = stdoutbuf:match"^([%s%S]-)%s+$"
-
 	local isphrase = code:match( "^[%w ]+$" ) -- Match alphanumeric and space
-	if ( isphrase ) then
-		writepacket( CreatePacket( codecrc, stdoutbuf, false ) )
-	else
-		writepacket( CreatePacket( codecrc, stdoutbuf, true ) )
-	end
+
+	writepacket( CreatePacket( codecrc, stdoutbuf, not isphrase ) )
 
 end
 io.flush()
