@@ -14,15 +14,7 @@ writepacket       = io.write
 
 local function NormalizeMessage(message)
 
-	message = (message .. "\n"):gsub("[%s%S]-\n",
-		function(match)
-
-			match = match:gsub( "%s*$", "" )
-
-			return match .. "\n"
-
-		end
-	):sub(1,-2);
+	message = (message .. "\n"):gsub( "[ \t\r]*\n", "\n" ):sub( 1,-2 )
 
 	return message
 
