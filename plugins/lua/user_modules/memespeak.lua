@@ -28,8 +28,8 @@ local emotes = {
 	z = ":Z:",
 }
 hook.Add("Message", "memespeak", function(ply, id, txt)
-	if string.sub(txt, 1, 1) == ">" then
-		txt = string.sub(txt, 2)
+	if string.sub(txt, 1, 2) == ">>" then
+		txt = string.sub(txt, 3)
 		txt = string.lower(txt)
 		txt = string.gsub(txt, ".", emotes)
 		print(txt)
