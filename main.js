@@ -96,11 +96,13 @@ bot.registerCommand( "chat", function( name, steamID ) {
 
 		bot.Listeners.push( steamID );
 		bot.sendMessage( name + " entered chat." );
+		bot.emit( "UserConnected", name, steamID, bot.GroupID );
 
 	} else {
 
 		bot.sendMessage( name + " disconnected." );
 		bot.Listeners.splice( index, 1 );
+		bot.emit( "UserDisconnected", name, steamID, bot.GroupID );
 
 	}
 
