@@ -95,12 +95,12 @@ bot.registerCommand( "chat", function( name, steamID ) {
 	if ( index == -1 ) {
 
 		bot.Listeners.push( steamID );
-		bot.sendMessage( name + " entered chat." );
+		bot.sendMessage( name + " entered chat." undefined, undefined, true );
 		bot.emit( "UserConnected", name, steamID, bot.GroupID );
 
 	} else {
 
-		bot.sendMessage( name + " disconnected." );
+		bot.sendMessage( name + " disconnected.", undefined, undefined, true );
 		bot.Listeners.splice( index, 1 );
 		bot.emit( "UserDisconnected", name, steamID, bot.GroupID );
 
