@@ -1,6 +1,7 @@
 bot.on( "Message", function( name, steamID, msg, group ) {
 	
-	if ( /\bskid(die|s)?\b/.test( msg ) )
-		bot.sendMessage( "lamer*", group );
+	var res = /\bskid[^ ]*\b/.exec( msg );
+	if ( res )
+		bot.sendMessage( res[0] + "*", group );
 
 } );
