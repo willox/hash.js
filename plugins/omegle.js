@@ -52,6 +52,27 @@ bot.on( "Message", function( name, steamID, msg ) {
 
 } );
 
+bot.on( "UserConnected", function( name ) {
+
+	if ( connected )
+		omegle.send( name + " connected." );
+	
+});
+
+bot.on( "UserDisconnected", function( name ) {
+
+	if ( connected )
+		omegle.send( name + " disconnected." );
+	
+});
+
+bot.on( "OutgoingPrint", function( msg ) {
+	
+	if ( connected )
+		omegle.send( "#: " + msg );
+		
+});
+
 bot.registerCommand( "omegle", function( name, steamID, args ) {
 
 	if ( !bot.isAdmin( steamID ) )
