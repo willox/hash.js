@@ -4,7 +4,7 @@ var connected = false;
 
 function Connect(tags) {
 
-	bot.sendMessage( "Connecting to Omegle." );
+	bot.sendMessage( "Connecting to Omegle.", undefined, undefined, true );
 
 	omegle.start(tags, function( e ) {
 
@@ -19,7 +19,7 @@ function Connect(tags) {
 
 function Disconnect() {
 
-	bot.sendMessage( "Disconnected from Omegle." );
+	bot.sendMessage( "Disconnected from Omegle.", undefined, undefined, true );
 
 	omegle.disconnect();
 	connected = false;
@@ -28,19 +28,19 @@ function Disconnect() {
 
 omegle.on( "connected", function() {
 
-	bot.sendMessage( "Stranger connected." );
+	bot.sendMessage( "Stranger connected.", undefined, undefined, true );
 
 } );
 
 omegle.on( "gotMessage", function( msg ) {
 
-	bot.sendMessage( "Stranger: " + msg );
+	bot.sendMessage( "Stranger: " + msg, undefined, undefined, true );
 
 } );
 
 omegle.on( "strangerDisconnected", function() {
 
-	bot.sendMessage( "Stranger disconnected." );
+	bot.sendMessage( "Stranger disconnected.", undefined, undefined, true );
 	Disconnect();
 
 } );
