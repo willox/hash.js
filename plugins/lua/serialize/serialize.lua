@@ -19,17 +19,14 @@ local encoders = {
 	end,
 
 	["function"] = function( v )
-
 		local success, data = pcall( string.dump, v )
 
 		return string.pack( ">s4", success and data or string.dump( function() end ) )
-		
 	end
 
 }
 
 local function serialize( t )
-
 	local tabArray, tabAssoc = {}, {}
 	local valArray, valAssoc = {}, {}
 
@@ -38,26 +35,20 @@ local function serialize( t )
 		if type( v ) == "table" then
 
 			if not tabAssoc[ v ] then
-
 				table.insert( tabArray, v )
 				tabAssoc[ v ] = #tabArray
 
 				for k, v in pairs( v ) do
-
 					populateDictionary( k )
 					populateDictionary( v )
-
 				end
-
 			end
 
 		else
 
 			if not valAssoc[ v ] then
-
 				table.insert( valArray, v )
 				valAssoc[ v ] = #valArray				
-
 			end
 
 		end
@@ -72,7 +63,6 @@ local function serialize( t )
 	-- Write value data to output
 	--
 	for k, v in ipairs( valArray ) do
-
 		local vType = type( v )
 
 		if math.type( v ) == "integer" then
@@ -85,7 +75,6 @@ local function serialize( t )
 
 		table.insert( outBuf, string.pack( ">B", types[ vType ] ) )
 		table.insert( outBuf, encoders[ vType ]( v ) )
-
 	end
 
 	--
@@ -106,30 +95,22 @@ local function serialize( t )
 			-- Write key data
 			--
 			if type( k ) ~= "table" then
-
 				table.insert( outBuf, string.pack( ">B", 1 ) )
 				table.insert( outBuf, string.pack( ">j", valAssoc[ k ] ) )
-
 			else
-
 				table.insert( outBuf, string.pack( ">B", 2 ) )
 				table.insert( outBuf, string.pack( ">j", tabAssoc[ k ] ) )
-
 			end
 
 			--
 			-- Write value data
 			--
 			if type( v ) ~= "table" then
-
 				table.insert( outBuf, string.pack( ">B", 1 ) )
 				table.insert( outBuf, string.pack( ">j", valAssoc[ v ] ) )
-
 			else
-
 				table.insert( outBuf, string.pack( ">B", 2 ) )
 				table.insert( outBuf, string.pack( ">j", tabAssoc[ v ] ) )
-
 			end
 
 		end
@@ -138,11 +119,9 @@ local function serialize( t )
 		-- Data-Type of 0 signals end of table
 		--
 		table.insert( outBuf, string.pack( ">B", 0 ) )
-
 	end
 
 	return table.concat( outBuf )
-
 end
 
 return serialize
