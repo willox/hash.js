@@ -3,6 +3,11 @@ local deserialize	= require "serialize.deserialize"
 local types			= require "serialize.types"
 
 local cookies = {}
+local cookie_members = {}
+
+-- this is persistance for lua modules' protection
+
+local persist = true
 
 --
 -- Ensure our file exists
@@ -22,12 +27,13 @@ local function Load()
 	end
 
 	cookies._protected_user = cookies._protected_user or {}
+	cookies._protected_modules = cookies._protected_modules or {}
 
 	fs:close()
 
 end
 
-local function Save()
+function cookie_members.Save()
 
 	local data = serialize( cookies )
 
@@ -52,7 +58,15 @@ local function Size()
 
 end
 
-local function GetProtected()
+function cookie_members.StopPersist()
+
+	persist = false;
+
+end
+
+local module_cookies = {};
+
+function cookie_members.GetProtected( identifier )
 
 	if ( IsSandboxed() and not IsInternal() ) then -- confirm a user input this
 
@@ -65,13 +79,26 @@ local function GetProtected()
 
 		return ret
 
+	elseif ( persist and not module_cookies[ identifier ] ) then
+
+		local ret = cookies._protected_modules[ identifier ]
+
+		if ( not ret ) then
+			ret = {}
+			cookies._protected_modules[ identifier ] = ret
+		end
+
+		module_cookies[ identifier ] = true
+
+		return ret
+
 	end
 
 	error( "attempt to get protected cookies from non user script code", 2 )
 
 end
 
-local function ResetProtected()
+function cookie_members.ResetProtected()
 
 	if ( IsSandboxed() and not IsInternal() ) then -- confirm a user input this
 
@@ -89,19 +116,11 @@ meta.__len = Size
 
 function meta:__index( k )
 
-	if k == "Save" then
-		return Save
+	if ( cookie_members[ k ] ) then
+		return cookie_members[ k ]
 	end
 
-	if ( k == "GetProtected" ) then
-		return GetProtected
-	end
-
-	if ( k == "ResetProtected" ) then
-		return ResetProtected
-	end
-
-	if ( k == "_protected_user" ) then
+	if ( k == "_protected_user" or k == "_protected_modules" ) then
 		return nil
 	end
 
@@ -111,40 +130,8 @@ end
 
 function meta:__newindex( k, v )
 
-	if k == self or v == self then
-		error( "attempt to store cookie table within itself", 2 )
-	end
-
-	if k == "Save" then
-		error( "attempt to modify protected member 'Save'", 2 )
-	end
-
-	if ( k == "_protected_user" ) then
-		error( "attempt to modify protected member '_protected_user'", 2 )
-	end
-
-	if ( k == "GetProtected" ) then
-		error( "attempt to modify protected member 'GetProtected'", 2 )
-	end
-
-	if ( k == "ResetProtected" ) then
-		error( "attempt to modify protected member 'ResetProtected'", 2 )
-	end
-
-	if not types[ type( k ) ] and type( k ) ~= "table" then
-		error( "attempt to create cookie with invalid key type (" .. type( k ) .. ")", 2 )
-	end
-
-	if not types[ type( v ) ] and type( v ) ~= "table" and v ~= nil then
-		error( "attempt to create cookie with invalid value type (" .. type( v ) .. ")", 2 )
-	end
-
-	if type( k ) == "function" and not pcall( string.dump, k ) then
-		error( "attempt to store invalid function as key", 2 )
-	end
-
-	if type( v ) == "function" and not pcall( string.dump, v ) then
-		error( "attempt to store invalid function as value", 2 )
+	if ( cookie_members[ k ] or k == "_protected_user" or k == "_protected_modules" ) then
+		error( "attempt to modify protected member '" .. k .. "'", 2 )
 	end
 
 	cookies[ k ] = v
@@ -156,7 +143,7 @@ function meta:__pairs()
 	local t = {}
 
 	for k, v in pairs( cookies ) do
-		if ( k ~= "_protected_user" ) then
+		if ( k ~= "_protected_user" and k ~= "_protected_modules" ) then
 			t[ k ] = v
 		end
 	end
