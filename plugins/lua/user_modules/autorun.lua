@@ -13,3 +13,4 @@ require "wiki"
 require "memespeak"
 
 hook.StopPersist()
+cookie.StopPersist();

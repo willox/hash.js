@@ -1,51 +1,64 @@
-cookie.texts = cookie.texts or {};
+local new_cookie = cookie.GetProtected"texts"
 
-cookie.texts.mean = cookie.texts.mean or 0;
-cookie.texts.tracked = cookie.texts.tracked or 0;
-cookie.texts.totallen = cookie.texts.totallen or 0;
-cookie.texts.ids = cookie.texts.ids or {};
-cookie.texts.cocks = cookie.texts.cocks or 0
+if ( not new_cookie.transitioned ) then
 
-local function add(stmd, len)
-	local mean = cookie.texts.mean;
-	local amt = cookie.texts.tracked;
-	
-	mean = (mean * (amt / (amt + 1))) + len / (amt + 1);
-	amt = amt + 1;
-	
-	cookie.texts.tracked = amt;
-	cookie.texts.mean = mean;
-	
-	
-	local total = cookie.texts.totallen;
-	
-	for k,v in pairs(cookie.texts.ids) do
-		v.len = v.len * (total / (total + len));
+	for k,v in pairs(cookie.texts or {}) do
+		new_cookie[k] = v
 	end
-	cookie.texts.ids[stmd] = cookie.texts.ids[stmd] or {};
-	
-	cookie.texts.ids[stmd].len = (cookie.texts.ids[stmd].len or 0) + len / (total + len);
-	
-	cookie.texts.totallen = cookie.texts.totallen + len;
+
+	cookie.texts = nil
+	new_cookie.transitioned = true
+
 end
 
-hook.Add("Message", "Lengthometer", function(name,id, text) 
+local cookie = new_cookie
+
+cookie.mean = cookie.mean or 0;
+cookie.tracked = cookie.tracked or 0;
+cookie.totallen = cookie.totallen or 0;
+cookie.ids = cookie.ids or {};
+cookie.cocks = cookie.cocks or 0
+
+local function add(stmd, len)
+	local mean = cookie.mean;
+	local amt = cookie.tracked;
+
+	mean = (mean * (amt / (amt + 1))) + len / (amt + 1);
+	amt = amt + 1;
+
+	cookie.tracked = amt;
+	cookie.mean = mean;
+
+
+	local total = cookie.totallen;
+
+	for k,v in pairs(cookie.ids) do
+		v.len = v.len * (total / (total + len));
+	end
+	cookie.ids[stmd] = cookie.ids[stmd] or {};
+
+	cookie.ids[stmd].len = (cookie.ids[stmd].len or 0) + len / (total + len);
+
+	cookie.totallen = cookie.totallen + len;
+end
+
+hook.Add("Message", "Lengthometer", function(name,id, text)
 	add(id, text:len());
-		
+
 	text:gsub("cock", function()
-		cookie.texts.cocks = cookie.texts.cocks + 1	
+		cookie.cocks = cookie.cocks + 1
 	end )
 end)
 
 stats = stats or {};
 
-function stats.MeanLength() return cookie.texts.mean end
+function stats.MeanLength() return cookie.mean end
 
 function stats.TotalCharsSent(id)
 	if(id) then
-		local info = cookie.texts.ids[tostring(id)];
+		local info = cookie.ids[tostring(id)];
 		if(not info) then return; end
-		return info.len * cookie.texts.totallen;
+		return info.len * cookie.totallen;
 	end
-	return cookie.texts.totallen;
+	return cookie.totallen;
 end
