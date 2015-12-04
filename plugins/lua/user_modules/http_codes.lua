@@ -64,6 +64,8 @@ HTTP = setmetatable({
 
 [520] = "Unknown Error",
 
+[622] = "All The Fucks",
+
 [701] = "Meh",
 [702] = "Emacs",
 [703] = "Explosion",
