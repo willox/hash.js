@@ -1,5 +1,5 @@
 local emotes = {
-	[" "] = "  ",
+	[" "] = "   ",
 	a = ":csgoa:",
 	b = ":csgob:",
 	c = ":carbon:",
