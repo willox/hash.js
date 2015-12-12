@@ -165,6 +165,8 @@ bot.on( "UserConnected", function( name, steamID ) {
 
 bot.on( "TextMessage", function( username, steamid, message, groupid ) {
 
+    if ( groupid != bot.GroupID )
+        return
 
     var usersettings = {}
     db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
