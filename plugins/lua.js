@@ -199,7 +199,7 @@ setInterval( function() {
 
 	QueueCommand( "cookie.Save()", false, true );
 
-}, 30000 );
+}, 1000 * 60 * 60 );
 
 bot.on( "Message", function( name, steamID, msg, group ) {
 
