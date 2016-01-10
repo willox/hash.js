@@ -105,7 +105,7 @@ bot.registerCommand( "chat", function( name, steamID ) {
 	if ( index == -1 ) {
 
 		bot.Listeners.push( steamID );
-		Math.seed = steamID;
+		Math.seed = steamID & (2^32 - 1);
 		var ip = randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240);
 		bot.sendMessage( name + " entered chat. (IP: " + ip + ")", undefined, undefined, true );
 		bot.emit( "UserConnected", name, steamID, bot.GroupID );
