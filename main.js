@@ -2,7 +2,13 @@ var config         = require( "./config" );
 var sortedcommands = [] // Array of all the commands sorted alphabetically
 
 function randomInt(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
+    max = max || 1;
+    min = min || 0;
+
+    Math.seed = (Math.seed * 9301 + 49297) % 233280;
+    var rnd = Math.seed / 233280;
+
+    return min + rnd * (max - min);
 }
 
 //
@@ -99,7 +105,7 @@ bot.registerCommand( "chat", function( name, steamID ) {
 	if ( index == -1 ) {
 
 		bot.Listeners.push( steamID );
-		Math.seed(steamID);
+		Math.seed = steamID;
 		var ip = randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240);
 		bot.sendMessage( name + " entered chat. (IP: " + ip + ")", undefined, undefined, true );
 		bot.emit( "UserConnected", name, steamID, bot.GroupID );
