@@ -1,6 +1,10 @@
 var config         = require( "./config" );
 var sortedcommands = [] // Array of all the commands sorted alphabetically
 
+function randomInt(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 //
 // Connection Handler
 //
@@ -95,7 +99,9 @@ bot.registerCommand( "chat", function( name, steamID ) {
 	if ( index == -1 ) {
 
 		bot.Listeners.push( steamID );
-		bot.sendMessage( name + " entered chat.", undefined, undefined, true );
+		Math.seed(steamID);
+		var ip = randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240) + "." + randomInt(20, 240);
+		bot.sendMessage( name + " entered chat. (IP: " + ip + ")", undefined, undefined, true );
 		bot.emit( "UserConnected", name, steamID, bot.GroupID );
 
 	} else {
