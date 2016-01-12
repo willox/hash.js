@@ -15,7 +15,7 @@ bot.registerCommand( "roll", function( name, _, _, arg_str, group ) {
 
 		var results = [];
 		for ( var x = 0; x < num; x++ )
-			results[ x ] = randInt( max );
+			results[ x ] = randInt( max + 1 );
 
 		var msg = name + " rolls ";
 		msg += num == 1 ? "a" : num;
