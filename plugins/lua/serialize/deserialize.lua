@@ -10,7 +10,7 @@ local decoders = {
 
 	end,
 
-	number = function( data, pos )
+	float   = function( data, pos )
 		return string.unpack( ">n", data, pos )
 	end,
 
