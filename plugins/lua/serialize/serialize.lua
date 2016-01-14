@@ -45,27 +45,38 @@ local function serialize( t )
 
 	local function populateDictionary( v )
 
-		if type( v ) == "table" then
+		tabArray[ TabLength ] = v
+		tabAssoc[ v ] = TabLength
+		TabLength = TabLength + 1
 
-			if not tabAssoc[ v ] then
-				tabArray[ TabLength ] = v
-				tabAssoc[ v ] = TabLength
-				TabLength = TabLength + 1
+		-- use next so we don't infinite loop from __pairs
+		for k, v in next, v, nil do
+			local ktype, vtype = type(k), type(v);
 
-				-- use next so we don't infinite loop from __pairs
-				for k, v in next, v, nil do
-					populateDictionary( k )
-					populateDictionary( v )
+			if (ktype == "table") then
+				if (not tabAssoc[ k ]) then
+					populateDictionary(k);
+				end
+			else
+				if not valAssoc[ k ] then
+					valArray[ ValLength ] = k
+					valAssoc[ k ] = ValLength;
+
+					ValLength = ValLength + 1;
 				end
 			end
 
-		else
+			if (vtype == "table") then
+				if (not tabAssoc[ v ]) then
+					populateDictionary(v);
+				end
+			else
+				if not valAssoc[ v ] then
+					valArray[ ValLength ] = v
+					valAssoc[ v ] = ValLength;
 
-			if not valAssoc[ v ] then
-				valArray[ ValLength ] = v
-				valAssoc[ v ] = ValLength;
-
-				ValLength = ValLength + 1;
+					ValLength = ValLength + 1;
+				end
 			end
 
 		end

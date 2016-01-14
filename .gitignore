@@ -5,3 +5,4 @@ plugins/lua/cookies.dat
 plugins/lua/lua.exe
 sentry.sha
 npm-debug.log
+plugins/lua/serialize/tests
