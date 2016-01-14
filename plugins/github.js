@@ -46,14 +46,7 @@ github.on( "data", function( notification ) {
 		var url = obj.html_url;
 
 		// Shortern the URL
-		gitio( url, function( err, shortUrl ) {
-
-			if ( err )
-				bot.sendMessage( notification.subject.title + "\n" + url );
-			else
-				bot.sendMessage( notification.subject.title + " - " + shortUrl );
-
-		} );
+		bot.sendMessage( notification.subject.title + "\n" + url );
 
 	} );
 
