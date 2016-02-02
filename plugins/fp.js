@@ -59,6 +59,8 @@ function HandlePosts( posts ) {
 		// We need a new scope for our title and postID values
 		( function( title, postID ) {
 
+			bot.emit( "FPThreadUpdate", title, postID );
+
 			db.all( "SELECT thread FROM threads", function( err, rows ) {
 
 				for ( var i = 0; i < rows.length; i++ ) {
