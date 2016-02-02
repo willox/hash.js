@@ -33,6 +33,8 @@ github.on( "data", function( notification ) {
 			"User-Agent": "Node-JS"
 		}
 	};
+	
+	bot.emit( "GithubUpdate", notification );
 
 	request( notification.subject.url, options, function( error, req, body ) {
 

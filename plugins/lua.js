@@ -226,6 +226,16 @@ bot.on( "UserDisconnected", function( name, steamID ) {
 	QueueHook( "Disconnected", [ name, steamID ] );
 } );
 
+
+bot.on( "FPThreadUpdate", function( title, postID ) {
+	QueueHook( "FPThreadUpdate", [ title, postID ] );
+} );
+
+
+bot.on( "GithubUpdate", function( notification ) {
+	QueueHook( "GithubUpdate", [ notification.repository.full_name, notification.subject.title, notification.subject.latest_comment_url ] );
+} );
+
 var buf = [];
 var timers = {};
 function OnStdOut( data ) {
