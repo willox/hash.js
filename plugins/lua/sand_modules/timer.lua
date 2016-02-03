@@ -78,9 +78,9 @@ end
 
 local function Remove( id )
 
-	timers[ id ] = nil
+	timers[ "t"..id ] = nil
 	
-	writepacket(CreateTimerPacket(id, delay, -1));
+	writepacket(CreateTimerPacket("t"..id, delay, -1));
 	writepacket(EOF);
 
 end
