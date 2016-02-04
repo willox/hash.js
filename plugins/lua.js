@@ -203,8 +203,9 @@ setInterval( function() {
 
 bot.on( "Message", function( name, steamID, msg, group ) {
 
-	if ( steamID == group && !bot.isAdmin( steamID ) ) { // Only admins can PM the bot code
-		return;
+	if ( steamID == group ) { // This is a PM
+		if ( !config.AllowLuaPM && !bot.isAdmin( steamID ) ) // Only allow admin to PM Lua code if config var unset
+			return;
 	}
 
 	QueueCommand( "SetLastExecutedSteamID( " + steamID + " )", false, true );

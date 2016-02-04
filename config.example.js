@@ -4,13 +4,15 @@ var config = {
 	Sentry:	"sentry.sha",
 	Auth:	"???",
 
+	AllowLuaPM: false,
+	
 	AcceptItems: true,
-	
+
 	Group: "103582791436028776",
-	
+
 	CleverBotUser: "???",
 	CleverBotKey:  "???",
-	
+
 	HTTPBlacklist: [
 		"127.0.0.1",
 		"127.0.0.0",
@@ -18,7 +20,7 @@ var config = {
 		"192.168.0.1",
 		"192.168.200.1",
 	],
-	
+
 	LuaBin: "/im/really/gay/lua531",
 
 	Admins: [
