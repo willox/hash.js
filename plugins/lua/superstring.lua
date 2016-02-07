@@ -43,7 +43,7 @@ local function getvarvalue (name)
 	-- try local variables
 	local i = 1
 	while true do
-		local n, v = debug.getlocal(2, i)
+		local n, v = debug.getlocal(5, i)
 		if not n then break end
 		if n == name then
 		  value = v
@@ -54,7 +54,7 @@ local function getvarvalue (name)
 	if found then return value end
 	
 	-- try upvalues
-	local func = debug.getinfo(2).func
+	local func = debug.getinfo(5).func
 	i = 1
 	while true do
 		local n, v = debug.getupvalue(func, i)
@@ -66,7 +66,7 @@ end
 
 local function eval_expr( expr )
 	local varval = getvarvalue(expr)
-	if varval then return varval end
+	if varval then return tostring(varval) end
 	
 	local try_ret, err = load("return " .. expr, "interp", "t", _ENV)
 	if not err then return tostring(try_ret()) end
@@ -74,5 +74,5 @@ local function eval_expr( expr )
 	return "{err: " .. err .. "}"
 end
 function meta:__bnot( arg )
-	return string.gsub(arg, "$([^%s]+)", function(var) return eval_expr(var) end)
+	return (string.gsub(arg, "^([^%s]+)", function(var) return eval_expr(var) end))
 end
