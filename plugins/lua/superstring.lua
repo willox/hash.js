@@ -74,5 +74,5 @@ local function eval_expr( expr )
 	return "{err: " .. err .. "}"
 end
 function meta:__bnot( arg )
-	return (string.gsub(arg, "^([^%s]+)", function(var) return eval_expr(var) end))
+	return (string.gsub(arg, "(%$[^%s]+)", eval_expr))
 end
