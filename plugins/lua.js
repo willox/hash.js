@@ -14,7 +14,8 @@ var userpackets     = {}; // Lookup object for user submitted code. Matches crc 
 
 function Init() {
 	lua = child_process.spawn( config.LuaBin ? config.LuaBin : "lua", [ "init.lua" ], {
-		cwd: __dirname + "/lua"
+		cwd: __dirname + "/lua",
+		uid: config.LuaBinUID
 	} );
 
 	cmdbuf     = [];

@@ -1,14 +1,14 @@
 var config = {
-	User:	"???",
-	Pass:	"???",
+	User:	"steam_username",
+	Pass:	"steam_password",
 	Sentry:	"sentry.sha",
-	Auth:	"???",
-
-	AllowLuaPM: false,
-	
-	AcceptItems: true,
+	Auth:	"steam_guard_code",
 
 	Group: "103582791436028776",
+	LuaBin: "/path/to/lua",
+	LuaBinUID: undefined,
+	AllowLuaPM: false,
+	AcceptItems: true,
 
 	CleverBotUser: "???",
 	CleverBotKey:  "???",
@@ -20,8 +20,6 @@ var config = {
 		"192.168.0.1",
 		"192.168.200.1",
 	],
-
-	LuaBin: "/im/really/gay/lua531",
 
 	Admins: [
 		"76561197998909316",
