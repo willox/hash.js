@@ -63,6 +63,21 @@ function ParseHeader(data)
 	return header
 end
 
+function SendKillNotif()
+
+
+    local function CreateKillNotif( crc, data, validlua )
+    	return HEADERSTART .. "KillNotif,1:1" .. HEADEREND
+    end
+
+    require"sand_modules.cookie".Save()
+
+    writepacket( CreateKillNotif() )
+    writepacket( EOF )
+    io.flush()
+
+end
+
 function PacketSafe(str, argnum)
 
 	str = tostring(str)
