@@ -196,12 +196,6 @@ function Require( path ) {
 
 }
 
-setInterval( function() {
-
-	QueueCommand( "cookie.Save()", false, true );
-
-}, 1000 * 60 * 60 );
-
 bot.on( "Message", function( name, steamID, msg, group ) {
 
 	if ( steamID == group ) { // This is a PM
@@ -428,6 +422,14 @@ bot.registerCommand( "restart", function() {
     }
     lua.pendingKill = true;
     QueueCommand("SendKillNotif()", false);
+    setTimeout(() => {
+        console.log("KillNotif took too long to be received, force restarting.");
+        if (lua.pendingKill) // it hasn't killed, someone might have infinite looped it somehow
+        {
+            lua.kill();
+            Init();
+        }
+    }, 10000);
 
 	//lua.kill();
 	//Init();

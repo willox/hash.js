@@ -22,7 +22,11 @@ function HTTPCallback ( id, code, body, err )
 
     callbacks[id] = nil
 
-    callback ( code, body, err )
+    local s, e = scall( callback, code, body, err )
+
+    if ( not s ) then
+        print( "error in http callback '"..id.."' "..e);
+    end
 
 end
 
