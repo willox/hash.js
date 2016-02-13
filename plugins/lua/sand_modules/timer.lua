@@ -4,16 +4,11 @@ local timers = {}
 local simple_timers = {}
 
 local function CreateSimpleTimerPacket( id, delay )
-	local header = HEADERSTART .. "SimpleTimer," ..
-		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND
-	return header
+	return "SimpleTimer,"..id..";"..delay..":";
 end
 
 local function CreateTimerPacket( id, delay, reps )
-	local header = HEADERSTART .. "Timer," ..
-		PacketSafe(id, 2) .. ":" .. PacketSafe(delay, 3) .. HEADEREND ..
-		PacketSafe(reps, 4)
-	return header
+	return "Timer,"..reps..";"..delay..";"..PacketSafe(id)..":";
 end
 
 local simple_index = 1;
@@ -27,7 +22,6 @@ local function Simple( delay, callback )
 	simple_timers[simple_index] = callback;
 
 	writepacket(CreateSimpleTimerPacket(simple_index, delay));
-	writepacket(EOF);
 
 	simple_index = simple_index + 1;
 
@@ -64,10 +58,9 @@ local function Create( id, delay, reps, callback )
 		error( "bad argument #4 to 'Create' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
-	timers[ "t"..id ] = callback
+	timers[ id ] = callback
 
-	writepacket(CreateTimerPacket("t"..id, delay, reps)); -- "t"..id because limitations in my regex string i cba to fix
-	writepacket(EOF);
+	writepacket(CreateTimerPacket(id, delay, reps));
 
 end
 
@@ -84,9 +77,9 @@ end
 
 local function Remove( id )
 
-	timers[ "t"..id ] = nil
+	timers[ id ] = nil
 
-	writepacket(CreateTimerPacket("t"..id, delay, -1));
+	writepacket(CreateTimerPacket(id, delay, -1));
 	writepacket(EOF);
 
 end

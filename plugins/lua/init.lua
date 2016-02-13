@@ -67,57 +67,34 @@ function SendKillNotif()
 
 
     local function CreateKillNotif( crc, data, validlua )
-    	return HEADERSTART .. "KillNotif,1:1" .. HEADEREND
+    	return "KillNotif,:"
     end
 
     require"sand_modules.cookie".Save()
 
-    writepacket( CreateKillNotif() )
-    writepacket( EOF )
+    writepacket(CreateKillNotif())
     io.flush()
 
 end
 
 function PacketSafe(str, argnum)
 
+	if (argnum) then error("unexpected argument #2 in PacketSafe - need to fix") end
+
 	str = tostring(str)
 
 	local exchanges = {
-		[1] = {
-
-			[","] = "\\,",
-			["\x00"] = "\\x00",
-
-		},
-		[2] = {
-
-			[":"] = "\\:",
-			["\x00"] = "\\x00",
-
-		},
-		[3] = {
-
-			["\x00"] = "\\x00",
-			--["]"] = "\\]",
-
-		},
-		[4] = {
-
-			["\x00"] = "\\x00",
-			--["]"] = "\\]",
-
-		},
+		["\\"] = "\\\\",
+		[":"] = "\\:",
 	}
 
-	return str:gsub(".", exchanges[argnum] or {})
+	return str:gsub(".", exchanges)
 
 end
 
-function CreatePacket( crc, data, validlua )
-	local header = HEADERSTART .. "Lua," .. tostring(crc) .. ":"
-	header = header .. (validlua and "1" or "0") .. HEADEREND
-	data = string.gsub(PacketSafe(data, 4), "\x00", "")
-	return header .. PacketSafe(data, 4)
+function CreateLuaPacket(crc, data, validlua)
+	return "Lua,"..(validlua and "1" or "0")..tostring(crc)..";"..
+		   PacketSafe(data)..":";
 end
 
 ::start::
@@ -126,7 +103,6 @@ stdoutbuf = ""
 --
 -- Indicate that we are ready to receive a packet
 --
-writepacket( EOF )
 io.flush()
 
 --
@@ -170,7 +146,7 @@ end
 
 -- Returns true if this call is not being executed by a user
 function IsInternal()
-	return (steamid == 0) and (groupid == 0)
+	return steamid == 0 and groupid == 0
 end
 
 -- Return true if this code is being executed inside the sandbox
@@ -183,14 +159,14 @@ end
 -- but there's no point in obscuring the seed any more
 -- than it is now by also using microseconds or whatever,
 -- because the sandbox has math.randomseed exposed anyway.
-math.randomseed( os.time() )
+math.randomseed(os.time())
 
 -- Set the environment to the sandbox
 local LOAD_ENV  = ENV
 local CALL_FUNC = scall
 
 -- Use the un-sandboxed the environment if the header says so
-if ( not IsSandboxed() ) then
+if (not IsSandboxed()) then
 	--io.stderr:write("no sandbox: \"" .. code .. "\"\n") io.stderr:flush()
 	LOAD_ENV  = _ENV
 	CALL_FUNC = pcall
@@ -209,7 +185,7 @@ end
 -- We've been passed invalid Lua
 --
 if err then
-	writepacket( CreatePacket( codecrc, err, false ) )
+	writepacket( CreateLuaPacket( codecrc, err, false ) )
 	io.flush()
 
 	goto start
@@ -226,7 +202,7 @@ local success, err = ret[ 1 ], ret[ 2 ]
 -- Our function has failed
 --
 if not success then
-	writepacket( CreatePacket( codecrc, err, false ) )
+	writepacket( CreateLuaPacket( codecrc, err, false ) )
 	io.flush()
 
 	goto start
@@ -235,9 +211,9 @@ end
 --
 -- Remove scall success success bool
 --
-table.remove( ret, 1 )
+table.remove(ret, 1)
 
-stdoutbuf = NormalizeMessage( stdoutbuf )
+stdoutbuf = NormalizeMessage(stdoutbuf)
 
 if ( #ret > 0 ) then -- Code returned something
 
@@ -247,13 +223,13 @@ if ( #ret > 0 ) then -- Code returned something
 	end
 
 	local data = table.concat( ret, "\t" )
-	writepacket( CreatePacket( codecrc, NormalizeMessage( stdoutbuf .. data ), true ) )
+	writepacket(CreateLuaPacket(codecrc, NormalizeMessage(stdoutbuf..data), true))
 
 else -- Code returned nil, check if its `return lol` 'valid' or actually lua.
 
-	local isphrase = code:match( "^[%w ]+$" ) -- Match alphanumeric and space
+	local isphrase = code:match("^[%w ]+$") -- Match alphanumeric and space
 
-	writepacket( CreatePacket( codecrc, stdoutbuf, not isphrase ) )
+	writepacket(CreateLuaPacket(codecrc, stdoutbuf, not isphrase))
 
 end
 io.flush()
