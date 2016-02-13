@@ -29,7 +29,7 @@ bot.on("UserConnected", (name, steamID) =>
 
 
 bot.on("UserDisconnected", (name, steamID) =>
-	QueueHook("Disconnected", [name, steamID])
+	lua.queueHook("Disconnected", [name, steamID])
 );
 
 

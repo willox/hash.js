@@ -26,7 +26,13 @@ local function stostring( obj )
 	--
 	-- Try executing metamethods in the sandbox first
 	--
-	local success, str = scall( tostring, obj )
+	local success, str
+
+	local meta = debug.getmetatable( obj )
+
+	if type( meta ) == "table" and rawget(meta, "__tostring") ~= error then
+		success, str = scall( tostring, obj )
+	end
 
 	--
 	-- If the metamethod succeeds, return it in strong form
