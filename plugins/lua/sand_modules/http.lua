@@ -6,15 +6,13 @@ local callbacks = {}
 local i = 1;
 
 local function CreateHTTPPacket( url, id )
-	local header = HEADERSTART .. "HTTP," ..
-		PacketSafe(url, 2) .. ":" .. tostring(id) .. HEADEREND ..
-		GetLastExecutedSteamID( )
-	return header
+	return "HTTP,"..tostring(id)..";"..GetLastExecutedSteamID()..";"..
+	       PacketSafe(url)..":";
 end
 
 function HTTPCallback ( id, code, body, err )
 
-    if ( not callbacks[id] ) then
+    if (not callbacks[id]) then
         return;
     end
 
@@ -22,7 +20,11 @@ function HTTPCallback ( id, code, body, err )
 
     callbacks[id] = nil
 
-    callback ( code, body, err )
+    local s, e = scall(callback, code, body, err)
+
+    if ( not s ) then
+        print( "error in http callback '"..id.."' "..e);
+    end
 
 end
 
@@ -41,7 +43,6 @@ local function HTTP ( url, callback )
     callbacks[i] = callback
 
     writepacket ( CreateHTTPPacket ( url, i ) )
-    writepacket ( EOF )
 
     i = i + 1;
 
