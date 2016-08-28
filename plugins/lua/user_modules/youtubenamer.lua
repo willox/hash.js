@@ -1,6 +1,7 @@
 local api_keys = {
 	"AIzaSyA8OmKcw2DMNkJicyCJ0vqvf90xgeH52zE",
-	"AIzaSyBdNHtSytlHao_L5l_dPe-FByVapmKzd0U"
+	"AIzaSyBdNHtSytlHao_L5l_dPe-FByVapmKzd0U",
+	"AIzaSyD74kTqDqj6YQQdKYH9n5-6kG-l_oX_41A" -- thanks playx
 }
 
 local function round(x) return math.floor(x + 0.5) end
